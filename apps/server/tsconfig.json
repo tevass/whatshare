@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "@whatshare/tsconfig/node.json",
+    "@whatshare/tsconfig/vitest.json",
+  ],
+  "compilerOptions": {
+    "baseUrl": "./"
+  }
+}
