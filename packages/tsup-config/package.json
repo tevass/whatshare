@@ -1,5 +1,5 @@
 {
-  "name": "@whatshare/vitest-config",
+  "name": "@whatshare/tsup-config",
   "version": "1.0.0",
   "license": "ISC",
   "private": true,
@@ -12,15 +12,10 @@
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts --fix ."
   },
-  "dependencies": {
-    "vite-tsconfig-paths": "^4.2.2"
-  },
   "devDependencies": {
     "@whatshare/eslint-config": "workspace:^",
     "@whatshare/tsconfig": "workspace:^",
-    "@whatshare/tsup-config": "workspace:^",
     "eslint": "^8.56.0",
-    "tsup": "^8.0.1",
-    "vitest": "^0.34.6"
+    "tsup": "^8.0.1"
   }
 }
