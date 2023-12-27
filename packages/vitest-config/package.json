@@ -1,0 +1,25 @@
+{
+  "name": "@whatshare/vitest-config",
+  "version": "1.0.0",
+  "license": "ISC",
+  "private": true,
+  "exports": {
+    "./node": "./dist/node.js"
+  },
+  "scripts": {
+    "build": "rm -rf dist & tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
+  },
+  "dependencies": {
+    "vite-tsconfig-paths": "^4.2.2"
+  },
+  "devDependencies": {
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "eslint": "^8.56.0",
+    "tsup": "^8.0.1",
+    "vitest": "^0.34.6"
+  }
+}
