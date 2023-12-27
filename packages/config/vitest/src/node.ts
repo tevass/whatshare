@@ -5,5 +5,6 @@ export const config: UserConfig = {
   plugins: [tsConfigPaths()],
   test: {
     globals: true,
+    root: './',
   },
 }
