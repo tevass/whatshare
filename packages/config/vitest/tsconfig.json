@@ -1,6 +1,3 @@
 {
-  "extends": "@whatshare/tsconfig/node.json",
-  "compilerOptions": {
-    "incremental": false
-  },
+  "extends": "@whatshare/tsconfig/node.json"
 }

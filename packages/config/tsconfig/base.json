@@ -4,7 +4,6 @@
     "skipLibCheck": true,
     "strict": true,
     "sourceMap": true,
-    "incremental": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
     "paths": {

@@ -1,1 +1,2 @@
-export { default } from './dist/node'
+export * from './dist/node';
+

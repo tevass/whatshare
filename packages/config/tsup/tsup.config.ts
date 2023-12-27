@@ -5,5 +5,4 @@ export default defineConfig({
   format: ['cjs'],
   dts: true,
   clean: true,
-  // external: ['esbuild'],
 })

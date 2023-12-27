@@ -7,7 +7,7 @@
     "./node": "./dist/node.js"
   },
   "scripts": {
-    "build": "rm -rf dist & tsup",
+    "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts --fix ."
