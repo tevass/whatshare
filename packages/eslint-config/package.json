@@ -4,6 +4,7 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
-    "@rocketseat/eslint-config": "^2.1.0"
+    "@rocketseat/eslint-config": "^2.1.0",
+    "eslint-plugin-vitest-globals": "^1.4.0"
   }
 }
