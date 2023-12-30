@@ -1,2 +1,1 @@
-export * from './dist/entities';
-
+export * from './dist/entities'

@@ -4,7 +4,6 @@
     "@whatshare/tsconfig/vitest.json",
   ],
   "compilerOptions": {
-    "baseUrl": "./",
-    "esModuleInterop": true
+    "baseUrl": "./"
   }
 }

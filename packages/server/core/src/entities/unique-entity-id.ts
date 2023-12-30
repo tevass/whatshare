@@ -11,11 +11,7 @@ export class UniqueEntityID {
     return this.value
   }
 
-  toValue() {
-    return this.value
-  }
-
   equals(id: UniqueEntityID) {
-    return id.toValue() === this.value
+    return id.toString() === this.value
   }
 }

@@ -1,19 +1,19 @@
 import type { SetOptional } from 'type-fest'
 import { UniqueEntityID } from './unique-entity-id'
 
-export type WAContactIDServer = 'us'
-export type WAContactIDType = 'c' | 'g'
+export type WAEntityIDServer = 'us'
+export type WAEntityIDType = 'c' | 'g'
 
-export interface WAContactIDProps {
-  server: WAContactIDServer
-  number: string
-  type: WAContactIDType
+export interface WAEntityIDProps {
+  server: WAEntityIDServer
+  ref: string
+  type: WAEntityIDType
 }
 
-export class WAContactID {
-  private props: WAContactIDProps
+export class WAEntityID {
+  private props: WAEntityIDProps
 
-  constructor(props: SetOptional<WAContactIDProps, 'server' | 'type'>) {
+  constructor(props: SetOptional<WAEntityIDProps, 'server' | 'type'>) {
     this.props = {
       ...props,
       server: props.server ?? 'us',
@@ -25,8 +25,8 @@ export class WAContactID {
     return this.props.server
   }
 
-  get number() {
-    return this.props.number
+  get ref() {
+    return this.props.ref
   }
 
   get type() {
@@ -34,28 +34,28 @@ export class WAContactID {
   }
 
   toString() {
-    return `${this.number}@${this.type}.${this.server}`
+    return `${this.ref}@${this.type}.${this.server}`
   }
 
   toUniqueEntityID() {
     return new UniqueEntityID(this.toString())
   }
 
-  equals(id: WAContactID) {
+  equals(id: WAEntityID) {
     return id.toString() === this.toString()
   }
 
   static createFromString(value: string) {
     const [waNumber, waParams] = value.split('@')
     const [type, server] = waParams.split('.') as [
-      WAContactIDType,
-      WAContactIDServer,
+      WAEntityIDType,
+      WAEntityIDServer,
     ]
 
-    const number = waNumber.replaceAll(':', '').trim()
+    const ref = waNumber.replaceAll(':', '').trim()
 
-    return new WAContactID({
-      number,
+    return new WAEntityID({
+      ref,
       server,
       type,
     })

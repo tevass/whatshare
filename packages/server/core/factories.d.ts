@@ -1,2 +1,1 @@
-export * from './dist/factories';
-
+export * from './dist/factories'

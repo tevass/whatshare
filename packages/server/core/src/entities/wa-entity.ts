@@ -15,7 +15,7 @@ export abstract class WAEntity<Props, ID> {
     this.props = Object.assign({}, this.props, newProps)
   }
 
-  public equals(entity: WAEntity<unknown, unknown>) {
+  equals(entity: WAEntity<unknown, unknown>) {
     if (entity === this) {
       return true
     }

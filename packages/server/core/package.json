@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "license": "ISC",
   "private": true,
+  "exports": {
+    "./entities": {
+      "import": "./dist/entities/index.mjs",
+      "require": "./dist/entities/index.js"
+    },
+    "./factories": {
+      "import": "./dist/factories/index.mjs",
+      "require": "./dist/factories/index.js"
+    }
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -19,7 +29,7 @@
     "@whatshare/vitest-config": "workspace:^",
     "eslint": "^8.56.0",
     "tsup": "^8.0.1",
-    "type-fest": "^4.8.3",
+    "type-fest": "^4.9.0",
     "vitest": "^0.34.6"
   }
 }

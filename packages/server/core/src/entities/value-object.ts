@@ -1,16 +1,24 @@
-export abstract class ValueObject<Props> {
-  protected props: Props
+export abstract class ValueObject<PropsOrValue> {
+  protected props: PropsOrValue
 
-  protected constructor(props: Props) {
+  protected constructor(props: PropsOrValue) {
     this.props = props
   }
 
-  public equals(vo: ValueObject<unknown>) {
+  get value() {
+    return this.props
+  }
+
+  equals(vo: ValueObject<unknown>) {
     if (vo === null || vo === undefined) {
       return false
     }
 
     if (vo.props === undefined) {
+      return false
+    }
+
+    if (vo.value !== this.value) {
       return false
     }
 

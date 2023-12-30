@@ -1,12 +1,12 @@
-import { makeWAContactID } from '@/test/factories/make-wa-contact-id'
+import { makeWAEntityID } from '@/factories'
 import { faker } from '@faker-js/faker'
 import { UniqueEntityID } from '../unique-entity-id'
 import { WAMessageID } from '../wa-message-id'
 
-describe('WAMessageID', () => {
+describe('WAMessageID (Private)', () => {
   test('create', () => {
     const messageId = new WAMessageID({
-      contactId: makeWAContactID(),
+      entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
     })
@@ -14,11 +14,130 @@ describe('WAMessageID', () => {
     expect(messageId).toBeTruthy()
   })
 
-  test('toString', () => {
+  test('hasOwner', () => {
     const messageId = new WAMessageID({
-      contactId: makeWAContactID(),
+      entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.hasOwner()).toBe(false)
+  })
+
+  test('isGroup', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.isGroup()).toBe(false)
+  })
+
+  test('isPrivate', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.isPrivate()).toBe(true)
+  })
+
+  test('toString', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.toString()).toEqual(expect.any(String))
+    expect(messageId.toString()).toMatch(/true_[0-9]{13}@c\.us/)
+  })
+
+  test('toUniqueEntityID', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.toUniqueEntityID()).toBeInstanceOf(UniqueEntityID)
+  })
+
+  test('equals', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+    })
+
+    expect(messageId.equals(messageId)).toBe(true)
+  })
+
+  test('createFromString', () => {
+    const entityId = makeWAEntityID().toString()
+    const ref = faker.database.mongodbObjectId()
+    const rawId = `true_${entityId}_${ref}`
+
+    const messageId = WAMessageID.createFromString(rawId)
+
+    expect(messageId).toBeTruthy()
+    expect(messageId.toString()).toEqual(rawId)
+  })
+})
+
+describe('WAMessageID (Group)', () => {
+  test('create', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
+    })
+
+    expect(messageId).toBeTruthy()
+  })
+
+  test('hasOwner', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
+    })
+
+    expect(messageId.hasOwner()).toBe(true)
+  })
+
+  test('isGroup', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
+    })
+
+    expect(messageId.isGroup()).toBe(true)
+  })
+
+  test('isPrivate', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
+    })
+
+    expect(messageId.isPrivate()).toBe(false)
+  })
+
+  test('toString', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
     })
 
     expect(messageId.toString()).toEqual(expect.any(String))
@@ -27,18 +146,31 @@ describe('WAMessageID', () => {
 
   test('toUniqueEntityID', () => {
     const messageId = new WAMessageID({
-      contactId: makeWAContactID(),
+      entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
     })
 
     expect(messageId.toUniqueEntityID()).toBeInstanceOf(UniqueEntityID)
   })
 
+  test('equals', () => {
+    const messageId = new WAMessageID({
+      entityId: makeWAEntityID(),
+      isFromMe: true,
+      ref: faker.database.mongodbObjectId(),
+      owner: makeWAEntityID(),
+    })
+
+    expect(messageId.equals(messageId)).toBe(true)
+  })
+
   test('createFromString', () => {
-    const contactId = makeWAContactID().toString()
+    const entityId = makeWAEntityID().toString()
+    const ownerId = makeWAEntityID().toString()
     const ref = faker.database.mongodbObjectId()
-    const rawId = `true_${contactId}_${ref}`
+    const rawId = `true_${entityId}_${ref}_${ownerId}`
 
     const messageId = WAMessageID.createFromString(rawId)
 

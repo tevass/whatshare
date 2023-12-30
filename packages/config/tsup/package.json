@@ -4,7 +4,10 @@
   "license": "ISC",
   "private": true,
   "exports": {
-    "./node": "./dist/node.js"
+    "./node": {
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.js"
+    }
   },
   "scripts": {
     "build": "tsup",

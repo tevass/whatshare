@@ -1,6 +1,12 @@
 {
   "name": "whatshare",
   "version": "1.0.0",
+  "scripts": {
+    "packages:dev": "cd packages & turbo run dev",
+    "lint": "turbo run lint --parallel",
+    "lint:fix": "turbo run lint:fix --parallel",
+    "test": "turbo run test --parallel"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"

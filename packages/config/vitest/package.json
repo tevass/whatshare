@@ -4,7 +4,10 @@
   "license": "ISC",
   "private": true,
   "exports": {
-    "./node": "./dist/node.js"
+    "./node": {
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.js"
+    }
   },
   "scripts": {
     "build": "tsup",
@@ -13,7 +16,7 @@
     "lint:fix": "eslint --ext .ts --fix ."
   },
   "dependencies": {
-    "vite-tsconfig-paths": "^4.2.2"
+    "vite-tsconfig-paths": "^4.2.3"
   },
   "devDependencies": {
     "@whatshare/eslint-config": "workspace:^",

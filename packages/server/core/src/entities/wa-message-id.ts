@@ -1,26 +1,29 @@
+import type { OverrideProperties, SetNonNullable, SetOptional } from 'type-fest'
 import { UniqueEntityID } from './unique-entity-id'
-import { WAContactID } from './wa-contact-id'
-
-// "fromMe": false,
-// "remote": "5511955933663@c.us",
-// "id": "6C2394955D46A1F0FBC5B124EA1DFF4C",
-// "_serialized": "false_5511955933663@c.us_6C2394955D46A1F0FBC5B124EA1DFF4C"
+import { WAEntityID } from './wa-entity-id'
 
 export interface WAMessageIDProps {
-  contactId: WAContactID
+  entityId: WAEntityID
   isFromMe: boolean
   ref: string
+  owner: WAEntityID | null
 }
 
-export class WAMessageID {
-  private props: WAMessageIDProps
+type GroupMessage = SetNonNullable<WAMessageIDProps, 'owner'>
+type PrivateMessage = OverrideProperties<WAMessageIDProps, { owner: null }>
 
-  constructor(props: WAMessageIDProps) {
-    this.props = props
+export class WAMessageID {
+  protected props: WAMessageIDProps
+
+  constructor(props: SetOptional<WAMessageIDProps, 'owner'>) {
+    this.props = {
+      ...props,
+      owner: props.owner ?? null,
+    }
   }
 
-  get contactId() {
-    return this.props.contactId
+  get entityId() {
+    return this.props.entityId
   }
 
   get isFromMe() {
@@ -31,8 +34,34 @@ export class WAMessageID {
     return this.props.ref
   }
 
+  get owner() {
+    return this.props.owner
+  }
+
+  hasOwner(): this is GroupMessage {
+    return !!this.owner
+  }
+
+  isGroup(): this is GroupMessage {
+    return this.hasOwner()
+  }
+
+  isPrivate(): this is PrivateMessage {
+    return !this.owner
+  }
+
   toString() {
-    return `${this.isFromMe}_${this.contactId.toString()}_${this.ref}`
+    const isFromMe = String(this.isFromMe)
+    const entityId = this.entityId.toString()
+
+    const idParts = [isFromMe, entityId, this.ref]
+
+    if (this.hasOwner()) {
+      idParts.push(this.owner.toString())
+    }
+
+    const stringId = idParts.join('_')
+    return stringId
   }
 
   toUniqueEntityID() {
@@ -44,12 +73,17 @@ export class WAMessageID {
   }
 
   static createFromString(value: string) {
-    const [isFromMe, rawContactId, ref] = value.split('_')
+    const splittedValue = value.split('_')
+    const [isFromMe, rawEntityId, ref, rawOwnerId] = splittedValue
+    const hasOwner = !!rawOwnerId
 
     return new WAMessageID({
-      contactId: WAContactID.createFromString(rawContactId),
-      isFromMe: isFromMe === 'true',
       ref,
+      isFromMe: isFromMe === 'true',
+      entityId: WAEntityID.createFromString(rawEntityId),
+      ...(hasOwner && {
+        owner: WAEntityID.createFromString(rawOwnerId),
+      }),
     })
   }
 }

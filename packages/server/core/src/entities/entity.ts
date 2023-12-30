@@ -17,7 +17,7 @@ export abstract class Entity<Props> {
     this.props = Object.assign({}, this.props, newProps)
   }
 
-  public equals(entity: Entity<unknown>) {
+  equals(entity: Entity<unknown>) {
     if (entity === this) {
       return true
     }
