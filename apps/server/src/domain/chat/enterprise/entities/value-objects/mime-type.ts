@@ -1,4 +1,4 @@
-import { ValueObject } from '@whatshare/server-core/entities'
+import { ValueObject } from '@/core/entities/value-object'
 import mime from 'mime'
 
 export class MimeType extends ValueObject<string> {

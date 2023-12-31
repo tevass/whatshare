@@ -1,10 +1,10 @@
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import {
   WAContact,
   WAContactProps,
 } from '@/domain/chat/application/entities/wa-contact'
 import { faker } from '@faker-js/faker'
-import { WAEntityID } from '@whatshare/server-core/entities'
-import { makeWAEntityID } from '@whatshare/server-core/factories'
+import { makeWAEntityID } from './make-wa-entity-id'
 
 export const makeWAContact = (
   override: Partial<WAContactProps> = {},

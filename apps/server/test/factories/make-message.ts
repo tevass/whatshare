@@ -1,17 +1,15 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   Message,
   MessageProps,
 } from '@/domain/chat/enterprise/entities/message'
 import { faker } from '@faker-js/faker'
-import { UniqueEntityID } from '@whatshare/server-core/entities'
-import {
-  makeUniqueEntityID,
-  makeWAEntityID,
-  makeWAMessageID,
-} from '@whatshare/server-core/factories'
 import { makeAttendantProfile } from './make-attendant-profile'
 import { makeContact } from './make-contact'
 import { makeMessageMedia } from './make-message-media'
+import { makeUniqueEntityID } from './make-unique-entity-id'
+import { makeWAEntityID } from './make-wa-entity-id'
+import { makeWAMessageID } from './make-wa-message-id'
 
 export const makeMessage = (
   override: Partial<MessageProps> = {},

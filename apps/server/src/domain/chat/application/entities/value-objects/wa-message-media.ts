@@ -1,4 +1,4 @@
-import { ValueObject } from '@whatshare/server-core/entities'
+import { ValueObject } from '@/core/entities/value-object'
 
 export interface WAMessageMediaProps {
   mimetype: string

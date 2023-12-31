@@ -11,10 +11,8 @@
     "@faker-js/faker": "^8.3.1",
     "@types/node": "^20.10.6",
     "@whatshare/eslint-config": "workspace:^",
-    "@whatshare/server-core": "workspace:^",
     "@whatshare/tsconfig": "workspace:^",
     "@whatshare/vitest-config": "workspace:^",
-    "dayjs": "^1.11.10",
     "eslint": "^8.56.0",
     "type-fest": "^4.9.0",
     "typescript": "^5.3.3",
@@ -22,6 +20,7 @@
   },
   "dependencies": {
     "@whatshare/core-schemas": "workspace:^",
+    "dayjs": "^1.11.10",
     "mime": "^4.0.1",
     "vcard4-ts": "^0.4.1",
     "whatsapp-web.js": "^1.23.0"

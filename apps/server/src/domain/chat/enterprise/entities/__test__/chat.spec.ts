@@ -1,9 +1,7 @@
 import { makeContact } from '@/test/factories/make-contact'
+import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
-import {
-  makeUniqueEntityID,
-  makeWAEntityID,
-} from '@whatshare/server-core/factories'
 import { Chat } from '../chat'
 
 describe('Chat', () => {

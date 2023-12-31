@@ -1,8 +1,6 @@
-import {
-  Entity,
-  UniqueEntityID,
-  WAEntityID,
-} from '@whatshare/server-core/entities'
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
 import { Message } from './message'

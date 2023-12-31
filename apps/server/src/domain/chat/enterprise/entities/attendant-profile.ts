@@ -1,7 +1,9 @@
-import { Entity, UniqueEntityID } from '@whatshare/server-core/entities'
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import type { SetOptional } from 'type-fest'
 
 export interface AttendantProfileProps {
-  attendantId: UniqueEntityID
+  attendantId: UniqueEntityID | null
   email: string
   name: string
   displayName: string
@@ -24,7 +26,16 @@ export class AttendantProfile extends Entity<AttendantProfileProps> {
     return this.props.displayName
   }
 
-  static create(props: AttendantProfileProps, id?: UniqueEntityID) {
-    return new AttendantProfile(props, id)
+  static create(
+    props: SetOptional<AttendantProfileProps, 'attendantId'>,
+    id?: UniqueEntityID,
+  ) {
+    return new AttendantProfile(
+      {
+        ...props,
+        attendantId: props.attendantId ?? null,
+      },
+      id,
+    )
   }
 }

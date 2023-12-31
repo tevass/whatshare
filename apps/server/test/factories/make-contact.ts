@@ -1,10 +1,10 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   Contact,
   ContactProps,
 } from '@/domain/chat/enterprise/entities/contact'
 import { faker } from '@faker-js/faker'
-import { UniqueEntityID } from '@whatshare/server-core/entities'
-import { makeWAEntityID } from '@whatshare/server-core/factories'
+import { makeWAEntityID } from './make-wa-entity-id'
 import { makeContactPhone } from './value-objects/make-contact-phone'
 
 export const makeContact = (

@@ -1,4 +1,5 @@
-import { WAEntity, WAEntityID } from '@whatshare/server-core/entities'
+import { WAEntity } from '@/core/entities/wa-entity'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { WAMessage } from './wa-message'
 

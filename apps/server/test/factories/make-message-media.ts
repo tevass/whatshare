@@ -1,10 +1,10 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   MessageMedia,
   MessageMediaProps,
 } from '@/domain/chat/enterprise/entities/message-media'
 import { faker } from '@faker-js/faker'
-import { UniqueEntityID } from '@whatshare/server-core/entities'
-import { makeUniqueEntityID } from '@whatshare/server-core/factories'
+import { makeUniqueEntityID } from './make-unique-entity-id'
 
 export const makeMessageMedia = (
   override: Partial<MessageMediaProps> = {},

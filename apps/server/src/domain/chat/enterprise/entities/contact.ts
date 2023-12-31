@@ -1,8 +1,6 @@
-import {
-  Entity,
-  UniqueEntityID,
-  WAEntityID,
-} from '@whatshare/server-core/entities'
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetOptional } from 'type-fest'
 import { ContactPhone } from './value-objects/contact-phone'
 

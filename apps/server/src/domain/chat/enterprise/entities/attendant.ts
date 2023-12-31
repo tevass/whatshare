@@ -1,4 +1,5 @@
-import { Entity, UniqueEntityID } from '@whatshare/server-core/entities'
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { AttendantWhatsAppList } from './attendant-whats-app-list'
@@ -32,7 +33,7 @@ export class Attendant extends Entity<AttendantProps> {
     props: SetOptional<AttendantProps, 'password' | 'whatsAppsList'>,
     id?: UniqueEntityID,
   ) {
-    return new Attendant(
+    const attendant = new Attendant(
       {
         ...props,
         password: props.password ?? null,
@@ -40,5 +41,9 @@ export class Attendant extends Entity<AttendantProps> {
       },
       id,
     )
+
+    attendant.profile.set({ attendantId: attendant.id })
+
+    return attendant
   }
 }

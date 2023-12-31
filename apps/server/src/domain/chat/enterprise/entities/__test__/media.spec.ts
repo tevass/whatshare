@@ -1,6 +1,6 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeMimeType } from '@/test/factories/value-objects/make-mime-type'
 import { faker } from '@faker-js/faker'
-import { UniqueEntityID } from '@whatshare/server-core/entities'
 import { Media, MediaProps } from '../media'
 
 class RawMedia extends Media<MediaProps> {

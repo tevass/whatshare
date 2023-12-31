@@ -1,5 +1,6 @@
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { WhatsAppStatus } from '@whatshare/core-schemas/entities'
-import { Entity, UniqueEntityID } from '@whatshare/server-core/entities'
 import type { SetOptional } from 'type-fest'
 
 export interface WhatsAppProps {

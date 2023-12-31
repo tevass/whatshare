@@ -1,15 +1,13 @@
+import { WAMessageID } from '@/core/entities/wa-message-id'
 import {
   WAMessage,
   WAMessageProps,
 } from '@/domain/chat/application/entities/wa-message'
 import { faker } from '@faker-js/faker'
-import { WAMessageID } from '@whatshare/server-core/entities'
-import {
-  makeWAEntityID,
-  makeWAMessageID,
-} from '@whatshare/server-core/factories'
 import dayjs from 'dayjs'
 import { makeWAContact } from './make-wa-contact'
+import { makeWAEntityID } from './make-wa-entity-id'
+import { makeWAMessageID } from './make-wa-message-id'
 import { makeWAMessageMedia } from './value-objects/make-wa-message-media'
 
 export const makeWAMessage = (

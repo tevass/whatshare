@@ -1,3 +1,6 @@
 {
-  "extends": ["@whatshare/eslint-config/node", "@whatshare/eslint-config/vitest"]
+  "extends": ["@whatshare/eslint-config/node", "@whatshare/eslint-config/vitest"],
+  "rules": {
+    "no-useless-constructor": "off"
+  }
 }

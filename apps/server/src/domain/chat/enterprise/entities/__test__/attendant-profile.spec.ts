@@ -1,5 +1,5 @@
+import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { faker } from '@faker-js/faker'
-import { makeUniqueEntityID } from '@whatshare/server-core/factories'
 import { AttendantProfile } from '../attendant-profile'
 
 describe('Attendant Profile', () => {

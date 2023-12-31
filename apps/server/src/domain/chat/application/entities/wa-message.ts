@@ -1,9 +1,7 @@
+import { WAEntity } from '@/core/entities/wa-entity'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { WAMessageID } from '@/core/entities/wa-message-id'
 import type { MessageAck, MessageType } from '@whatshare/core-schemas/dist'
-import {
-  WAEntity,
-  WAEntityID,
-  WAMessageID,
-} from '@whatshare/server-core/entities'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { WAMessageMedia } from './value-objects/wa-message-media'
 import { WAContact } from './wa-contact'

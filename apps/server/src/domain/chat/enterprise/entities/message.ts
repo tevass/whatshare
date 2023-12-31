@@ -1,10 +1,8 @@
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { WAMessageID } from '@/core/entities/wa-message-id'
 import type { MessageAck, MessageType } from '@whatshare/core-schemas/entities'
-import {
-  Entity,
-  UniqueEntityID,
-  WAEntityID,
-  WAMessageID,
-} from '@whatshare/server-core/entities'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { Contact } from './contact'

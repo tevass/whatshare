@@ -13,6 +13,9 @@ importers:
       '@whatshare/core-schemas':
         specifier: workspace:^
         version: link:../../packages/schemas/core
+      dayjs:
+        specifier: ^1.11.10
+        version: 1.11.10
       mime:
         specifier: ^4.0.1
         version: 4.0.1
@@ -32,18 +35,12 @@ importers:
       '@whatshare/eslint-config':
         specifier: workspace:^
         version: link:../../packages/config/eslint
-      '@whatshare/server-core':
-        specifier: workspace:^
-        version: link:../../packages/server/core
       '@whatshare/tsconfig':
         specifier: workspace:^
         version: link:../../packages/config/tsconfig
       '@whatshare/vitest-config':
         specifier: workspace:^
         version: link:../../packages/config/vitest
-      dayjs:
-        specifier: ^1.11.10
-        version: 1.11.10
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -129,36 +126,6 @@ importers:
       tsup:
         specifier: ^8.0.1
         version: 8.0.1
-
-  packages/server/core:
-    devDependencies:
-      '@faker-js/faker':
-        specifier: ^8.3.1
-        version: 8.3.1
-      '@whatshare/eslint-config':
-        specifier: workspace:^
-        version: link:../../config/eslint
-      '@whatshare/tsconfig':
-        specifier: workspace:^
-        version: link:../../config/tsconfig
-      '@whatshare/tsup-config':
-        specifier: workspace:^
-        version: link:../../config/tsup
-      '@whatshare/vitest-config':
-        specifier: workspace:^
-        version: link:../../config/vitest
-      eslint:
-        specifier: ^8.56.0
-        version: 8.56.0
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.1
-      type-fest:
-        specifier: ^4.9.0
-        version: 4.9.0
-      vitest:
-        specifier: ^0.34.6
-        version: 0.34.6
 
 packages:
 
@@ -1393,7 +1360,7 @@ packages:
 
   /dayjs@1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
-    dev: true
+    dev: false
 
   /debug@3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}

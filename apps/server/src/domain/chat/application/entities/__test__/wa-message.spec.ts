@@ -1,10 +1,8 @@
 import { makeWAContact } from '@/test/factories/make-wa-contact'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
+import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
 import { makeWAMessageMedia } from '@/test/factories/value-objects/make-wa-message-media'
 import { faker } from '@faker-js/faker'
-import {
-  makeWAEntityID,
-  makeWAMessageID,
-} from '@whatshare/server-core/factories'
 import dayjs from 'dayjs'
 import { WAMessage } from '../wa-message'
 

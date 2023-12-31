@@ -1,4 +1,4 @@
-import { UniqueEntityID } from '@whatshare/server-core/entities'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetOptional } from 'type-fest'
 import { Media, MediaProps } from './media'
 import { MimeType } from './value-objects/mime-type'

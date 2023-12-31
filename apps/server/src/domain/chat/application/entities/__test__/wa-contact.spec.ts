@@ -1,5 +1,5 @@
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
-import { makeWAEntityID } from '@whatshare/server-core/factories'
 import { WAContact } from '../wa-contact'
 
 describe('WAContact', () => {

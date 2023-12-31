@@ -1,4 +1,4 @@
-import { WatchedList } from '@whatshare/server-core/entities'
+import { WatchedList } from '@/core/entities/watched-list'
 import { WhatsApp } from './whats-app'
 
 export class AttendantWhatsAppList extends WatchedList<WhatsApp> {

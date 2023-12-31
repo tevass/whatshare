@@ -1,5 +1,5 @@
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
-import { makeWAEntityID } from '@whatshare/server-core/factories'
 import dayjs from 'dayjs'
 import { WAChat } from '../wa-chat'
 

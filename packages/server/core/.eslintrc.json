@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "@whatshare/eslint-config/node",
-    "@whatshare/eslint-config/vitest"
-  ]
-}

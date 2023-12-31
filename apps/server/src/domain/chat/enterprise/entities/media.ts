@@ -1,4 +1,4 @@
-import { Entity } from '@whatshare/server-core/entities'
+import { Entity } from '@/core/entities/entity'
 import { MimeType } from './value-objects/mime-type'
 
 export interface MediaProps {

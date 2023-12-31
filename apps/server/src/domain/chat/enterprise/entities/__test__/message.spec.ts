@@ -1,11 +1,9 @@
 import { makeAttendantProfile } from '@/test/factories/make-attendant-profile'
 import { makeContact } from '@/test/factories/make-contact'
 import { makeMessageMedia } from '@/test/factories/make-message-media'
-import {
-  makeUniqueEntityID,
-  makeWAEntityID,
-  makeWAMessageID,
-} from '@whatshare/server-core/factories'
+import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
+import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
 import { Message } from '../message'
 
 describe('Message', () => {
