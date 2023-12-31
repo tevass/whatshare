@@ -1,7 +1,6 @@
+import type { WhatsAppStatus } from '@whatshare/core-schemas/entities'
 import { Entity, UniqueEntityID } from '@whatshare/server-core/entities'
 import type { SetOptional } from 'type-fest'
-
-export type WhatsAppStatus = 'disconnected' | 'connecting' | 'connected'
 
 export interface WhatsAppProps {
   name: string

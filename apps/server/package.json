@@ -14,12 +14,16 @@
     "@whatshare/server-core": "workspace:^",
     "@whatshare/tsconfig": "workspace:^",
     "@whatshare/vitest-config": "workspace:^",
+    "dayjs": "^1.11.10",
     "eslint": "^8.56.0",
     "type-fest": "^4.9.0",
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
   },
   "dependencies": {
-    "mime": "^4.0.1"
+    "@whatshare/core-schemas": "workspace:^",
+    "mime": "^4.0.1",
+    "vcard4-ts": "^0.4.1",
+    "whatsapp-web.js": "^1.23.0"
   }
 }

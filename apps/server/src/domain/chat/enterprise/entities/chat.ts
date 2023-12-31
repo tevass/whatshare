@@ -3,7 +3,7 @@ import {
   UniqueEntityID,
   WAEntityID,
 } from '@whatshare/server-core/entities'
-import { SetNonNullable, SetOptional } from 'type-fest'
+import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
 import { Message } from './message'
 

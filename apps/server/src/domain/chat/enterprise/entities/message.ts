@@ -1,3 +1,4 @@
+import type { MessageAck, MessageType } from '@whatshare/core-schemas/entities'
 import {
   Entity,
   UniqueEntityID,
@@ -8,21 +9,6 @@ import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { Contact } from './contact'
 import { MessageMedia } from './message-media'
-
-export type MessageAck = 'error' | 'pending' | 'sent' | 'read' | 'played'
-
-export type MessageType =
-  | 'text'
-  | 'audio'
-  | 'voice'
-  | 'image'
-  | 'video'
-  | 'document'
-  | 'sticker'
-  | 'vcard'
-  | 'multi_vcard'
-  | 'revoked'
-  | 'unknown'
 
 export interface MessageProps {
   waMessageId: WAMessageID
