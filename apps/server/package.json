@@ -19,10 +19,10 @@
     "vitest": "^1.1.0"
   },
   "dependencies": {
-    "@whatshare/core-schemas": "workspace:^",
     "dayjs": "^1.11.10",
     "mime": "^4.0.1",
     "vcard4-ts": "^0.4.1",
-    "whatsapp-web.js": "^1.23.0"
+    "whatsapp-web.js": "^1.23.0",
+    "zod": "^3.22.4"
   }
 }

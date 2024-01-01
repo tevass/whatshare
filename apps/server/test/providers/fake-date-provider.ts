@@ -4,6 +4,12 @@ import dayjs from 'dayjs'
 export class FakeDateProvider implements DateProvider {
   private dateRef = dayjs()
 
+  fromUnix(timestamp: number): this {
+    this.dateRef = dayjs.unix(timestamp)
+
+    return this
+  }
+
   addDays(value: number): this {
     this.dateRef.add(value, 'days')
     return this

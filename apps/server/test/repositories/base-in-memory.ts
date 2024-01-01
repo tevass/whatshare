@@ -31,13 +31,13 @@ export class BaseInMemory<Entity extends { id: UniqueEntityID }> {
   //   this.items.push(...entities)
   // }
 
-  // async save(entity: Entity): Promise<void> {
-  //   const itemIndex = this.items.findIndex(
-  //     (item) => item.id.toString() === entity.id.toString(),
-  //   )
+  async save(entity: Entity): Promise<void> {
+    const itemIndex = this.items.findIndex(
+      (item) => item.id.toString() === entity.id.toString(),
+    )
 
-  //   this.items[itemIndex] = entity
-  // }
+    this.items[itemIndex] = entity
+  }
 
   // async delete(entity: Entity): Promise<void> {
   //   this.items = this.items.filter((item) => !item.id.equals(entity.id))

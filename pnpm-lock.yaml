@@ -10,9 +10,6 @@ importers:
 
   apps/server:
     dependencies:
-      '@whatshare/core-schemas':
-        specifier: workspace:^
-        version: link:../../packages/schemas/core
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
@@ -25,6 +22,9 @@ importers:
       whatsapp-web.js:
         specifier: ^1.23.0
         version: 1.23.0
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
     devDependencies:
       '@faker-js/faker':
         specifier: ^8.3.1
@@ -106,6 +106,28 @@ importers:
         version: 0.34.6
 
   packages/schemas/core:
+    dependencies:
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
+    devDependencies:
+      '@whatshare/eslint-config':
+        specifier: workspace:^
+        version: link:../../config/eslint
+      '@whatshare/tsconfig':
+        specifier: workspace:^
+        version: link:../../config/tsconfig
+      '@whatshare/tsup-config':
+        specifier: workspace:^
+        version: link:../../config/tsup
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      tsup:
+        specifier: ^8.0.1
+        version: 8.0.1
+
+  packages/schemas/events:
     dependencies:
       zod:
         specifier: ^3.22.4
