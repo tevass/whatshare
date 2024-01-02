@@ -2,9 +2,9 @@ import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { DateAdapter } from '../../adapters/date-adapter'
 import { MessageEmitter } from '../../emitters/message-emitter'
 import { WAMessage } from '../../entities/wa-message'
-import { DateProvider } from '../../providers/date-provider'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
@@ -26,7 +26,7 @@ export class HandleWARevokeMessage {
   constructor(
     private messagesRepository: MessagesRepository,
     private messageMediasRepository: MessageMediasRepository,
-    private dateProvider: DateProvider,
+    private dateadapter: DateAdapter,
     private messageEmitter: MessageEmitter,
     private uploader: Uploader,
   ) {}
@@ -36,7 +36,7 @@ export class HandleWARevokeMessage {
   ): Promise<HandleWARevokeMessageResponse> {
     const { waChatId, waRevokedMessage, whatsAppId } = request
 
-    const createdAtOfRevokedMessage = this.dateProvider
+    const createdAtOfRevokedMessage = this.dateadapter
       .fromUnix(waRevokedMessage.timestamp)
       .toDate()
 

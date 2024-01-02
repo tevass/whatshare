@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
+import { DateAdapter } from '../../adapters/date-adapter'
 import { Encrypter } from '../../cryptography/encrypter'
 import { HashCompare } from '../../cryptography/hash-compare'
 import { Token } from '../../entities/value-objects/token'
-import { DateProvider } from '../../providers/date-provider'
 import { AttendantsRepository } from '../../repositories/attendants-repository'
 import { WrongCredentialsError } from '../errors/wrong-credentials-error'
 
@@ -25,7 +25,7 @@ export class AuthenticateAttendantUseCase {
   constructor(
     private attendantsRepository: AttendantsRepository,
     private hashCompare: HashCompare,
-    private dateProvider: DateProvider,
+    private dateadapter: DateAdapter,
     private encrypter: Encrypter,
   ) {}
 
@@ -51,8 +51,8 @@ export class AuthenticateAttendantUseCase {
 
     const payload = { sub: attendant.id.toString() }
 
-    const expiresAccessToken = this.dateProvider.addMinutes(15)
-    const expiresRefreshAccessToken = this.dateProvider.addDays(7)
+    const expiresAccessToken = this.dateadapter.addMinutes(15)
+    const expiresRefreshAccessToken = this.dateadapter.addDays(7)
 
     const [accessTokenValue, refreshTokenValue] = await Promise.all([
       this.encrypter.encrypt(payload, {

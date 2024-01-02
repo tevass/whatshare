@@ -1,3 +1,4 @@
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeChat } from '@/test/factories/make-chat'
@@ -8,7 +9,6 @@ import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWAMessage } from '@/test/factories/make-wa-message'
 import { makeWAMessageMedia } from '@/test/factories/value-objects/make-wa-message-media'
-import { FakeDateProvider } from '@/test/providers/fake-date-provider'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
@@ -22,7 +22,7 @@ let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeMessageEmitter: FakeMessageEmitter
 let fakeChatEmitter: FakeChatEmitter
-let fakeDateProvider: FakeDateProvider
+let fakeDateAdapter: FakeDateAdapter
 let fakeUploader: FakeUploader
 
 let sut: HandleWAReceivedMessage
@@ -35,7 +35,7 @@ describe('HandleWAReceivedMessage', () => {
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()
-    fakeDateProvider = new FakeDateProvider()
+    fakeDateAdapter = new FakeDateAdapter()
     fakeUploader = new FakeUploader()
 
     sut = new HandleWAReceivedMessage(
@@ -45,7 +45,7 @@ describe('HandleWAReceivedMessage', () => {
       inMemoryMessageMediasRepository,
       fakeMessageEmitter,
       fakeChatEmitter,
-      fakeDateProvider,
+      fakeDateAdapter,
       fakeUploader,
     )
   })

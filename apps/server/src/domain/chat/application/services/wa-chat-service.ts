@@ -1,0 +1,5 @@
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+
+export abstract class WAChatService {
+  abstract sendSeenById(chatId: WAEntityID): Promise<boolean>
+}

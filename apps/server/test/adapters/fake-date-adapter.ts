@@ -1,7 +1,7 @@
-import { DateProvider } from '@/domain/chat/application/providers/date-provider'
+import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
 import dayjs from 'dayjs'
 
-export class FakeDateProvider implements DateProvider {
+export class FakeDateAdapter implements DateAdapter {
   private dateRef = dayjs()
 
   fromUnix(timestamp: number): this {

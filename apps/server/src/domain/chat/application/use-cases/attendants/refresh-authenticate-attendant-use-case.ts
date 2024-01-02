@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { DateAdapter } from '../../adapters/date-adapter'
 import { Encrypter } from '../../cryptography/encrypter'
 import { Token } from '../../entities/value-objects/token'
-import { DateProvider } from '../../providers/date-provider'
 import { AttendantsRepository } from '../../repositories/attendants-repository'
 
 interface RefreshAuthenticateAttendantUseCaseRequest {
@@ -22,7 +22,7 @@ type RefreshAuthenticateAttendantUseCaseResponse = Either<
 export class RefreshAuthenticateAttendantUseCase {
   constructor(
     private attendantsRepository: AttendantsRepository,
-    private dateProvider: DateProvider,
+    private dateadapter: DateAdapter,
     private encrypter: Encrypter,
   ) {}
 
@@ -39,8 +39,8 @@ export class RefreshAuthenticateAttendantUseCase {
 
     const payload = { sub: attendant.id.toString() }
 
-    const expiresAccessToken = this.dateProvider.addMinutes(15)
-    const expiresRefreshAccessToken = this.dateProvider.addDays(7)
+    const expiresAccessToken = this.dateadapter.addMinutes(15)
+    const expiresRefreshAccessToken = this.dateadapter.addDays(7)
 
     const [accessTokenValue, refreshTokenValue] = await Promise.all([
       this.encrypter.encrypt(payload, {

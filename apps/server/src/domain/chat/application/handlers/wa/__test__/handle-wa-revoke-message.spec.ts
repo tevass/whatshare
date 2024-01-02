@@ -1,10 +1,10 @@
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeMessageMedia } from '@/test/factories/make-message-media'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessage } from '@/test/factories/make-wa-message'
-import { FakeDateProvider } from '@/test/providers/fake-date-provider'
 import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import { FakeUploader } from '@/test/storage/fake-uploader'
@@ -12,7 +12,7 @@ import { HandleWARevokeMessage } from '../handle-wa-revoke-message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
-let fakeDateProvider: FakeDateProvider
+let fakeDateAdapter: FakeDateAdapter
 let fakeMessageEmitter: FakeMessageEmitter
 let fakeUploader: FakeUploader
 
@@ -22,14 +22,14 @@ describe('HandleWARevokeMessage', () => {
   beforeEach(() => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
-    fakeDateProvider = new FakeDateProvider()
+    fakeDateAdapter = new FakeDateAdapter()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeUploader = new FakeUploader()
 
     sut = new HandleWARevokeMessage(
       inMemoryMessagesRepository,
       inMemoryMessageMediasRepository,
-      fakeDateProvider,
+      fakeDateAdapter,
       fakeMessageEmitter,
       fakeUploader,
     )
@@ -46,7 +46,7 @@ describe('HandleWARevokeMessage', () => {
         waChatId,
         whatsAppId,
         waMessageId: waMessage.id,
-        createdAt: fakeDateProvider.fromUnix(waMessage.timestamp).toDate(),
+        createdAt: fakeDateAdapter.fromUnix(waMessage.timestamp).toDate(),
       }),
     )
 
@@ -77,7 +77,7 @@ describe('HandleWARevokeMessage', () => {
       waChatId,
       whatsAppId,
       waMessageId: waMessage.id,
-      createdAt: fakeDateProvider.fromUnix(waMessage.timestamp).toDate(),
+      createdAt: fakeDateAdapter.fromUnix(waMessage.timestamp).toDate(),
       type: 'image',
       media: messageMedia,
     })

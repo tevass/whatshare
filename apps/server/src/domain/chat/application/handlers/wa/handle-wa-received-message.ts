@@ -5,12 +5,12 @@ import { Message } from '@/domain/chat/enterprise/entities/message'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { Readable } from 'node:stream'
+import { DateAdapter } from '../../adapters/date-adapter'
 import { ChatEmitter } from '../../emitters/chat-emitter'
 import { MessageEmitter } from '../../emitters/message-emitter'
 import { WAChat } from '../../entities/wa-chat'
 import { WAContact } from '../../entities/wa-contact'
 import { WAMessage } from '../../entities/wa-message'
-import { DateProvider } from '../../providers/date-provider'
 import { ChatsRepository } from '../../repositories/chats-repository'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
@@ -39,7 +39,7 @@ export class HandleWAReceivedMessage {
     private messageMediasRepository: MessageMediasRepository,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
-    private dateProvider: DateProvider,
+    private dateadapter: DateAdapter,
     private uploader: Uploader,
   ) {}
 
@@ -64,7 +64,7 @@ export class HandleWAReceivedMessage {
     }
 
     if (!chat) {
-      const lastInteraction = this.dateProvider
+      const lastInteraction = this.dateadapter
         .fromUnix(waChat.timestamp)
         .toDate()
 

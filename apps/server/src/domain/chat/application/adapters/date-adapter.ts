@@ -1,4 +1,4 @@
-export abstract class DateProvider {
+export abstract class DateAdapter {
   // abstract set(date?: Date): this
   abstract addDays(value: number): this
   abstract addMinutes(value: number): this
