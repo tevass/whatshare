@@ -7,11 +7,11 @@ export interface FindByWAChatIdAndWhatsAppIdParams {
 }
 
 export abstract class ChatsRepository {
-  abstract findByIdOrThrow(id: string): Promise<Chat>
-
   abstract findByWAChatIdAndWhatsAppId(
     params: FindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null>
 
   abstract save(chat: Chat): Promise<void>
+
+  abstract create(chat: Chat): Promise<void>
 }

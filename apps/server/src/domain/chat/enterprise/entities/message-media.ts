@@ -1,10 +1,9 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetOptional } from 'type-fest'
 import { Media, MediaProps } from './media'
-import { MimeType } from './value-objects/mime-type'
 
 export interface MessageMediaProps extends MediaProps {
-  messageId: UniqueEntityID
+  messageId: UniqueEntityID | null
 }
 
 export class MessageMedia extends Media<MessageMediaProps> {
@@ -13,13 +12,13 @@ export class MessageMedia extends Media<MessageMediaProps> {
   }
 
   static create(
-    props: SetOptional<MessageMediaProps, 'mimetype'>,
+    props: SetOptional<MessageMediaProps, 'messageId'>,
     id?: UniqueEntityID,
   ) {
     return new MessageMedia(
       {
         ...props,
-        mimetype: props.mimetype ?? MimeType.createFromFilename(props.filename),
+        messageId: props.messageId ?? null,
       },
       id,
     )

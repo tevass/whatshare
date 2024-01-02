@@ -1,3 +1,4 @@
+import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
 import { WAContact } from '../wa-contact'
@@ -41,5 +42,26 @@ describe('WAContact', () => {
     )
 
     expect(waContact).toBeTruthy()
+  })
+
+  test('toContact', () => {
+    const waContact = WAContact.create(
+      {
+        name: faker.person.fullName(),
+        shortName: faker.person.firstName(),
+        pushName: faker.person.lastName(),
+        number: faker.helpers.fromRegExp(/[0-9]{13}/),
+        imageUrl: faker.internet.url(),
+        formattedNumber: faker.phone.number(),
+        isGroup: faker.datatype.boolean(),
+        isBusiness: faker.datatype.boolean(),
+        isEnterprise: faker.datatype.boolean(),
+        isMyContact: faker.datatype.boolean(),
+        description: faker.company.buzzPhrase(),
+      },
+      makeWAEntityID(),
+    )
+
+    expect(waContact.toContact()).toBeInstanceOf(Contact)
   })
 })

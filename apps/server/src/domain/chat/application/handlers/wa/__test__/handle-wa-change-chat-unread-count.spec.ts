@@ -10,14 +10,6 @@ let fakeChatEmitter: FakeChatEmitter
 
 let sut: HandleWAChangeUnreadCount
 
-vi.mock('@/test/emitters/fake-chat-emitter', () => {
-  const FakeChatEmitter = vi.fn()
-
-  FakeChatEmitter.prototype.emit = vi.fn()
-
-  return { FakeChatEmitter }
-})
-
 describe('WAChangeChatUnreadHandler', () => {
   beforeEach(() => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
@@ -27,10 +19,6 @@ describe('WAChangeChatUnreadHandler', () => {
       inMemoryChatsRepository,
       fakeChatEmitter,
     )
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
   })
 
   it('should be able to change unread count of chat', async () => {
@@ -54,6 +42,6 @@ describe('WAChangeChatUnreadHandler', () => {
 
     const { chat } = response.value
     expect(chat.unreadCount).toBe(3)
-    expect(fakeChatEmitter.emit).toHaveBeenCalled()
+    expect(fakeChatEmitter.events).toHaveLength(1)
   })
 })

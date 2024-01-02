@@ -1,41 +1,38 @@
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeMessage } from '@/test/factories/make-message'
+import { makeMessageMedia } from '@/test/factories/make-message-media'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessage } from '@/test/factories/make-wa-message'
 import { FakeDateProvider } from '@/test/providers/fake-date-provider'
+import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
+import { FakeUploader } from '@/test/storage/fake-uploader'
 import { HandleWARevokeMessage } from '../handle-wa-revoke-message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
+let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeDateProvider: FakeDateProvider
 let fakeMessageEmitter: FakeMessageEmitter
+let fakeUploader: FakeUploader
 
 let sut: HandleWARevokeMessage
-
-vi.mock('@/test/emitters/fake-message-emitter', () => {
-  const FakeMessageEmitter = vi.fn()
-
-  FakeMessageEmitter.prototype.emit = vi.fn()
-
-  return { FakeMessageEmitter }
-})
 
 describe('HandleWARevokeMessage', () => {
   beforeEach(() => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
     fakeDateProvider = new FakeDateProvider()
     fakeMessageEmitter = new FakeMessageEmitter()
+    fakeUploader = new FakeUploader()
 
     sut = new HandleWARevokeMessage(
       inMemoryMessagesRepository,
+      inMemoryMessageMediasRepository,
       fakeDateProvider,
       fakeMessageEmitter,
+      fakeUploader,
     )
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
   })
 
   it('should be able to revoke a message', async () => {
@@ -64,6 +61,37 @@ describe('HandleWARevokeMessage', () => {
 
     const { message } = response.value
     expect(message.type).toBe('revoked')
-    expect(fakeMessageEmitter.emit).toHaveBeenCalled()
+    expect(fakeMessageEmitter.events).toHaveLength(1)
+  })
+
+  it('should be able to delete message media from revoke message', async () => {
+    const whatsAppId = makeUniqueEntityID()
+    const waChatId = makeWAEntityID()
+
+    const waMessage = makeWAMessage()
+
+    const messageMedia = makeMessageMedia()
+    inMemoryMessageMediasRepository.items.push(messageMedia)
+
+    const messageToRevoke = makeMessage({
+      waChatId,
+      whatsAppId,
+      waMessageId: waMessage.id,
+      createdAt: fakeDateProvider.fromUnix(waMessage.timestamp).toDate(),
+      type: 'image',
+      media: messageMedia,
+    })
+
+    inMemoryMessagesRepository.items.push(messageToRevoke)
+
+    const response = await sut.execute({
+      waChatId,
+      whatsAppId: whatsAppId.toString(),
+      waRevokedMessage: waMessage,
+    })
+
+    expect(response.isRight()).toBe(true)
+    expect(inMemoryMessageMediasRepository.items).toHaveLength(0)
+    expect(fakeUploader.uploads).toHaveLength(0)
   })
 })

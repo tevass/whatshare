@@ -199,7 +199,7 @@ export class Message extends Entity<MessageProps> {
     >,
     id?: UniqueEntityID,
   ) {
-    return new Message(
+    const message = new Message(
       {
         ...props,
         author: props.author ?? null,
@@ -221,5 +221,9 @@ export class Message extends Entity<MessageProps> {
       },
       id,
     )
+
+    message.media?.set({ messageId: message.id })
+
+    return message
   }
 }

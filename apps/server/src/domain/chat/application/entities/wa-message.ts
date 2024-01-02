@@ -91,7 +91,10 @@ export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
   }
 
   hasContacts(): this is SetNonNullable<WAMessageProps, 'contacts'> {
-    return !!this.contacts?.length
+    return (
+      !!this.contacts?.length &&
+      (this.type === 'vcard' || this.type === 'multi_vcard')
+    )
   }
 
   static create(

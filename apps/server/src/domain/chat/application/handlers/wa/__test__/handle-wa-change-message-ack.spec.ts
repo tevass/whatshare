@@ -9,14 +9,6 @@ let fakeMessageEmitter: FakeMessageEmitter
 
 let sut: HandleWAChangeMessageAck
 
-vi.mock('@/test/emitters/fake-message-emitter', () => {
-  const FakeMessageEmitter = vi.fn()
-
-  FakeMessageEmitter.prototype.emit = vi.fn()
-
-  return { FakeMessageEmitter }
-})
-
 describe('HandleWAChangeMessageAck', () => {
   beforeEach(() => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
@@ -26,10 +18,6 @@ describe('HandleWAChangeMessageAck', () => {
       inMemoryMessagesRepository,
       fakeMessageEmitter,
     )
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
   })
 
   it('should be able to change ack of message', async () => {
@@ -49,6 +37,6 @@ describe('HandleWAChangeMessageAck', () => {
 
     const { message } = response.value
     expect(message.ack).toBe('sent')
-    expect(fakeMessageEmitter.emit).toHaveBeenCalled()
+    expect(fakeMessageEmitter.events).toHaveLength(1)
   })
 })

@@ -1,11 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 import {
   ChatEmitParams,
   ChatEmitter,
-} from '@/domain/chat/application/emitters/chat-emitter';
+} from '@/domain/chat/application/emitters/chat-emitter'
+import { ChatEvents } from '@/schemas/events/chat-events'
 
 export class FakeChatEmitter implements ChatEmitter {
-  emit(params: ChatEmitParams): void {}
+  events: ChatEvents[] = []
+
+  emit({ event }: ChatEmitParams): void {
+    this.events.push(event)
+  }
 }

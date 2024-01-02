@@ -4,19 +4,19 @@ export class BaseInMemory<Entity extends { id: UniqueEntityID }> {
   items: Entity[] = []
 
   // async findByIdOrThrow(id: string): Promise<Entity> {
-  //   const message = this.items.find((item) => item.id.toString() === id)
+  //   const entity = this.items.find((item) => item.id.toString() === id)
 
-  //   if (!message) throw new Error('Entity not found')
+  //   if (!entity) throw new Error('Entity not found')
 
-  //   return message
+  //   return entity
   // }
 
   async findById(id: string): Promise<Entity | null> {
-    const message = this.items.find((item) => item.id.toString() === id)
+    const entity = this.items.find((item) => item.id.toString() === id)
 
-    if (!message) return null
+    if (!entity) return null
 
-    return message
+    return entity
   }
 
   async findManyByIds(ids: string[]): Promise<Entity[]> {
@@ -27,9 +27,9 @@ export class BaseInMemory<Entity extends { id: UniqueEntityID }> {
     this.items.push(entity)
   }
 
-  // async createMany(entities: Entity[]): Promise<void> {
-  //   this.items.push(...entities)
-  // }
+  async createMany(entities: Entity[]): Promise<void> {
+    this.items.push(...entities)
+  }
 
   async save(entity: Entity): Promise<void> {
     const itemIndex = this.items.findIndex(
@@ -39,7 +39,7 @@ export class BaseInMemory<Entity extends { id: UniqueEntityID }> {
     this.items[itemIndex] = entity
   }
 
-  // async delete(entity: Entity): Promise<void> {
-  //   this.items = this.items.filter((item) => !item.id.equals(entity.id))
-  // }
+  async delete(entity: Entity): Promise<void> {
+    this.items = this.items.filter((item) => !item.id.equals(entity.id))
+  }
 }

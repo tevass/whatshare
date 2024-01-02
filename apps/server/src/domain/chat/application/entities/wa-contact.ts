@@ -2,6 +2,8 @@ import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import * as vCardTS from 'vcard4-ts'
+import { Contact } from '../../enterprise/entities/contact'
+import { ContactPhone } from '../../enterprise/entities/value-objects/contact-phone'
 
 export interface WAContactProps {
   name: string | null
@@ -69,6 +71,22 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
 
   get imageUrl() {
     return this.props.imageUrl
+  }
+
+  toContact() {
+    return Contact.create({
+      name: this.defaultName,
+      phone: ContactPhone.create({
+        formattedNumber: this.formattedNumber,
+        number: this.number,
+      }),
+      waContactId: this.id,
+      imageUrl: this.imageUrl,
+      isBusiness: this.isBusiness,
+      isEnterprise: this.isEnterprise,
+      isGroup: this.isGroup,
+      isMyContact: this.isMyContact,
+    })
   }
 
   static createFromVCard(vcf: string) {

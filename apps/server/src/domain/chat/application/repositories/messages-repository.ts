@@ -14,4 +14,6 @@ export abstract class MessagesRepository {
   abstract findToRevoke(params: FindToRevokeParams): Promise<Message | null>
 
   abstract save(message: Message): Promise<void>
+
+  abstract create(message: Message): Promise<void>
 }

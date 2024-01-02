@@ -12,8 +12,6 @@ class RawMedia extends Media<MediaProps> {
 describe('Media', () => {
   test('create', () => {
     const media = RawMedia.create({
-      filename: faker.system.fileName(),
-      key: faker.string.uuid(),
       mimetype: makeMimeType(),
       url: faker.internet.url(),
     })

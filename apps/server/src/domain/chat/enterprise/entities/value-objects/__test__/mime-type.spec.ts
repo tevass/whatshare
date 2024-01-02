@@ -2,6 +2,12 @@ import { faker } from '@faker-js/faker'
 import { MimeType } from '../mime-type'
 
 describe('MimeType', () => {
+  test('ext', () => {
+    const mimetype = MimeType.create('text/plain')
+
+    expect(mimetype.extension()).toBe('txt')
+  })
+
   test('create', () => {
     const mimetype = MimeType.create(faker.system.mimeType())
 

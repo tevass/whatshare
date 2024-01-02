@@ -5,7 +5,9 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { MessageEmitter } from '../../emitters/message-emitter'
 import { WAMessage } from '../../entities/wa-message'
 import { DateProvider } from '../../providers/date-provider'
+import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
+import { Uploader } from '../../storage/uploader'
 
 interface HandleWARevokeMessageRequest {
   waRevokedMessage: WAMessage
@@ -23,8 +25,10 @@ type HandleWARevokeMessageResponse = Either<
 export class HandleWARevokeMessage {
   constructor(
     private messagesRepository: MessagesRepository,
+    private messageMediasRepository: MessageMediasRepository,
     private dateProvider: DateProvider,
     private messageEmitter: MessageEmitter,
+    private uploader: Uploader,
   ) {}
 
   async execute(
@@ -44,6 +48,14 @@ export class HandleWARevokeMessage {
 
     if (!message) {
       return left(new ResourceNotFoundError(waRevokedMessage.id.toString()))
+    }
+
+    if (message.hasMedia()) {
+      const media = message.media
+      await Promise.all([
+        this.messageMediasRepository.delete(media),
+        this.uploader.remove({ url: media.key }),
+      ])
     }
 
     // TODO: `delete media if has`

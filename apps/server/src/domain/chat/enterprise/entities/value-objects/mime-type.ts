@@ -6,6 +6,10 @@ export class MimeType extends ValueObject<string> {
     return this.props
   }
 
+  extension() {
+    return mime.getExtension(this.value) ?? 'unknown'
+  }
+
   static createFromFilename(filename: string) {
     const mimetype = mime.getType(filename)
     if (!mimetype) throw new Error(`Invalid mimetype of "${filename}"`)

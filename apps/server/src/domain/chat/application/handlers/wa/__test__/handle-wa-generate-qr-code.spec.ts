@@ -8,14 +8,6 @@ import { HandleWAGenerateQRCode } from '../handle-wa-generate-qr-code'
 let inMemoryWhatsAppsRepository: InMemoryWhatsAppsRepository
 let fakeWhatsAppEmitter: FakeWhatsAppEmitter
 
-vi.mock('@/test/emitters/fake-whats-app-emitter', () => {
-  const FakeWhatsAppEmitter = vi.fn()
-
-  FakeWhatsAppEmitter.prototype.emit = vi.fn()
-
-  return { FakeWhatsAppEmitter }
-})
-
 let sut: HandleWAGenerateQRCode
 
 describe('HandleWAGenerateQRCode', () => {
@@ -27,10 +19,6 @@ describe('HandleWAGenerateQRCode', () => {
       inMemoryWhatsAppsRepository,
       fakeWhatsAppEmitter,
     )
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
   })
 
   it('should be able to change qr-code of whats-app', async () => {
@@ -48,6 +36,6 @@ describe('HandleWAGenerateQRCode', () => {
 
     const { whatsApp } = response.value
     expect(whatsApp.qrCode).toEqual(expect.any(String))
-    expect(fakeWhatsAppEmitter.emit).toHaveBeenCalledTimes(2)
+    expect(fakeWhatsAppEmitter.events).toHaveLength(2)
   })
 })
