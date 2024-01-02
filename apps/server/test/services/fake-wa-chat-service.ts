@@ -8,4 +8,9 @@ export class FakeWAChatService implements WAChatService {
     this.values.push(chatId.toString())
     return true
   }
+
+  async markUnreadById(chatId: WAEntityID): Promise<boolean> {
+    this.values.push(chatId.toString())
+    return true
+  }
 }

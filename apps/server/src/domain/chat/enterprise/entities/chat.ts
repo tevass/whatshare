@@ -47,6 +47,10 @@ export class Chat extends Entity<ChatProps> {
     this.set({ unreadCount: 0 })
   }
 
+  unread() {
+    this.set({ unreadCount: -1 })
+  }
+
   static create(
     props: SetOptional<ChatProps, 'lastInteraction' | 'lastMessage'>,
     id?: UniqueEntityID,

@@ -7,11 +7,11 @@ import { WAService } from '../services/wa-service'
 import { UnexpectedWAClientResponseError } from './errors/unexpected-wa-client-response-error'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
-interface HandleReadChatRequest {
+interface HandleUnreadChatRequest {
   chatId: string
 }
 
-type HandleReadChatResponse = Either<
+type HandleUnreadChatResponse = Either<
   | ResourceNotFoundError
   | WAClientNotFoundError
   | UnexpectedWAClientResponseError,
@@ -20,7 +20,7 @@ type HandleReadChatResponse = Either<
   }
 >
 
-export class HandleReadChat {
+export class HandleUnreadChat {
   constructor(
     private chatsRepository: ChatsRepository,
     private waService: WAService,
@@ -28,8 +28,8 @@ export class HandleReadChat {
   ) {}
 
   async execute(
-    request: HandleReadChatRequest,
-  ): Promise<HandleReadChatResponse> {
+    request: HandleUnreadChatRequest,
+  ): Promise<HandleUnreadChatResponse> {
     const { chatId } = request
 
     const chat = await this.chatsRepository.findById(chatId)
@@ -43,12 +43,15 @@ export class HandleReadChat {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
-    const isWAChatSeen = await waClient.chat.sendSeenById(chat.waChatId)
-    if (!isWAChatSeen) {
+    const isWAChatMarkedUnread = await waClient.chat.markUnreadById(
+      chat.waChatId,
+    )
+
+    if (!isWAChatMarkedUnread) {
       return left(new UnexpectedWAClientResponseError(waClient.id.toString()))
     }
 
-    chat.read()
+    chat.unread()
     await this.chatsRepository.save(chat)
 
     this.chatEmitter.emit({

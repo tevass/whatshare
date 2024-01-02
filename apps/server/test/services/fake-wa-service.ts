@@ -6,6 +6,10 @@ import {
 import { FakeWAChatService } from './fake-wa-chat-service'
 
 export class FakeWAClientServices extends WAClientServices {
+  get chat() {
+    return this.props.chat as FakeWAChatService
+  }
+
   static create(id?: UniqueEntityID) {
     return new FakeWAClientServices(
       {

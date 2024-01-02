@@ -1,8 +1,8 @@
 import { Entity } from '@/core/entities/entity'
-import { FakeWAChatService } from '@/test/services/fake-wa-chat-service'
+import { WAChatService } from './wa-chat-service'
 
 export interface WAClientServicesProps {
-  chat: FakeWAChatService
+  chat: WAChatService
 }
 
 export abstract class WAClientServices extends Entity<WAClientServicesProps> {
