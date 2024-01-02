@@ -42,7 +42,6 @@ export class HandleWAChangeUnreadCount {
 
     this.chatEmitter.emit({
       event: 'chat:change',
-      whatsAppsIds: [whatsAppId],
       data: {
         chat,
       },

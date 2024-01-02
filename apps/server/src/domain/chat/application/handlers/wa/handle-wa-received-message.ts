@@ -79,7 +79,6 @@ export class HandleWAReceivedMessage {
       await this.chatsRepository.create(chat)
       this.chatEmitter.emit({
         event: 'chat:create',
-        whatsAppsIds: [whatsAppId],
         data: {
           chat,
         },
@@ -176,7 +175,6 @@ export class HandleWAReceivedMessage {
 
     this.messageEmitter.emit({
       event: 'message:create',
-      whatsAppsIds: [whatsAppId],
       data: {
         message,
       },
@@ -184,7 +182,6 @@ export class HandleWAReceivedMessage {
 
     this.chatEmitter.emit({
       event: 'chat:change',
-      whatsAppsIds: [whatsAppId],
       data: {
         chat,
       },

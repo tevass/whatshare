@@ -58,14 +58,11 @@ export class HandleWARevokeMessage {
       ])
     }
 
-    // TODO: `delete media if has`
-
     message.revoke()
     await this.messagesRepository.save(message)
 
     this.messageEmitter.emit({
       event: 'message:revoked',
-      whatsAppsIds: [whatsAppId],
       data: {
         message,
       },

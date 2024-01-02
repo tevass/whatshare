@@ -3,7 +3,6 @@ import { Message } from '../../enterprise/entities/message'
 
 export interface MessageEmitParams {
   event: MessageEvents
-  whatsAppsIds: string[]
   data: {
     message: Message
   }

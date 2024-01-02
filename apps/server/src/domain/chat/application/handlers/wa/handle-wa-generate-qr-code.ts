@@ -38,7 +38,6 @@ export class HandleWAGenerateQRCode {
     this.whatsAppEmitter.emit({
       namespace: 'admin',
       event: 'whatsApp:change',
-      whatsAppsIds: [whatsAppId],
       data: {
         whatsApp,
       },
@@ -47,7 +46,6 @@ export class HandleWAGenerateQRCode {
     this.whatsAppEmitter.emit({
       namespace: 'chat',
       event: 'whatsApp:change',
-      whatsAppsIds: [whatsAppId],
       data: {
         whatsApp,
       },

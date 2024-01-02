@@ -40,11 +40,8 @@ export class HandleWAChangeMessageAck {
     message.set({ ack })
     await this.messagesRepository.save(message)
 
-    const whatsAppId = message.whatsAppId.toString()
-
     this.messageEmitter.emit({
       event: 'message:change',
-      whatsAppsIds: [whatsAppId],
       data: {
         message,
       },
