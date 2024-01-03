@@ -64,6 +64,14 @@ export class Chat extends Entity<ChatProps> {
     })
   }
 
+  interact(message: Message) {
+    this.set({
+      lastInteraction: message.createdAt,
+      lastMessage: message,
+      deletedAt: null,
+    })
+  }
+
   static create(
     props: SetOptional<
       ChatProps,

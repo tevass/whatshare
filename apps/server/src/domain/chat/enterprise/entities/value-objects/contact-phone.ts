@@ -21,6 +21,10 @@ export class ContactPhone extends ValueObject<ContactPhoneProps> {
     )
   }
 
+  toString() {
+    return this.format()
+  }
+
   static create(props: ContactPhoneProps) {
     return new ContactPhone(props)
   }

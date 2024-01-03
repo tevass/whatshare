@@ -4,7 +4,6 @@ import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { WAService } from '../services/wa-service'
-import { UnexpectedWAClientResponseError } from './errors/unexpected-wa-client-response-error'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleReadChatRequest {
@@ -12,9 +11,7 @@ interface HandleReadChatRequest {
 }
 
 type HandleReadChatResponse = Either<
-  | ResourceNotFoundError
-  | WAClientNotFoundError
-  | UnexpectedWAClientResponseError,
+  ResourceNotFoundError | WAClientNotFoundError,
   {
     chat: Chat
   }
@@ -43,10 +40,7 @@ export class HandleReadChat {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
-    const isWAChatSeen = await waClient.chat.sendSeenById(chat.waChatId)
-    if (!isWAChatSeen) {
-      return left(new UnexpectedWAClientResponseError(waClient.id.toString()))
-    }
+    await waClient.chat.sendSeenById(chat.waChatId)
 
     chat.read()
     await this.chatsRepository.save(chat)

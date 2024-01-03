@@ -4,7 +4,6 @@ import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { WAService } from '../services/wa-service'
-import { UnexpectedWAClientResponseError } from './errors/unexpected-wa-client-response-error'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleUnreadChatRequest {
@@ -12,9 +11,7 @@ interface HandleUnreadChatRequest {
 }
 
 type HandleUnreadChatResponse = Either<
-  | ResourceNotFoundError
-  | WAClientNotFoundError
-  | UnexpectedWAClientResponseError,
+  ResourceNotFoundError | WAClientNotFoundError,
   {
     chat: Chat
   }
@@ -43,13 +40,7 @@ export class HandleUnreadChat {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
-    const isWAChatMarkedUnread = await waClient.chat.markUnreadById(
-      chat.waChatId,
-    )
-
-    if (!isWAChatMarkedUnread) {
-      return left(new UnexpectedWAClientResponseError(waClient.id.toString()))
-    }
+    await waClient.chat.markUnreadById(chat.waChatId)
 
     chat.unread()
     await this.chatsRepository.save(chat)

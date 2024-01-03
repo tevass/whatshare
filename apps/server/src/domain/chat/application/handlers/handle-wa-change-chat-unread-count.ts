@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
-import { ChatEmitter } from '../../emitters/chat-emitter'
-import { WAChat } from '../../entities/wa-chat'
-import { ChatsRepository } from '../../repositories/chats-repository'
+import { ChatEmitter } from '../emitters/chat-emitter'
+import { WAChat } from '../entities/wa-chat'
+import { ChatsRepository } from '../repositories/chats-repository'
 
 interface HandleWAChangeUnreadCountRequest {
   waChat: WAChat

@@ -9,6 +9,8 @@ export interface FindToRevokeParams {
 }
 
 export abstract class MessagesRepository {
+  abstract findById(id: string): Promise<Message | null>
+
   abstract findManyByChatId(chatId: string): Promise<Message[]>
 
   abstract findByWAMessageId(waMessageId: WAMessageID): Promise<Message | null>

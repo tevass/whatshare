@@ -5,7 +5,6 @@ import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAService } from '../services/wa-service'
-import { UnexpectedWAClientResponseError } from './errors/unexpected-wa-client-response-error'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleClearChatRequest {
@@ -13,9 +12,7 @@ interface HandleClearChatRequest {
 }
 
 type HandleClearChatResponse = Either<
-  | ResourceNotFoundError
-  | WAClientNotFoundError
-  | UnexpectedWAClientResponseError,
+  ResourceNotFoundError | WAClientNotFoundError,
   {
     chat: Chat
   }
@@ -45,11 +42,7 @@ export class HandleClearChat {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
-    const isWAChatClean = await waClient.chat.clearById(chat.waChatId)
-    if (!isWAChatClean) {
-      return left(new UnexpectedWAClientResponseError(waClient.id.toString()))
-    }
-
+    await waClient.chat.clearById(chat.waChatId)
     chat.clear()
 
     const [messages] = await Promise.all([

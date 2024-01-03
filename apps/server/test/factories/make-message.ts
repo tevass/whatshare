@@ -3,13 +3,13 @@ import {
   Message,
   MessageProps,
 } from '@/domain/chat/enterprise/entities/message'
-import { faker } from '@faker-js/faker'
 import { makeAttendantProfile } from './make-attendant-profile'
 import { makeContact } from './make-contact'
 import { makeMessageMedia } from './make-message-media'
 import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
+import { makeMessageBody } from './value-objects/make-message-body'
 
 export const makeMessage = (
   override: Partial<MessageProps> = {},
@@ -19,7 +19,7 @@ export const makeMessage = (
     {
       ack: 'pending',
       author: makeContact(),
-      body: faker.lorem.paragraph(),
+      body: makeMessageBody(),
       chatId: makeUniqueEntityID(),
       contacts: [makeContact()],
       createdAt: new Date(),

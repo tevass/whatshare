@@ -3,19 +3,20 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
+import { MessageBody } from '@/domain/chat/enterprise/entities/value-objects/message-body'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { Readable } from 'node:stream'
-import { DateAdapter } from '../../adapters/date-adapter'
-import { ChatEmitter } from '../../emitters/chat-emitter'
-import { MessageEmitter } from '../../emitters/message-emitter'
-import { WAChat } from '../../entities/wa-chat'
-import { WAContact } from '../../entities/wa-contact'
-import { WAMessage } from '../../entities/wa-message'
-import { ChatsRepository } from '../../repositories/chats-repository'
-import { ContactsRepository } from '../../repositories/contacts-repository'
-import { MessageMediasRepository } from '../../repositories/message-medias-repository'
-import { MessagesRepository } from '../../repositories/messages-repository'
-import { Uploader } from '../../storage/uploader'
+import { DateAdapter } from '../adapters/date-adapter'
+import { ChatEmitter } from '../emitters/chat-emitter'
+import { MessageEmitter } from '../emitters/message-emitter'
+import { WAChat } from '../entities/wa-chat'
+import { WAContact } from '../entities/wa-contact'
+import { WAMessage } from '../entities/wa-message'
+import { ChatsRepository } from '../repositories/chats-repository'
+import { ContactsRepository } from '../repositories/contacts-repository'
+import { MessageMediasRepository } from '../repositories/message-medias-repository'
+import { MessagesRepository } from '../repositories/messages-repository'
+import { Uploader } from '../storage/uploader'
 
 interface HandleWAReceivedMessageRequest {
   waChat: WAChat
@@ -83,6 +84,10 @@ export class HandleWAReceivedMessage {
       })
     }
 
+    const messageBody = waMessage.body
+      ? MessageBody.create({ content: waMessage.body })
+      : null
+
     const message = Message.create({
       waChatId: chat.waChatId,
       chatId: chat.id,
@@ -91,7 +96,7 @@ export class HandleWAReceivedMessage {
       whatsAppId: new UniqueEntityID(whatsAppId),
       ack: waMessage.ack,
       author: chat.contact ?? contact,
-      body: waMessage.body,
+      body: messageBody,
       isBroadcast: waMessage.isBroadcast,
       isForwarded: waMessage.isForwarded,
       isGif: waMessage.isGif,
@@ -170,7 +175,7 @@ export class HandleWAReceivedMessage {
 
     await this.messagesRepository.create(message)
 
-    chat.set({ deletedAt: null, lastInteraction, lastMessage: message })
+    chat.interact(message)
     await this.chatsRepository.save(chat)
 
     this.messageEmitter.emit({

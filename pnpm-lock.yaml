@@ -105,50 +105,6 @@ importers:
         specifier: ^0.34.6
         version: 0.34.6
 
-  packages/schemas/core:
-    dependencies:
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-    devDependencies:
-      '@whatshare/eslint-config':
-        specifier: workspace:^
-        version: link:../../config/eslint
-      '@whatshare/tsconfig':
-        specifier: workspace:^
-        version: link:../../config/tsconfig
-      '@whatshare/tsup-config':
-        specifier: workspace:^
-        version: link:../../config/tsup
-      eslint:
-        specifier: ^8.56.0
-        version: 8.56.0
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.1
-
-  packages/schemas/events:
-    dependencies:
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
-    devDependencies:
-      '@whatshare/eslint-config':
-        specifier: workspace:^
-        version: link:../../config/eslint
-      '@whatshare/tsconfig':
-        specifier: workspace:^
-        version: link:../../config/tsconfig
-      '@whatshare/tsup-config':
-        specifier: workspace:^
-        version: link:../../config/tsup
-      eslint:
-        specifier: ^8.56.0
-        version: 8.56.0
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.1
-
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:

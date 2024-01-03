@@ -4,18 +4,15 @@ import { WAChatService } from '@/domain/chat/application/services/wa-chat-servic
 export class FakeWAChatService implements WAChatService {
   values: string[] = []
 
-  async sendSeenById(chatId: WAEntityID): Promise<boolean> {
+  async sendSeenById(chatId: WAEntityID): Promise<void> {
     this.values.push(chatId.toString())
-    return true
   }
 
-  async markUnreadById(chatId: WAEntityID): Promise<boolean> {
+  async markUnreadById(chatId: WAEntityID): Promise<void> {
     this.values.push(chatId.toString())
-    return true
   }
 
-  async clearById(chatId: WAEntityID): Promise<boolean> {
+  async clearById(chatId: WAEntityID): Promise<void> {
     this.values.push(chatId.toString())
-    return true
   }
 }

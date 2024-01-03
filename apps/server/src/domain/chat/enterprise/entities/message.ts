@@ -8,6 +8,7 @@ import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { Contact } from './contact'
 import { MessageMedia } from './message-media'
+import { MessageBody } from './value-objects/message-body'
 
 export interface MessageProps {
   waMessageId: WAMessageID
@@ -21,7 +22,7 @@ export interface MessageProps {
   quoted: Message | null
 
   type: MessageType
-  body: string | null
+  body: MessageBody | null
   contacts: Contact[] | null
   media: MessageMedia | null
 

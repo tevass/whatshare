@@ -8,6 +8,12 @@ describe('MimeType', () => {
     expect(mimetype.extension()).toBe('txt')
   })
 
+  test('toString', () => {
+    const mimetype = MimeType.create('text/plain')
+
+    expect(mimetype.toString()).toBe('text/plain')
+  })
+
   test('create', () => {
     const mimetype = MimeType.create(faker.system.mimeType())
 
