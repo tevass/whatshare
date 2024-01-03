@@ -13,4 +13,9 @@ export class FakeWAChatService implements WAChatService {
     this.values.push(chatId.toString())
     return true
   }
+
+  async clearById(chatId: WAEntityID): Promise<boolean> {
+    this.values.push(chatId.toString())
+    return true
+  }
 }

@@ -39,6 +39,10 @@ export class BaseInMemory<Entity extends { id: UniqueEntityID }> {
     this.items[itemIndex] = entity
   }
 
+  async saveMany(entities: Entity[]): Promise<void> {
+    await Promise.all(entities.map((entity) => this.save(entity)))
+  }
+
   async delete(entity: Entity): Promise<void> {
     this.items = this.items.filter((item) => !item.id.equals(entity.id))
   }

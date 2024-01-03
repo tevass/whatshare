@@ -11,6 +11,10 @@ export class InMemoryMessagesRepository
   extends BaseInMemory<Message>
   implements MessagesRepository
 {
+  async findManyByChatId(chatId: string): Promise<Message[]> {
+    return this.items.filter((item) => item.chatId.toString() === chatId)
+  }
+
   async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
     const { createdAt, waChatId, whatsAppId } = params
 

@@ -26,7 +26,7 @@ export class HandleWARevokeMessage {
   constructor(
     private messagesRepository: MessagesRepository,
     private messageMediasRepository: MessageMediasRepository,
-    private dateadapter: DateAdapter,
+    private dateAdapter: DateAdapter,
     private messageEmitter: MessageEmitter,
     private uploader: Uploader,
   ) {}
@@ -36,7 +36,7 @@ export class HandleWARevokeMessage {
   ): Promise<HandleWARevokeMessageResponse> {
     const { waChatId, waRevokedMessage, whatsAppId } = request
 
-    const createdAtOfRevokedMessage = this.dateadapter
+    const createdAtOfRevokedMessage = this.dateAdapter
       .fromUnix(waRevokedMessage.timestamp)
       .toDate()
 

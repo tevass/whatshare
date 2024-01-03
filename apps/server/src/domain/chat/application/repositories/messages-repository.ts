@@ -9,11 +9,15 @@ export interface FindToRevokeParams {
 }
 
 export abstract class MessagesRepository {
+  abstract findManyByChatId(chatId: string): Promise<Message[]>
+
   abstract findByWAMessageId(waMessageId: WAMessageID): Promise<Message | null>
 
   abstract findToRevoke(params: FindToRevokeParams): Promise<Message | null>
 
   abstract save(message: Message): Promise<void>
+
+  abstract saveMany(messages: Message[]): Promise<void>
 
   abstract create(message: Message): Promise<void>
 }

@@ -25,7 +25,7 @@ export class AuthenticateAttendantUseCase {
   constructor(
     private attendantsRepository: AttendantsRepository,
     private hashCompare: HashCompare,
-    private dateadapter: DateAdapter,
+    private dateAdapter: DateAdapter,
     private encrypter: Encrypter,
   ) {}
 
@@ -51,8 +51,8 @@ export class AuthenticateAttendantUseCase {
 
     const payload = { sub: attendant.id.toString() }
 
-    const expiresAccessToken = this.dateadapter.addMinutes(15)
-    const expiresRefreshAccessToken = this.dateadapter.addDays(7)
+    const expiresAccessToken = this.dateAdapter.addMinutes(15)
+    const expiresRefreshAccessToken = this.dateAdapter.addDays(7)
 
     const [accessTokenValue, refreshTokenValue] = await Promise.all([
       this.encrypter.encrypt(payload, {

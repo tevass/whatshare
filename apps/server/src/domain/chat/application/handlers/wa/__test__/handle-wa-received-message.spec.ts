@@ -237,4 +237,39 @@ describe('HandleWAReceivedMessage', () => {
     expect(inMemoryMessageMediasRepository.items).toHaveLength(1)
     expect(fakeUploader.uploads).toHaveLength(1)
   })
+
+  it('should be able to create a received message to soft deleted chat', async () => {
+    const whatsAppId = makeUniqueEntityID()
+
+    const waContact = makeWAContact({ isMyContact: true })
+    const waChat = makeWAChat({}, waContact.id)
+
+    const waMessage = makeWAMessage()
+
+    const contact = makeContact({
+      waContactId: waContact.id,
+      isMyContact: true,
+    })
+    inMemoryContactsRepository.items.push(contact)
+
+    const chat = makeChat({
+      waChatId: waChat.id,
+      contact,
+      whatsAppId,
+      deletedAt: new Date(),
+    })
+    inMemoryChatsRepository.items.push(chat)
+
+    const response = await sut.execute({
+      waChat,
+      waContact,
+      waMessage,
+      whatsAppId: whatsAppId.toString(),
+    })
+
+    expect(response.isRight()).toBe(true)
+    expect(inMemoryChatsRepository.items[0]).toEqual(
+      expect.objectContaining({ deletedAt: null }),
+    )
+  })
 })

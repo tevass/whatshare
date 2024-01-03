@@ -177,6 +177,12 @@ export class Message extends Entity<MessageProps> {
     })
   }
 
+  delete() {
+    this.set({
+      deletedAt: new Date(),
+    })
+  }
+
   static create(
     props: SetOptional<
       MessageProps,

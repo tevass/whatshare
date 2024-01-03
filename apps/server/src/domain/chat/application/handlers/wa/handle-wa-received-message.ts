@@ -39,7 +39,7 @@ export class HandleWAReceivedMessage {
     private messageMediasRepository: MessageMediasRepository,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
-    private dateadapter: DateAdapter,
+    private dateAdapter: DateAdapter,
     private uploader: Uploader,
   ) {}
 
@@ -63,11 +63,9 @@ export class HandleWAReceivedMessage {
       await this.contactsRepository.create(contact)
     }
 
-    if (!chat) {
-      const lastInteraction = this.dateadapter
-        .fromUnix(waChat.timestamp)
-        .toDate()
+    const lastInteraction = this.dateAdapter.fromUnix(waChat.timestamp).toDate()
 
+    if (!chat) {
       chat = Chat.create({
         contact,
         lastInteraction,
@@ -171,7 +169,9 @@ export class HandleWAReceivedMessage {
     }
 
     await this.messagesRepository.create(message)
-    chat.set({ lastMessage: message })
+
+    chat.set({ deletedAt: null, lastInteraction, lastMessage: message })
+    await this.chatsRepository.save(chat)
 
     this.messageEmitter.emit({
       event: 'message:create',

@@ -12,6 +12,7 @@ export interface ChatProps {
   unreadCount: number
   lastInteraction: Date
   lastMessage: Message | null
+  deletedAt: Date | null
 }
 
 export class Chat extends Entity<ChatProps> {
@@ -43,6 +44,10 @@ export class Chat extends Entity<ChatProps> {
     return !!this.lastMessage
   }
 
+  get deletedAt() {
+    return this.props.deletedAt
+  }
+
   read() {
     this.set({ unreadCount: 0 })
   }
@@ -51,8 +56,19 @@ export class Chat extends Entity<ChatProps> {
     this.set({ unreadCount: -1 })
   }
 
+  clear() {
+    this.set({
+      unreadCount: 0,
+      lastMessage: null,
+      deletedAt: new Date(),
+    })
+  }
+
   static create(
-    props: SetOptional<ChatProps, 'lastInteraction' | 'lastMessage'>,
+    props: SetOptional<
+      ChatProps,
+      'lastInteraction' | 'lastMessage' | 'deletedAt'
+    >,
     id?: UniqueEntityID,
   ) {
     return new Chat(
@@ -60,6 +76,7 @@ export class Chat extends Entity<ChatProps> {
         ...props,
         lastInteraction: props.lastInteraction ?? new Date(),
         lastMessage: props.lastMessage ?? null,
+        deletedAt: props.deletedAt ?? null,
       },
       id,
     )
