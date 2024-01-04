@@ -3,7 +3,6 @@ import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
 import { DateAdapter } from '../../adapters/date-adapter'
 import { Encrypter } from '../../cryptography/encrypter'
 import { HashCompare } from '../../cryptography/hash-compare'
-import { Token } from '../../entities/value-objects/token'
 import { AttendantsRepository } from '../../repositories/attendants-repository'
 import { WrongCredentialsError } from '../errors/wrong-credentials-error'
 
@@ -16,8 +15,8 @@ type AuthenticateAttendantUseCaseResponse = Either<
   WrongCredentialsError,
   {
     attendant: Attendant
-    accessToken: Token
-    refreshToken: Token
+    accessToken: string
+    refreshToken: string
   }
 >
 
@@ -54,7 +53,7 @@ export class AuthenticateAttendantUseCase {
     const expiresAccessToken = this.dateAdapter.addMinutes(15)
     const expiresRefreshAccessToken = this.dateAdapter.addDays(7)
 
-    const [accessTokenValue, refreshTokenValue] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.encrypter.encrypt(payload, {
         expiresIn: expiresAccessToken.toUnix(),
       }),
@@ -62,18 +61,6 @@ export class AuthenticateAttendantUseCase {
         expiresIn: expiresRefreshAccessToken.toUnix(),
       }),
     ])
-
-    const accessToken = Token.create({
-      name: 'access-token',
-      value: accessTokenValue,
-      expiresAt: expiresAccessToken.toDate(),
-    })
-
-    const refreshToken = Token.create({
-      name: 'refresh-access-token',
-      value: refreshTokenValue,
-      expiresAt: expiresRefreshAccessToken.toDate(),
-    })
 
     return right({
       attendant,

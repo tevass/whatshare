@@ -24,4 +24,10 @@ export class InMemoryChatsRepository
 
     return chat
   }
+
+  async findManyByWhatsAppId(whatsAppId: string): Promise<Chat[]> {
+    return this.items.filter(
+      (item) => item.whatsAppId.toString() === whatsAppId,
+    )
+  }
 }

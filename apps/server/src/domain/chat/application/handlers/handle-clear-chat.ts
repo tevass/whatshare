@@ -46,7 +46,7 @@ export class HandleClearChat {
     chat.clear()
 
     const [messages] = await Promise.all([
-      this.messagesRepository.findManyByChatId(chat.id.toString()),
+      this.messagesRepository.findAllByChatId(chat.id.toString()),
       this.chatsRepository.save(chat),
     ])
 

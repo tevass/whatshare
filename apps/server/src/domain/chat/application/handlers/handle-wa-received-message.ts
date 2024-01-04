@@ -53,10 +53,13 @@ export class HandleWAReceivedMessage {
       waContact.isMyContact
         ? this.contactsRepository.findByWAContactId(waContact.id)
         : null,
-      this.chatsRepository.findByWAChatIdAndWhatsAppId({
-        whatsAppId,
-        waChatId: waChat.id,
-      }),
+      this.chatsRepository.findByWAChatIdAndWhatsAppId(
+        {
+          whatsAppId,
+          waChatId: waChat.id,
+        },
+        true,
+      ),
     ])
 
     if (!contact) {
@@ -109,6 +112,7 @@ export class HandleWAReceivedMessage {
 
       const quotedMessage = await this.messagesRepository.findByWAMessageId(
         waQuotedMessage.id,
+        true,
       )
 
       if (quotedMessage) message.set({ quoted: quotedMessage })

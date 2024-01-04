@@ -3,7 +3,6 @@ import { FakeEncrypter } from '@/test/cryptography/faker-encrypter'
 import { FakeHashService } from '@/test/cryptography/faker-hash-service'
 import { makeAttendant } from '@/test/factories/make-attendant'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
-import { Token } from '../../../entities/value-objects/token'
 import { AuthenticateAttendantUseCase } from '../authenticate-attendant-use-case'
 
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
@@ -44,7 +43,7 @@ describe('AuthenticateAttendantUseCase', () => {
     if (response.isLeft()) return
 
     const { accessToken, refreshToken } = response.value
-    expect(accessToken).toBeInstanceOf(Token)
-    expect(refreshToken).toBeInstanceOf(Token)
+    expect(accessToken).toEqual(expect.any(String))
+    expect(refreshToken).toEqual(expect.any(String))
   })
 })
