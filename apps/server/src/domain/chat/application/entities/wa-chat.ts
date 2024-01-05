@@ -1,6 +1,9 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
+import { Chat } from '../../enterprise/entities/chat'
+import { WAContact } from './wa-contact'
 import { WAMessage } from './wa-message'
 
 export interface WAChatProps {
@@ -10,6 +13,8 @@ export interface WAChatProps {
   isGroup: boolean
   imageUrl: string | null
   lastMessage: WAMessage | null
+  contact: WAContact
+  waClientId: UniqueEntityID
 }
 
 export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
@@ -39,6 +44,24 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
 
   hasLastMessage(): this is SetNonNullable<WAChatProps, 'lastMessage'> {
     return !!this.lastMessage
+  }
+
+  get contact() {
+    return this.props.contact
+  }
+
+  get waClientId() {
+    return this.props.waClientId
+  }
+
+  toChat() {
+    return Chat.create({
+      contact: this.contact.toContact(),
+      waChatId: this.id,
+      unreadCount: this.unreadCount,
+      whatsAppId: this.waClientId,
+      lastInteraction: new Date(this.timestamp * 1000),
+    })
   }
 
   static create(

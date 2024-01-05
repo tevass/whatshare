@@ -1,12 +1,10 @@
 import { Either, right } from '@/core/either'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
 import { MessageBody } from '@/domain/chat/enterprise/entities/value-objects/message-body'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { Readable } from 'node:stream'
-import { DateAdapter } from '../adapters/date-adapter'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { MessageEmitter } from '../emitters/message-emitter'
 import { WAChat } from '../entities/wa-chat'
@@ -40,7 +38,6 @@ export class HandleWAReceivedMessage {
     private messageMediasRepository: MessageMediasRepository,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
-    private dateAdapter: DateAdapter,
     private uploader: Uploader,
   ) {}
 
@@ -67,16 +64,8 @@ export class HandleWAReceivedMessage {
       await this.contactsRepository.create(contact)
     }
 
-    const lastInteraction = this.dateAdapter.fromUnix(waChat.timestamp).toDate()
-
     if (!chat) {
-      chat = Chat.create({
-        contact,
-        lastInteraction,
-        waChatId: waChat.id,
-        unreadCount: waChat.unreadCount,
-        whatsAppId: new UniqueEntityID(whatsAppId),
-      })
+      chat = waChat.toChat()
 
       await this.chatsRepository.create(chat)
       this.chatEmitter.emit({
@@ -128,7 +117,7 @@ export class HandleWAReceivedMessage {
         (waContact) => waContact.id,
       )
 
-      const myContacts = await this.contactsRepository.findManyByWAContactIds(
+      const myContacts = await this.contactsRepository.findManyByWAContactsIds(
         waContactsThatAreMineIds,
       )
 
@@ -144,7 +133,7 @@ export class HandleWAReceivedMessage {
         .concat(contactsAteMineButNotExists)
         .map((waContact) => waContact.toContact())
 
-      this.contactsRepository.createMany(contactsToCreate)
+      await this.contactsRepository.createMany(contactsToCreate)
 
       const contacts = myContacts.concat(contactsToCreate)
 

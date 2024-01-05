@@ -1,4 +1,3 @@
-import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeChat } from '@/test/factories/make-chat'
@@ -22,7 +21,6 @@ let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeMessageEmitter: FakeMessageEmitter
 let fakeChatEmitter: FakeChatEmitter
-let fakeDateAdapter: FakeDateAdapter
 let fakeUploader: FakeUploader
 
 let sut: HandleWAReceivedMessage
@@ -35,7 +33,6 @@ describe('HandleWAReceivedMessage', () => {
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()
-    fakeDateAdapter = new FakeDateAdapter()
     fakeUploader = new FakeUploader()
 
     sut = new HandleWAReceivedMessage(
@@ -45,7 +42,6 @@ describe('HandleWAReceivedMessage', () => {
       inMemoryMessageMediasRepository,
       fakeMessageEmitter,
       fakeChatEmitter,
-      fakeDateAdapter,
       fakeUploader,
     )
   })

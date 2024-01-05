@@ -4,6 +4,7 @@ import {
   WAService,
 } from '@/domain/chat/application/services/wa-service'
 import { FakeWAChatService } from './fake-wa-chat-service'
+import { FakeWAContactService } from './fake-wa-contact-service'
 import { FakeWAMessageService } from './fake-wa-message-service'
 
 export class FakeWAClientServices extends WAClientServices {
@@ -15,11 +16,16 @@ export class FakeWAClientServices extends WAClientServices {
     return this.props.message as FakeWAMessageService
   }
 
+  get contact() {
+    return this.props.contact as FakeWAContactService
+  }
+
   static create(id?: UniqueEntityID) {
     return new FakeWAClientServices(
       {
         chat: new FakeWAChatService(),
         message: new FakeWAMessageService(),
+        contact: new FakeWAContactService(),
       },
       id,
     )

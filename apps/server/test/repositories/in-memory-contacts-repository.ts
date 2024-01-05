@@ -17,9 +17,11 @@ export class InMemoryContactsRepository
     return contact
   }
 
-  async findManyByWAContactIds(waContactIds: WAEntityID[]): Promise<Contact[]> {
+  async findManyByWAContactsIds(
+    waContactsIds: WAEntityID[],
+  ): Promise<Contact[]> {
     const contacts = this.items.filter((item) =>
-      waContactIds.includes(item.waContactId),
+      waContactsIds.includes(item.waContactId),
     )
 
     return contacts

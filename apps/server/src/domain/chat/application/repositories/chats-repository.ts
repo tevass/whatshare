@@ -16,7 +16,11 @@ export abstract class ChatsRepository {
     includeDeleted?: boolean,
   ): Promise<Chat | null>
 
+  abstract findManyByWAChatsIds(waChatsIds: WAEntityID[]): Promise<Chat[]>
+
   abstract save(chat: Chat): Promise<void>
 
   abstract create(chat: Chat): Promise<void>
+
+  abstract createMany(chats: Chat[]): Promise<void>
 }

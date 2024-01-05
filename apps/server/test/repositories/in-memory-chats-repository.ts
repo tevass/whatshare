@@ -1,3 +1,4 @@
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import {
   ChatsRepository,
   FindByWAChatIdAndWhatsAppIdParams,
@@ -29,5 +30,13 @@ export class InMemoryChatsRepository
     return this.items.filter(
       (item) => item.whatsAppId.toString() === whatsAppId,
     )
+  }
+
+  async findManyByWAChatsIds(waChatsIds: WAEntityID[]): Promise<Chat[]> {
+    const chats = this.items.filter((item) =>
+      waChatsIds.includes(item.waChatId),
+    )
+
+    return chats
   }
 }

@@ -4,7 +4,7 @@ import { Contact } from '../../enterprise/entities/contact'
 export abstract class ContactsRepository {
   abstract findByWAContactId(waContactId: WAEntityID): Promise<Contact | null>
 
-  abstract findManyByWAContactIds(
+  abstract findManyByWAContactsIds(
     waContactIds: WAEntityID[],
   ): Promise<Contact[]>
 

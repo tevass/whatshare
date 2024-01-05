@@ -1,6 +1,8 @@
 import { WAChat, WAChatProps } from '@/domain/chat/application/entities/wa-chat'
 import { faker } from '@faker-js/faker'
 import dayjs from 'dayjs'
+import { makeUniqueEntityID } from './make-unique-entity-id'
+import { makeWAContact } from './make-wa-contact'
 import { makeWAEntityID } from './make-wa-entity-id'
 
 export const makeWAChat = (
@@ -14,6 +16,8 @@ export const makeWAChat = (
       timestamp: dayjs().unix(),
       unreadCount: faker.number.int({ max: 99 }),
       imageUrl: faker.internet.url(),
+      contact: makeWAContact({}, id),
+      waClientId: makeUniqueEntityID(),
       ...override,
     },
     id,
