@@ -1,5 +1,8 @@
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { ContactsRepository } from '@/domain/chat/application/repositories/contacts-repository'
+import {
+  ContactsRepository,
+  FindByWAContactIdParams,
+  FindManyByWAContactsIdsParams,
+} from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { BaseInMemory } from './base-in-memory'
 
@@ -7,9 +10,15 @@ export class InMemoryContactsRepository
   extends BaseInMemory<Contact>
   implements ContactsRepository
 {
-  async findByWAContactId(waContactId: WAEntityID): Promise<Contact | null> {
-    const contact = this.items.find((item) =>
-      item.waContactId.equals(waContactId),
+  async findByWAContactId(
+    params: FindByWAContactIdParams,
+  ): Promise<Contact | null> {
+    const { waContactId, includeUnknowns = false } = params
+
+    const contact = this.items.find(
+      (item) =>
+        item.waContactId.equals(waContactId) &&
+        (includeUnknowns ? true : item.isMyContact),
     )
 
     if (!contact) return null
@@ -18,10 +27,14 @@ export class InMemoryContactsRepository
   }
 
   async findManyByWAContactsIds(
-    waContactsIds: WAEntityID[],
+    params: FindManyByWAContactsIdsParams,
   ): Promise<Contact[]> {
-    const contacts = this.items.filter((item) =>
-      waContactsIds.includes(item.waContactId),
+    const { waContactsIds, includeUnknowns = false } = params
+
+    const contacts = this.items.filter(
+      (item) =>
+        waContactsIds.includes(item.waContactId) &&
+        (includeUnknowns ? true : item.isMyContact),
     )
 
     return contacts

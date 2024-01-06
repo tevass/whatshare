@@ -29,9 +29,9 @@ export class HandleWAChangeMessageAck {
   ): Promise<HandleWAChangeMessageAckResponse> {
     const { ack, waMessage } = request
 
-    const message = await this.messagesRepository.findByWAMessageId(
-      waMessage.id,
-    )
+    const message = await this.messagesRepository.findByWAMessageId({
+      waMessageId: waMessage.id,
+    })
 
     if (!message) {
       return left(new ResourceNotFoundError(waMessage.id.toString()))

@@ -3,38 +3,63 @@ import { WAMessageID } from '@/core/entities/wa-message-id'
 import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
 import { Message } from '../../enterprise/entities/message'
 
-export interface FindToRevokeParams {
+interface MessagesRepositoryMethodsParams {
+  includeDeleted?: boolean
+}
+
+export interface FindByIdParams extends MessagesRepositoryMethodsParams {
+  id: string
+}
+
+export interface FindManyByChatIdParams
+  extends MessagesRepositoryMethodsParams,
+    PaginationParams {
+  chatId: string
+}
+
+export interface CountManyByChatIdParams
+  extends MessagesRepositoryMethodsParams {
+  chatId: string
+}
+
+export interface FindAllByChatIdParams extends MessagesRepositoryMethodsParams {
+  chatId: string
+}
+
+export interface FindByWAMessageIdParams
+  extends MessagesRepositoryMethodsParams {
+  waMessageId: WAMessageID
+}
+
+export interface FindManyByWAMessagesIdsParams
+  extends MessagesRepositoryMethodsParams {
+  waMessagesIds: WAMessageID[]
+}
+
+export interface FindToRevokeParams extends MessagesRepositoryMethodsParams {
   createdAt: Date
   waChatId: WAEntityID
   whatsAppId: string
 }
 
-export interface FindManyByChatIdParams extends PaginationParams {
-  chatId: string
-}
-
-export interface CountManyByChatIdParams {
-  chatId: string
-}
-
 export abstract class MessagesRepository {
-  abstract findById(id: string): Promise<Message | null>
+  abstract findById(params: FindByIdParams): Promise<Message | null>
 
   abstract findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]>
 
   abstract countManyByChatId(params: CountManyByChatIdParams): Promise<number>
 
-  abstract findAllByChatId(chatId: string): Promise<Message[]>
+  abstract findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]>
 
   abstract findByWAMessageId(
-    waMessageId: WAMessageID,
-    includeDeleted?: boolean,
+    params: FindByWAMessageIdParams,
   ): Promise<Message | null>
 
-  abstract findToRevoke(
-    params: FindToRevokeParams,
-    includeDeleted?: boolean,
-  ): Promise<Message | null>
+  abstract findManyByWAMessagesIds(
+    params: FindManyByWAMessagesIdsParams,
+  ): Promise<Message[]>
+
+  abstract findToRevoke(params: FindToRevokeParams): Promise<Message | null>
 
   abstract save(message: Message): Promise<void>
 

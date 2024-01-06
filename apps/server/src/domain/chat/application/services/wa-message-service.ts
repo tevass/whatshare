@@ -10,4 +10,6 @@ export interface WAMessageServiceSendTextParams {
 
 export abstract class WAMessageService {
   abstract sendText(params: WAMessageServiceSendTextParams): Promise<WAMessage>
+
+  abstract getByChatId(chatId: WAEntityID): Promise<WAMessage[]>
 }

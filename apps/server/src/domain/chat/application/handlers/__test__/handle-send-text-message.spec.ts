@@ -57,7 +57,8 @@ describe('HandleSendTextMessage', () => {
     const response = await sut.execute({
       attendantId: attendant.id.toString(),
       body: faker.lorem.paragraph(),
-      chatId: chat.id.toString(),
+      waChatId: chat.waChatId.toString(),
+      whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)
@@ -95,8 +96,9 @@ describe('HandleSendTextMessage', () => {
     const response = await sut.execute({
       attendantId: attendant.id.toString(),
       body: faker.lorem.paragraph(),
-      chatId: chat.id.toString(),
+      waChatId: chat.waChatId.toString(),
       quotedId: quotedMessage.id.toString(),
+      whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)

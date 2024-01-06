@@ -40,14 +40,12 @@ export class HandleWARevokeMessage {
       .fromUnix(waRevokedMessage.timestamp)
       .toDate()
 
-    const message = await this.messagesRepository.findToRevoke(
-      {
-        waChatId,
-        whatsAppId,
-        createdAt: createdAtOfRevokedMessage,
-      },
-      true,
-    )
+    const message = await this.messagesRepository.findToRevoke({
+      waChatId,
+      whatsAppId,
+      createdAt: createdAtOfRevokedMessage,
+      includeDeleted: true,
+    })
 
     if (!message) {
       return left(new ResourceNotFoundError(waRevokedMessage.id.toString()))

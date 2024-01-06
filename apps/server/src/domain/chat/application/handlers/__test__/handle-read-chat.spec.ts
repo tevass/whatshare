@@ -1,6 +1,7 @@
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import {
   FakeWAClientServices,
@@ -33,12 +34,12 @@ describe('HandleReadChat', () => {
     const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
     fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
 
-    const chatId = makeUniqueEntityID()
-
-    inMemoryChatsRepository.items.push(makeChat({ whatsAppId }, chatId))
+    const waChatId = makeWAEntityID()
+    inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
 
     const response = await sut.execute({
-      chatId: chatId.toString(),
+      waChatId: waChatId.toString(),
+      whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)

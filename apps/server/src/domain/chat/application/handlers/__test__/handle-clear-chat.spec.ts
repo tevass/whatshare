@@ -2,6 +2,7 @@ import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import {
@@ -38,12 +39,12 @@ describe('HandleClearChat', () => {
     const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
     fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
 
-    const chatId = makeUniqueEntityID()
-
-    inMemoryChatsRepository.items.push(makeChat({ whatsAppId }, chatId))
+    const waChatId = makeWAEntityID()
+    inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
 
     const response = await sut.execute({
-      chatId: chatId.toString(),
+      waChatId: waChatId.toString(),
+      whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)
@@ -70,16 +71,18 @@ describe('HandleClearChat', () => {
     const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
     fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
 
-    const chatId = makeUniqueEntityID()
-    inMemoryChatsRepository.items.push(makeChat({ whatsAppId }, chatId))
+    const waChatId = makeWAEntityID()
+    const chat = makeChat({ whatsAppId, waChatId })
+    inMemoryChatsRepository.items.push(chat)
 
     const messages = Array.from(Array(3)).map(() =>
-      makeMessage({ whatsAppId, chatId }),
+      makeMessage({ whatsAppId, chatId: chat.id }),
     )
     inMemoryMessagesRepository.items.push(...messages)
 
     const response = await sut.execute({
-      chatId: chatId.toString(),
+      waChatId: waChatId.toString(),
+      whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)

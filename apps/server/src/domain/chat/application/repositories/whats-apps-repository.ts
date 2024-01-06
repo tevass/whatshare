@@ -1,4 +1,4 @@
-import { WhatsApp } from '../../enterprise/entities/whats-app';
+import { WhatsApp } from '../../enterprise/entities/whats-app'
 
 export abstract class WhatsAppsRepository {
   abstract findById(id: string): Promise<WhatsApp | null>

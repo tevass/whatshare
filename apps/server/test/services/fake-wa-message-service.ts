@@ -1,3 +1,4 @@
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
 import {
   WAMessageService,
@@ -35,5 +36,9 @@ export class FakeWAMessageService implements WAMessageService {
     this.messages.push(message)
 
     return message
+  }
+
+  async getByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
+    return this.messages.filter((item) => item.chatId.equals(chatId))
   }
 }

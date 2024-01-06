@@ -23,6 +23,7 @@ describe('FetchChatsUseCase', () => {
 
     const response = await sut.execute({
       whatsAppId: whatsAppId.toString(),
+      page: 1,
     })
 
     expect(response.isRight()).toBe(true)

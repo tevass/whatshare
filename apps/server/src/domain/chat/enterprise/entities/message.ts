@@ -150,6 +150,10 @@ export class Message extends Entity<MessageProps> {
     return this.props.deletedAt
   }
 
+  isDeleted(): this is SetNonNullable<MessageProps, 'deletedAt'> {
+    return !!this.deletedAt
+  }
+
   get senderBy() {
     return this.props.senderBy
   }

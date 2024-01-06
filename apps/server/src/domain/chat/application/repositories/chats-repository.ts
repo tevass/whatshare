@@ -1,22 +1,49 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
 import { Chat } from '../../enterprise/entities/chat'
 
-export interface FindByWAChatIdAndWhatsAppIdParams {
+interface ChatsRepositoryMethodsParams {
+  includeDeleted?: boolean
+}
+
+export interface FindManyByWhatsAppIdParams
+  extends ChatsRepositoryMethodsParams,
+    PaginationParams {
+  whatsAppId: string
+}
+
+export interface CountManyByWhatsAppIdParams
+  extends ChatsRepositoryMethodsParams {
+  whatsAppId: string
+}
+
+export interface FindByWAChatIdAndWhatsAppIdParams
+  extends ChatsRepositoryMethodsParams {
   whatsAppId: string
   waChatId: WAEntityID
 }
 
-export abstract class ChatsRepository {
-  abstract findById(id: string): Promise<Chat | null>
+export interface FindManyByWAChatsIdsParams
+  extends ChatsRepositoryMethodsParams {
+  waChatsIds: WAEntityID[]
+}
 
-  abstract findManyByWhatsAppId(whatsAppId: string): Promise<Chat[]>
+export abstract class ChatsRepository {
+  abstract findManyByWhatsAppId(
+    params: FindManyByWhatsAppIdParams,
+  ): Promise<Chat[]>
+
+  abstract countManyByWhatsAppId(
+    params: CountManyByWhatsAppIdParams,
+  ): Promise<number>
 
   abstract findByWAChatIdAndWhatsAppId(
     params: FindByWAChatIdAndWhatsAppIdParams,
-    includeDeleted?: boolean,
   ): Promise<Chat | null>
 
-  abstract findManyByWAChatsIds(waChatsIds: WAEntityID[]): Promise<Chat[]>
+  abstract findManyByWAChatsIds(
+    params: FindManyByWAChatsIdsParams,
+  ): Promise<Chat[]>
 
   abstract save(chat: Chat): Promise<void>
 

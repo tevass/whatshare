@@ -39,7 +39,9 @@ describe('ImportChatsUseCase', () => {
     const fakeWAClientServices = FakeWAClientServices.create(whatsApp.id)
     fakeWAService.clients.set(whatsApp.id.toString(), fakeWAClientServices)
 
-    const waContacts = Array.from(Array(4)).map(() => makeWAContact())
+    const waContacts = Array.from(Array(4)).map(() =>
+      makeWAContact({ isMyContact: true }),
+    )
     inMemoryContactsRepository.items.push(
       ...waContacts.slice(2).map((waContact) => waContact.toContact()),
     )

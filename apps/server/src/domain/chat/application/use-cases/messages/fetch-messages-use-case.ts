@@ -29,9 +29,9 @@ export class FetchMessagesUseCase {
     const [rows, messages] = await Promise.all([
       this.messagesRepository.countManyByChatId({ chatId }),
       this.messagesRepository.findManyByChatId({
-        take: limit,
         chatId,
         page,
+        take: limit,
       }),
     ])
 

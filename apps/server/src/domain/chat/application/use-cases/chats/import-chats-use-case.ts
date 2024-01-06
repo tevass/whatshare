@@ -45,8 +45,10 @@ export class ImportChatsUseCase {
     const waChats = await waClient.chat.getMany()
     const waChatsIds = waChats.map((waChat) => waChat.id)
 
-    const chatsAlreadyExists =
-      await this.chatsRepository.findManyByWAChatsIds(waChatsIds)
+    const chatsAlreadyExists = await this.chatsRepository.findManyByWAChatsIds({
+      waChatsIds,
+      includeDeleted: true,
+    })
 
     const waChatsToCreate = waChats.filter(
       (waChat) =>

@@ -13,7 +13,7 @@ describe('Media', () => {
   test('create', () => {
     const media = RawMedia.create({
       mimetype: makeMimeType(),
-      url: faker.internet.url(),
+      key: faker.internet.url(),
     })
 
     expect(media).toBeTruthy()

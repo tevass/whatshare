@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
@@ -7,7 +8,8 @@ import { WAService } from '../services/wa-service'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleReadChatRequest {
-  chatId: string
+  waChatId: string
+  whatsAppId: string
 }
 
 type HandleReadChatResponse = Either<
@@ -27,12 +29,15 @@ export class HandleReadChat {
   async execute(
     request: HandleReadChatRequest,
   ): Promise<HandleReadChatResponse> {
-    const { chatId } = request
+    const { waChatId, whatsAppId } = request
 
-    const chat = await this.chatsRepository.findById(chatId)
+    const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
+      waChatId: WAEntityID.createFromString(waChatId),
+      whatsAppId,
+    })
 
     if (!chat) {
-      return left(new ResourceNotFoundError(chatId))
+      return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
     const waClient = this.waService.get(chat.whatsAppId.toString())

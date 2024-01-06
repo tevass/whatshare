@@ -48,6 +48,10 @@ export class Chat extends Entity<ChatProps> {
     return this.props.deletedAt
   }
 
+  isDeleted(): this is SetNonNullable<ChatProps, 'deletedAt'> {
+    return !!this.deletedAt
+  }
+
   read() {
     this.set({ unreadCount: 0 })
   }

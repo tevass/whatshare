@@ -1,5 +1,6 @@
 import { Either, left, right } from '@/core/either'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Message } from '../../enterprise/entities/message'
@@ -13,7 +14,8 @@ import { WAService } from '../services/wa-service'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleSendTextMessageRequest {
-  chatId: string
+  waChatId: string
+  whatsAppId: string
   body: string
   quotedId?: string
   attendantId: string
@@ -39,16 +41,26 @@ export class HandleSendTextMessage {
   async execute(
     request: HandleSendTextMessageRequest,
   ): Promise<HandleSendTextMessageResponse> {
-    const { chatId, attendantId, body, quotedId } = request
+    const { waChatId, attendantId, body, quotedId, whatsAppId } = request
 
     const [chat, attendant, quotedMessage] = await Promise.all([
-      this.chatsRepository.findById(chatId),
+      this.chatsRepository.findByWAChatIdAndWhatsAppId({
+        waChatId: WAEntityID.createFromString(waChatId),
+        whatsAppId,
+        includeDeleted: true,
+      }),
       this.attendantsRepository.findById(attendantId),
-      quotedId ? this.messagesRepository.findById(quotedId) : null,
+      quotedId
+        ? this.messagesRepository.findById({
+            id: quotedId,
+            includeDeleted: true,
+          })
+        : null,
     ])
 
+    const hasPrevChat = !!chat
     if (!chat) {
-      return left(new ResourceNotFoundError(chatId))
+      return left(new ResourceNotFoundError(waChatId))
     }
 
     if (!attendant) {
@@ -123,7 +135,7 @@ export class HandleSendTextMessage {
     })
 
     this.chatEmitter.emit({
-      event: 'chat:change',
+      event: hasPrevChat ? 'chat:change' : 'chat:create',
       data: {
         chat,
       },

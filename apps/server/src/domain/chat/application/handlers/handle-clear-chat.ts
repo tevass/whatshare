@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
@@ -8,7 +9,8 @@ import { WAService } from '../services/wa-service'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleClearChatRequest {
-  chatId: string
+  waChatId: string
+  whatsAppId: string
 }
 
 type HandleClearChatResponse = Either<
@@ -29,12 +31,15 @@ export class HandleClearChat {
   async execute(
     request: HandleClearChatRequest,
   ): Promise<HandleClearChatResponse> {
-    const { chatId } = request
+    const { waChatId, whatsAppId } = request
 
-    const chat = await this.chatsRepository.findById(chatId)
+    const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
+      waChatId: WAEntityID.createFromString(waChatId),
+      whatsAppId,
+    })
 
     if (!chat) {
-      return left(new ResourceNotFoundError(chatId))
+      return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
     const waClient = this.waService.get(chat.whatsAppId.toString())
@@ -46,7 +51,9 @@ export class HandleClearChat {
     chat.clear()
 
     const [messages] = await Promise.all([
-      this.messagesRepository.findAllByChatId(chat.id.toString()),
+      this.messagesRepository.findAllByChatId({
+        chatId: chat.id.toString(),
+      }),
       this.chatsRepository.save(chat),
     ])
 
