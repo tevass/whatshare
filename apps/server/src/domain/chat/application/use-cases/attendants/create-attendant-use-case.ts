@@ -2,7 +2,9 @@ import { Either, left, right } from '@/core/either'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
 import { AttendantProfile } from '@/domain/chat/enterprise/entities/attendant-profile'
 import { AttendantWhatsAppList } from '@/domain/chat/enterprise/entities/attendant-whats-app-list'
+import { Injectable } from '@nestjs/common'
 import { HashGenerator } from '../../cryptography/hash-generator'
+import { AttendantProfilesRepository } from '../../repositories/attendant-profiles-repository'
 import { AttendantsRepository } from '../../repositories/attendants-repository'
 import { WhatsAppsRepository } from '../../repositories/whats-apps-repository'
 import { AttendantAlreadyExistsError } from '../errors/attendant-already-exists-error'
@@ -22,8 +24,10 @@ type CreateAttendantUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateAttendantUseCase {
   constructor(
+    private profilesRepository: AttendantProfilesRepository,
     private attendantsRepository: AttendantsRepository,
     private whatsAppsRepository: WhatsAppsRepository,
     private hashGenerator: HashGenerator,
@@ -51,6 +55,8 @@ export class CreateAttendantUseCase {
       email,
       name,
     })
+
+    await this.profilesRepository.create(profile)
 
     const attendant = Attendant.create({
       profile,

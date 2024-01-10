@@ -1,10 +1,10 @@
-import { randomUUID } from 'node:crypto'
+import objectId from 'bson-objectid'
 
 export class UniqueEntityID {
   private value: string
 
   constructor(value?: string) {
-    this.value = value ?? randomUUID()
+    this.value = value ?? objectId().toString()
   }
 
   toString() {

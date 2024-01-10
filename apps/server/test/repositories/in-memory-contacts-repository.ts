@@ -4,12 +4,10 @@ import {
   FindManyByWAContactsIdsParams,
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
-import { BaseInMemory } from './base-in-memory'
 
-export class InMemoryContactsRepository
-  extends BaseInMemory<Contact>
-  implements ContactsRepository
-{
+export class InMemoryContactsRepository implements ContactsRepository {
+  items: Contact[] = []
+
   async findByWAContactId(
     params: FindByWAContactIdParams,
   ): Promise<Contact | null> {
@@ -38,5 +36,13 @@ export class InMemoryContactsRepository
     )
 
     return contacts
+  }
+
+  async create(contact: Contact): Promise<void> {
+    this.items.push(contact)
+  }
+
+  async createMany(entities: Contact[]): Promise<void> {
+    this.items.push(...entities)
   }
 }

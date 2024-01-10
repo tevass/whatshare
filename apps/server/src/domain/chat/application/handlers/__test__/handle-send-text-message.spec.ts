@@ -4,6 +4,7 @@ import { makeAttendant } from '@/test/factories/make-attendant'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
@@ -16,6 +17,7 @@ import { HandleSendTextMessage } from '../handle-send-text-message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
+let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
 let fakeWAService: FakeWAService
 let fakeMessageEmitter: FakeMessageEmitter
@@ -27,7 +29,11 @@ describe('HandleSendTextMessage', () => {
   beforeEach(() => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryChatsRepository = new InMemoryChatsRepository()
-    inMemoryAttendantsRepository = new InMemoryAttendantsRepository()
+    inMemoryAttendantProfilesRepository =
+      new InMemoryAttendantProfilesRepository()
+    inMemoryAttendantsRepository = new InMemoryAttendantsRepository(
+      inMemoryAttendantProfilesRepository,
+    )
     fakeWAService = new FakeWAService()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()

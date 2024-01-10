@@ -2,9 +2,11 @@ import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeEncrypter } from '@/test/cryptography/faker-encrypter'
 import { makeAttendant } from '@/test/factories/make-attendant'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { RefreshAuthenticateAttendantUseCase } from '../refresh-authenticate-attendant-use-case'
 
+let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
 let fakeDateAdapter: FakeDateAdapter
 let fakerEncrypter: FakeEncrypter
@@ -13,7 +15,11 @@ let sut: RefreshAuthenticateAttendantUseCase
 
 describe('RefreshAuthenticateAttendantUseCase', () => {
   beforeEach(() => {
-    inMemoryAttendantsRepository = new InMemoryAttendantsRepository()
+    inMemoryAttendantProfilesRepository =
+      new InMemoryAttendantProfilesRepository()
+    inMemoryAttendantsRepository = new InMemoryAttendantsRepository(
+      inMemoryAttendantProfilesRepository,
+    )
     fakeDateAdapter = new FakeDateAdapter()
     fakerEncrypter = new FakeEncrypter()
 

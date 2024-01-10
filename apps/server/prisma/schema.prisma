@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum WhatsAppStatus {
+  disconnected
+  connecting
+  connected
+}
+
+model WhatsApp {
+  id     String         @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  qrCode String?        @map("qr_code")
+  status WhatsAppStatus
+
+  attendantsIds String[] @map("attedants_ids") @db.ObjectId
+
+  attendants Attendant[] @relation(fields: [attendantsIds], references: [id])
+
+  @@map("whats_apps")
+}
+
+model AttendantProfile {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  email       String @unique
+  name        String
+  displayName String @map("display_name")
+
+  attendant Attendant?
+
+  @@map("attendant_profiles")
+}
+
+model Attendant {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  password String?
+
+  profileId    String   @unique @map("profile_id") @db.ObjectId
+  whatsAppsIds String[] @map("whats_apps_ids") @db.ObjectId
+
+  profile   AttendantProfile @relation(fields: [profileId], references: [id])
+  whatsApps WhatsApp[]       @relation(fields: [whatsAppsIds], references: [id])
+
+  @@map("attendants")
+}

@@ -11,12 +11,10 @@ import {
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/chat/enterprise/utilities/pagination'
 import dayjs from 'dayjs'
-import { BaseInMemory } from './base-in-memory'
 
-export class InMemoryMessagesRepository
-  extends BaseInMemory<Message>
-  implements MessagesRepository
-{
+export class InMemoryMessagesRepository implements MessagesRepository {
+  items: Message[] = []
+
   async findById(params: FindByIdParams): Promise<Message | null> {
     const { id, includeDeleted = false } = params
 
@@ -105,5 +103,21 @@ export class InMemoryMessagesRepository
     if (!message) return null
 
     return message
+  }
+
+  async create(message: Message): Promise<void> {
+    this.items.push(message)
+  }
+
+  async save(message: Message): Promise<void> {
+    const itemIndex = this.items.findIndex(
+      (item) => item.id.toString() === message.id.toString(),
+    )
+
+    this.items[itemIndex] = message
+  }
+
+  async saveMany(entities: Message[]): Promise<void> {
+    await Promise.all(entities.map((message) => this.save(message)))
   }
 }
