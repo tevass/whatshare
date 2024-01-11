@@ -16,6 +16,17 @@ export class PrismaWhatsAppMapper {
     )
   }
 
+  static toPrismaCreate(
+    whatsApp: WhatsApp,
+  ): Prisma.WhatsAppUncheckedCreateInput {
+    return {
+      id: whatsApp.id.toString(),
+      name: whatsApp.name,
+      qrCode: whatsApp.qrCode,
+      status: whatsApp.status,
+    }
+  }
+
   static toPrismaUpdate(
     whatsApp: WhatsApp,
   ): Prisma.WhatsAppUncheckedUpdateInput {

@@ -3,7 +3,10 @@ import {
   WhatsApp,
   WhatsAppProps,
 } from '@/domain/chat/enterprise/entities/whats-app'
+import { PrismaWhatsAppMapper } from '@/infra/http/database/prisma/mappers/prisma-whats-app-mapper'
+import { PrismaService } from '@/infra/http/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
+import { Injectable } from '@nestjs/common'
 
 export const makeWhatsApp = (
   override: Partial<WhatsAppProps> = {},
@@ -16,4 +19,19 @@ export const makeWhatsApp = (
     },
     id,
   )
+}
+
+@Injectable()
+export class WhatsAppFactory {
+  constructor(private prisma: PrismaService) {}
+
+  async makePrismaAnswer(data: Partial<WhatsAppProps> = {}): Promise<WhatsApp> {
+    const whatsApp = makeWhatsApp(data)
+
+    await this.prisma.whatsApp.create({
+      data: PrismaWhatsAppMapper.toPrismaCreate(whatsApp),
+    })
+
+    return whatsApp
+  }
 }
