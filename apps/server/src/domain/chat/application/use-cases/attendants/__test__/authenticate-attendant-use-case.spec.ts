@@ -1,3 +1,4 @@
+import { Token } from '@/domain/shared/enterprise/utilities/token'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeEncrypter } from '@/test/cryptography/faker-encrypter'
 import { FakeHashService } from '@/test/cryptography/faker-hash-service'
@@ -49,7 +50,7 @@ describe('AuthenticateAttendantUseCase', () => {
     if (response.isLeft()) return
 
     const { accessToken, refreshToken } = response.value
-    expect(accessToken).toEqual(expect.any(String))
-    expect(refreshToken).toEqual(expect.any(String))
+    expect(accessToken).toBeInstanceOf(Token)
+    expect(refreshToken).toBeInstanceOf(Token)
   })
 })

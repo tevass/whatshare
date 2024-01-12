@@ -9,7 +9,7 @@ import {
   MessagesRepository,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
-import { Pagination } from '@/domain/chat/enterprise/utilities/pagination'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import dayjs from 'dayjs'
 
 export class InMemoryMessagesRepository implements MessagesRepository {

@@ -1,4 +1,4 @@
-interface EncryptOptions {
+export interface EncryptOptions {
   expiresIn?: number
 }
 

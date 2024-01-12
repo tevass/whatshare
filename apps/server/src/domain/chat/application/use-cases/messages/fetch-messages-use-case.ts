@@ -1,7 +1,7 @@
 import { Either, right } from '@/core/either'
 import { Message } from '@/domain/chat/enterprise/entities/message'
-import { Pagination } from '@/domain/chat/enterprise/utilities/pagination'
 import { PaginationRequest } from '@/domain/shared/application/use-cases/pagination-request'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import { MessagesRepository } from '../../repositories/messages-repository'
 
 interface FetchMessagesUseCaseRequest extends PaginationRequest {

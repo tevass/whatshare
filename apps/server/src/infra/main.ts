@@ -1,8 +1,18 @@
 import { NestFactory } from '@nestjs/core'
+import cookieParser from 'cookie-parser'
+
 import { AppModule } from './app.module'
+import { EnvService } from './env/env.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  await app.listen(3000)
+
+  app.setGlobalPrefix('/v1')
+  app.use(cookieParser())
+
+  const configService = app.get<EnvService>(EnvService)
+  const port = configService.get('PORT')
+
+  await app.listen(port)
 }
 bootstrap()

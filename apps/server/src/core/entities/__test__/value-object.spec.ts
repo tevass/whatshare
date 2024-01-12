@@ -10,25 +10,11 @@ class RawValueObject extends ValueObject<RawValueObjectProps> {
   }
 }
 
-describe('ValueObject (Object Props)', () => {
+describe('ValueObject', () => {
   test('equals', () => {
     const valueObject = RawValueObject.create({
       isTrue: true,
     })
-
-    expect(valueObject.equals(valueObject)).toBe(true)
-  })
-})
-
-class RawSingleValueObject extends ValueObject<string> {
-  static create(value: string) {
-    return new RawSingleValueObject(value)
-  }
-}
-
-describe('ValueObject (Single Value)', () => {
-  test('equals', () => {
-    const valueObject = RawSingleValueObject.create('test')
 
     expect(valueObject.equals(valueObject)).toBe(true)
   })

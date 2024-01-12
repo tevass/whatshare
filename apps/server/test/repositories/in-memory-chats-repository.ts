@@ -6,7 +6,7 @@ import {
   FindManyByWhatsAppIdParams,
 } from '@/domain/chat/application/repositories/chats-repository'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
-import { Pagination } from '@/domain/chat/enterprise/utilities/pagination'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 
 export class InMemoryChatsRepository implements ChatsRepository {
   items: Chat[] = []

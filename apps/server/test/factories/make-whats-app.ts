@@ -3,8 +3,8 @@ import {
   WhatsApp,
   WhatsAppProps,
 } from '@/domain/chat/enterprise/entities/whats-app'
-import { PrismaWhatsAppMapper } from '@/infra/http/database/prisma/mappers/prisma-whats-app-mapper'
-import { PrismaService } from '@/infra/http/database/prisma/prisma.service'
+import { PrismaWhatsAppMapper } from '@/infra/database/prisma/mappers/prisma-whats-app-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 

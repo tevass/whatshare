@@ -3,7 +3,13 @@ import {
   Attendant,
   AttendantProps,
 } from '@/domain/chat/enterprise/entities/attendant'
-import { makeAttendantProfile } from './make-attendant-profile'
+import { PrismaAttendantMapper } from '@/infra/database/prisma/mappers/prisma-attendant-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { Injectable } from '@nestjs/common'
+import {
+  FakeAttendantProfile,
+  makeAttendantProfile,
+} from './make-attendant-profile'
 
 export const makeAttendant = (
   override: Partial<AttendantProps> = {},
@@ -16,4 +22,28 @@ export const makeAttendant = (
     },
     id,
   )
+}
+
+@Injectable()
+export class FakeAttendant {
+  constructor(
+    private prisma: PrismaService,
+    private fakeProfile: FakeAttendantProfile,
+  ) {}
+
+  async makePrismaAttendant(
+    data: Partial<AttendantProps> = {},
+  ): Promise<Attendant> {
+    const profile =
+      data.profile ??
+      (await this.fakeProfile.makePrismaAttendantProfile(data.profile))
+
+    const attendant = makeAttendant({ ...data, profile })
+
+    await this.prisma.attendant.create({
+      data: PrismaAttendantMapper.toPrismaCreate(attendant),
+    })
+
+    return attendant
+  }
 }
