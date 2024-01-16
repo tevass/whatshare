@@ -1,50 +1,39 @@
-import { AuthenticateAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/authenticate-attendant-use-case'
 import { WrongCredentialsError } from '@/domain/chat/application/use-cases/errors/wrong-credentials-error'
-import { Public } from '@/infra/auth/decorators/public.decorator'
 import {
   BadRequestException,
-  Body,
   Controller,
   HttpCode,
-  Post,
+  Patch,
   Res,
   UnauthorizedException,
-  UsePipes,
+  UseGuards,
 } from '@nestjs/common'
-import type { Response } from 'express'
-import { z } from 'zod'
-import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { AttendantViewModel } from '../../view-models/attendant-view-model'
 import { EnvService } from '@/infra/env/env.service'
 import { Cookie } from '../../utils/cookie'
+import { RefreshJwtAuthGuard } from '@/infra/auth/guards/refresh-jwt-auth.guard'
+import { CurrentAttendant } from '@/infra/auth/decorators/current-attendant.decorator'
+import { RefreshAuthenticatedAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/refresh-authenticated-attendant-use-case'
+import { Response } from 'express'
+import { Public } from '@/infra/auth/decorators/public.decorator'
 
-const authenticateBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-})
-
-type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
-
-@Controller('/sessions')
 @Public()
-export class AuthenticateController {
+@Controller('/sessions/refresh')
+@UseGuards(RefreshJwtAuthGuard)
+export class RefreshAuthenticationController {
   constructor(
     private env: EnvService,
-    private authenticateAttendant: AuthenticateAttendantUseCase,
+    private refreshAuthenticatedAttendant: RefreshAuthenticatedAttendantUseCase,
   ) {}
 
-  @Post()
+  @Patch()
   @HttpCode(200)
-  @UsePipes(new ZodValidationPipe(authenticateBodySchema))
   async handle(
-    @Body() body: AuthenticateBodySchema,
+    @CurrentAttendant('sub') attendantId: string,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { email, password } = body
-
-    const result = await this.authenticateAttendant.execute({
-      email,
-      password,
+    const result = await this.refreshAuthenticatedAttendant.execute({
+      attendantId,
     })
 
     if (result.isLeft()) {

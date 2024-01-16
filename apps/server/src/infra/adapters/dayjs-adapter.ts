@@ -16,8 +16,8 @@ export class DayjsAdapter implements DateAdapter {
     return this
   }
 
-  addMinutes(value: number): this {
-    this.dateRef.add(value, 'minutes')
+  addHours(value: number): this {
+    this.dateRef.add(value, 'hours')
     return this
   }
 

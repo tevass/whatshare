@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
     "sourceMap": true,
@@ -10,6 +9,5 @@
       "@/*": ["./src/*"],
       "@/test/*": ["./test/*"]
     }
-  },
-  "exclude": ["node_modules"]
+  }
 }

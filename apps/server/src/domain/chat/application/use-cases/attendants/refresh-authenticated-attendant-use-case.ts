@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { DateAdapter } from '../../adapters/date-adapter'
 import { Encrypter } from '../../cryptography/encrypter'
 import { AttendantsRepository } from '../../repositories/attendants-repository'
+import { Injectable } from '@nestjs/common'
 
 interface RefreshAuthenticateAttendantUseCaseRequest {
   attendantId: string
@@ -18,7 +19,8 @@ type RefreshAuthenticateAttendantUseCaseResponse = Either<
   }
 >
 
-export class RefreshAuthenticateAttendantUseCase {
+@Injectable()
+export class RefreshAuthenticatedAttendantUseCase {
   constructor(
     private attendantsRepository: AttendantsRepository,
     private dateAdapter: DateAdapter,
@@ -38,7 +40,7 @@ export class RefreshAuthenticateAttendantUseCase {
 
     const payload = { sub: attendant.id.toString() }
 
-    const expiresAccessToken = this.dateAdapter.addMinutes(15)
+    const expiresAccessToken = this.dateAdapter.addHours(1)
     const expiresRefreshAccessToken = this.dateAdapter.addDays(7)
 
     const [accessToken, refreshToken] = await Promise.all([

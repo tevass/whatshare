@@ -1,18 +1,17 @@
-import { HashGenerator } from '@/domain/chat/application/cryptography/hash-generator'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeAttendant } from '@/test/factories/make-attendant'
 import { FakeAttendantProfile } from '@/test/factories/make-attendant-profile'
-import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 import supertest from 'supertest'
 
-describe('Authenticate', () => {
+describe('Refresh Authentication', () => {
   let app: INestApplication
   let attendantFactory: FakeAttendant
-  let hasher: HashGenerator
+  let jwt: JwtService
   let env: EnvService
 
   beforeEach(async () => {
@@ -22,8 +21,9 @@ describe('Authenticate', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+
     attendantFactory = app.get(FakeAttendant)
-    hasher = app.get(HashGenerator)
+    jwt = app.get(JwtService)
     env = app.get(EnvService)
 
     app.use(cookieParser())
@@ -31,25 +31,21 @@ describe('Authenticate', () => {
     await app.init()
   })
 
-  it('[POST] /sessions', async () => {
-    const password = faker.string.hexadecimal()
+  it('[PATCH] /sessions/refresh', async () => {
+    const attendant = await attendantFactory.makePrismaAttendant()
 
-    const attendant = await attendantFactory.makePrismaAttendant({
-      password: await hasher.hash(password),
-    })
+    const refreshToken = jwt.sign({ sub: attendant.id.toString() })
+    const JWT_REFRESH_COOKIE_NAME = env.get('JWT_REFRESH_COOKIE_NAME')
 
     const response = await supertest(app.getHttpServer())
-      .post('/sessions')
-      .send({
-        email: attendant.profile.email,
-        password,
-      })
+      .patch('/sessions/refresh')
+      .set('Cookie', `${JWT_REFRESH_COOKIE_NAME}=${refreshToken}`)
+      .send()
 
     expect(response.statusCode).toBe(200)
 
     const cookies = response.headers['set-cookie']
     const JWT_COOKIE_NAME = env.get('JWT_COOKIE_NAME')
-    const JWT_REFRESH_COOKIE_NAME = env.get('JWT_REFRESH_COOKIE_NAME')
 
     expect(cookies).toHaveLength(2)
     expect(cookies).toEqual(

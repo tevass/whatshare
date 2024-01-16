@@ -10,8 +10,8 @@ async function bootstrap() {
   app.setGlobalPrefix('/v1')
   app.use(cookieParser())
 
-  const configService = app.get<EnvService>(EnvService)
-  const port = configService.get('PORT')
+  const envService = app.get<EnvService>(EnvService)
+  const port = envService.get('PORT')
 
   await app.listen(port)
 }

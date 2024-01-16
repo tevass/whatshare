@@ -1,11 +1,10 @@
 import { Encrypter } from '@/domain/chat/application/cryptography/encrypter'
 import { HashCompare } from '@/domain/chat/application/cryptography/hash-compare'
 import { HashGenerator } from '@/domain/chat/application/cryptography/hash-generator'
-import { Global, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { BcryptHasher } from './bcrypt-hasher'
 import { JwtEncrypter } from './jwt-encrypter'
 
-@Global()
 @Module({
   providers: [
     {

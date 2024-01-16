@@ -1,6 +1,6 @@
 import { AppModule } from '@/infra/app.module'
-import { ConstantsService } from '@/infra/constants/constants.service'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { EnvService } from '@/infra/env/env.service'
 import { FakeAttendant } from '@/test/factories/make-attendant'
 import { FakeAttendantProfile } from '@/test/factories/make-attendant-profile'
 import { WhatsAppFactory } from '@/test/factories/make-whats-app'
@@ -17,7 +17,7 @@ describe('Create Attendant (HTTP)', () => {
   let whatsAppsFactory: WhatsAppFactory
   let attendantFactory: FakeAttendant
   let jwt: JwtService
-  let constants: ConstantsService
+  let env: EnvService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -31,7 +31,7 @@ describe('Create Attendant (HTTP)', () => {
     whatsAppsFactory = moduleRef.get(WhatsAppFactory)
     attendantFactory = app.get(FakeAttendant)
     jwt = app.get(JwtService)
-    constants = app.get(ConstantsService)
+    env = app.get(EnvService)
 
     app.use(cookieParser())
 
@@ -42,7 +42,7 @@ describe('Create Attendant (HTTP)', () => {
     const attendant = await attendantFactory.makePrismaAttendant()
 
     const accessToken = jwt.sign({ sub: attendant.id.toString() })
-    const { cookies } = constants.get('auth').jwt
+    const JWT_COOKIE_NAME = env.get('JWT_COOKIE_NAME')
 
     const whatsApps = [
       await whatsAppsFactory.makePrismaAnswer({}),
@@ -53,7 +53,7 @@ describe('Create Attendant (HTTP)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/attendants')
-      .set('Cookie', [`${cookies.access_token}=${accessToken}`])
+      .set('Cookie', [`${JWT_COOKIE_NAME}=${accessToken}`])
       .send({
         email,
         name: faker.person.firstName(),
