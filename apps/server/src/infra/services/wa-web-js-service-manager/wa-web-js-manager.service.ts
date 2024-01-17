@@ -1,18 +1,18 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
 import { WAServiceManager } from '@/domain/chat/application/services/wa-service-manager'
-import { WAWebJSService } from './wa-web-js'
+import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
+import { EnvService } from '@/infra/env/env.service'
 import {
   Injectable,
   Logger,
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common'
-import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
-import { EnvService } from '@/infra/env/env.service'
 import { Client, LocalAuth } from 'whatsapp-web.js'
 import { args as BROWSER_ARGS } from './browser-args.json'
-import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
 import { WAWebJSEvent } from './wa-web-js-event'
+import { WAWebJSService } from './wa-web-js-service'
 
 @Injectable()
 export class WAWebJSServiceManager
@@ -24,20 +24,7 @@ export class WAWebJSServiceManager
     private whatsAppsRepository: WhatsAppsRepository,
   ) {}
 
-  private instances: Map<string, WAWebJSService> = new Map()
-  private get waServices() {
-    return Array.from(this.instances.values())
-  }
-
-  get(whatsAppId: UniqueEntityID): WAWebJSService | null {
-    const waService = this.instances.get(whatsAppId.toString())
-    return waService && waService.isConnected() ? waService : null
-  }
-
-  private events: WAWebJSEvent[] = []
-  addEvent(event: WAWebJSEvent) {
-    this.events.push(event)
-  }
+  private waServices: Map<string, WAWebJSService> = new Map()
 
   async onModuleInit() {
     const whatsApps = await this.whatsAppsRepository.findAll()
@@ -52,8 +39,21 @@ export class WAWebJSServiceManager
   }
 
   async onModuleDestroy() {
-    await Promise.all(this.waServices.map((waService) => waService.destroy()))
+    const waServicesArray = Array.from(this.waServices.values())
+    await Promise.all(waServicesArray.map((waService) => waService.destroy()))
+
     this.logger.debug('WAServices disconnected successfully!')
+  }
+
+  get(whatsAppId: UniqueEntityID): WAWebJSService | null {
+    const waService = this.waServices.get(whatsAppId.toString())
+    return waService && waService.isConnected() ? waService : null
+  }
+
+  private events: WAWebJSEvent[] = []
+
+  addEvent(event: WAWebJSEvent) {
+    this.events.push(event)
   }
 
   private createWAWebJSServiceFromWhatsApp(whatsApp: WhatsApp) {
@@ -78,7 +78,7 @@ export class WAWebJSServiceManager
       whatsAppId: whatsApp.id,
     })
 
-    this.instances.set(whatsApp.id.toString(), waService)
+    this.waServices.set(whatsApp.id.toString(), waService)
     this.events.forEach((event) => {
       raw.on(event.name, event.listener(waService))
     })

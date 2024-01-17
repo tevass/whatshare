@@ -1,5 +1,5 @@
 import { Events } from 'whatsapp-web.js'
-import { WAWebJSService } from './wa-web-js'
+import { WAWebJSService } from './wa-web-js-service'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WAWebJSListener = (...args: any[]) => Promise<void>

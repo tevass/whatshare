@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common'
-import { WAWebJSService } from '../wa-web-js'
 import { HandleWAGenerateQRCode } from '@/domain/chat/application/handlers/handle-wa-generate-qr-code'
-import { WAWebJSServiceManager } from '../wa-web-js-manager.service'
+import { Injectable } from '@nestjs/common'
 import { Events } from 'whatsapp-web.js'
 import { WAWebJSEvent, WAWebJSListener } from '../wa-web-js-event'
+import { WAWebJSServiceManager } from '../wa-web-js-manager.service'
+import { WAWebJSService } from '../wa-web-js-service'
 
 @Injectable()
 export class WAHandleGenerateQrCodeEvent implements WAWebJSEvent {

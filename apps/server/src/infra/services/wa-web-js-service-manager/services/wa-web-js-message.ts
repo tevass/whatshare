@@ -5,7 +5,8 @@ import {
   WAMessageService,
 } from '@/domain/chat/application/services/wa-message-service'
 import { Client } from 'whatsapp-web.js'
-import { WAWebJSService } from '../wa-web-js'
+import { WAWebJSMessageMapper } from '../mappers/wa-web-js-message-mapper'
+import { WAWebJSService } from '../wa-web-js-service'
 
 export class WAWebJSMessageService implements WAMessageService {
   private raw: Client
@@ -14,12 +15,31 @@ export class WAWebJSMessageService implements WAMessageService {
     this.raw = waService.switchToRaw()
   }
 
-  sendText(params: WAMessageSendTextParams): Promise<WAMessage> {
-    throw new Error('Method not implemented.')
+  private async getChatById(chatId: WAEntityID) {
+    return await this.raw.getChatById(chatId.toString())
   }
 
-  getByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
-    throw new Error('Method not implemented.')
+  async sendText(params: WAMessageSendTextParams): Promise<WAMessage> {
+    const { body, chatId, quotedId } = params
+
+    const waChat = await this.getChatById(chatId)
+    const waMessage = await waChat.sendMessage(body, {
+      quotedMessageId: quotedId?.toString(),
+    })
+
+    return await WAWebJSMessageMapper.toDomain({ raw: waMessage, chatId })
+  }
+
+  async getManyByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
+    const waChat = await this.getChatById(chatId)
+
+    const waMessages = await waChat.fetchMessages({
+      limit: Infinity,
+    })
+
+    return await Promise.all(
+      waMessages.map((raw) => WAWebJSMessageMapper.toDomain({ raw, chatId })),
+    )
   }
 
   static create(client: WAWebJSService) {

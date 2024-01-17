@@ -6,8 +6,8 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { ChatsRepository } from '../../repositories/chats-repository'
-import { CreateMessageFromWAMessageUseCase } from './create-message-from-wa-message-use-case'
 import { WAServiceManager } from '../../services/wa-service-manager'
+import { CreateMessageFromWAMessageUseCase } from './create-message-from-wa-message-use-case'
 
 interface ImportMessagesUseCaseRequest {
   waChatId: string
@@ -49,7 +49,7 @@ export class ImportMessagesUseCase {
       return left(new WAServiceNotFoundError(chat.whatsAppId.toString()))
     }
 
-    const waMessages = await waClient.message.getByChatId(chat.waChatId)
+    const waMessages = await waClient.message.getManyByChatId(chat.waChatId)
 
     const waMessagesIds = waMessages.map((waMessage) => waMessage.id)
 

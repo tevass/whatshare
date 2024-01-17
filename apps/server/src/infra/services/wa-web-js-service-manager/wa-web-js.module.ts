@@ -1,10 +1,9 @@
 import { WAServiceManager } from '@/domain/chat/application/services/wa-service-manager'
-import { Logger, Module, forwardRef } from '@nestjs/common'
+import { Logger, Module } from '@nestjs/common'
+import { WAHandleGenerateQrCodeEvent } from './events/wa-handle-generate-qr-code-event'
 import { WAWebJSServiceManager } from './wa-web-js-manager.service'
-import { WAWebJSEventsModule } from './events.module'
 
 @Module({
-  imports: [forwardRef(() => WAWebJSEventsModule)],
   providers: [
     Logger,
     WAWebJSServiceManager,
@@ -12,7 +11,10 @@ import { WAWebJSEventsModule } from './events.module'
       provide: WAServiceManager,
       useExisting: WAWebJSServiceManager,
     },
+
+    // Events
+    WAHandleGenerateQrCodeEvent,
   ],
-  exports: [WAServiceManager, WAWebJSServiceManager],
+  exports: [WAServiceManager],
 })
 export class WAWebJSModule {}

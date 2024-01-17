@@ -9,7 +9,7 @@ import { WAContact } from './wa-contact'
 
 export interface WAMessageProps {
   chatId: WAEntityID
-  author: WAEntityID
+  author: WAEntityID | null
   ack: MessageAck
   type: MessageType
   body: string | null
@@ -32,6 +32,10 @@ export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
 
   get author() {
     return this.props.author
+  }
+
+  hasAuthor(): this is SetNonNullable<WAMessageProps, 'author'> {
+    return !!this.author
   }
 
   get ack() {
@@ -100,7 +104,7 @@ export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
   static create(
     props: SetOptional<
       WAMessageProps,
-      'body' | 'media' | 'quoted' | 'contacts'
+      'body' | 'media' | 'quoted' | 'contacts' | 'author'
     >,
     id: WAMessageID,
   ) {

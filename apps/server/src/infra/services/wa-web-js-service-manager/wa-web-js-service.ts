@@ -4,11 +4,11 @@ import { WAContactService } from '@/domain/chat/application/services/wa-contact-
 import { WAMessageService } from '@/domain/chat/application/services/wa-message-service'
 import { WAService } from '@/domain/chat/application/services/wa-service'
 import { WhatsAppStatus } from '@/schemas/core/whats-app-status'
-import { SetOptional } from 'type-fest'
+import type { SetOptional } from 'type-fest'
 import { Client } from 'whatsapp-web.js'
 import { WAWebJSChatService } from './services/wa-web-js-chat'
-import { WAWebJSMessageService } from './services/wa-web-js-message'
 import { WAWebJSContactService } from './services/wa-web-js-contact'
+import { WAWebJSMessageService } from './services/wa-web-js-message'
 
 interface WAWebJSServiceProps {
   whatsAppId: UniqueEntityID

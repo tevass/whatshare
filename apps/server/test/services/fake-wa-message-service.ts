@@ -38,7 +38,7 @@ export class FakeWAMessageService implements WAMessageService {
     return message
   }
 
-  async getByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
+  async getManyByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
     return this.messages.filter((item) => item.chatId.equals(chatId))
   }
 }
