@@ -5,5 +5,7 @@ export abstract class WhatsAppsRepository {
 
   abstract findManyByIds(ids: string[]): Promise<WhatsApp[]>
 
+  abstract findAll(): Promise<WhatsApp[]>
+
   abstract save(whatsApp: WhatsApp): Promise<void>
 }

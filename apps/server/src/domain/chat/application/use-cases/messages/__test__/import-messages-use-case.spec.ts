@@ -7,10 +7,7 @@ import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-rep
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import {
-  FakeWAClientServices,
-  FakeWAService,
-} from '@/test/services/fake-wa-service'
+import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
@@ -58,13 +55,13 @@ describe('ImportMessagesUseCase', () => {
     const chat = makeChat({ whatsAppId, waChatId: waChat.id })
     inMemoryChatsRepository.items.push(chat)
 
-    const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
+    const fakeWAClient = FakeWAClient.create(whatsAppId)
+    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waMessages = Array.from(Array(4)).map(() =>
       makeWAMessage({ chatId: waChat.id }),
     )
-    fakeWAClientServices.message.messages.push(...waMessages)
+    fakeWAClient.message.messages.push(...waMessages)
 
     inMemoryMessagesRepository.items.push(
       ...waMessages.slice(2).map((waMessage) =>

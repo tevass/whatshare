@@ -8,10 +8,7 @@ import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memo
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import {
-  FakeWAClientServices,
-  FakeWAService,
-} from '@/test/services/fake-wa-service'
+import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { faker } from '@faker-js/faker'
 import { HandleSendTextMessage } from '../handle-send-text-message'
 
@@ -51,8 +48,8 @@ describe('HandleSendTextMessage', () => {
   it('should be able to create message from send text', async () => {
     const whatsAppId = makeUniqueEntityID()
 
-    const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
+    const fakeWAClient = FakeWAClient.create(whatsAppId)
+    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)
@@ -77,14 +74,14 @@ describe('HandleSendTextMessage', () => {
 
     expect(fakeMessageEmitter.events).toHaveLength(2)
     expect(fakeChatEmitter.events).toHaveLength(2)
-    expect(fakeWAClientServices.message.messages).toHaveLength(1)
+    expect(fakeWAClient.message.messages).toHaveLength(1)
   })
 
   it('should be able to create message from send text quoting other message', async () => {
     const whatsAppId = makeUniqueEntityID()
 
-    const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
+    const fakeWAClient = FakeWAClient.create(whatsAppId)
+    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)

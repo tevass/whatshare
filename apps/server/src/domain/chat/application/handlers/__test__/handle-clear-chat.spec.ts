@@ -5,10 +5,7 @@ import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import {
-  FakeWAClientServices,
-  FakeWAService,
-} from '@/test/services/fake-wa-service'
+import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { HandleClearChat } from '../handle-clear-chat'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
@@ -36,8 +33,8 @@ describe('HandleClearChat', () => {
   it('should be able to clear chat', async () => {
     const whatsAppId = makeUniqueEntityID()
 
-    const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
+    const fakeWAClient = FakeWAClient.create(whatsAppId)
+    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waChatId = makeWAEntityID()
     inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
@@ -62,14 +59,14 @@ describe('HandleClearChat', () => {
 
     expect(inMemoryChatsRepository.items[0]).toBe(chat)
     expect(fakeChatEmitter.events).toHaveLength(1)
-    expect(fakeWAClientServices.chat.values).toHaveLength(1)
+    expect(fakeWAClient.chat.values).toHaveLength(1)
   })
 
   it('should be able to update messages from chat', async () => {
     const whatsAppId = makeUniqueEntityID()
 
-    const fakeWAClientServices = FakeWAClientServices.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClientServices)
+    const fakeWAClient = FakeWAClient.create(whatsAppId)
+    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waChatId = makeWAEntityID()
     const chat = makeChat({ whatsAppId, waChatId })
