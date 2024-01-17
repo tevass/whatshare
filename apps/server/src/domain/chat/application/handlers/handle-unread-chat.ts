@@ -4,8 +4,8 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
-import { WAService } from '../services/wa-service'
-import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
+import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
+import { WAServiceManager } from '../services/wa-service-manager'
 
 interface HandleUnreadChatRequest {
   waChatId: string
@@ -13,7 +13,7 @@ interface HandleUnreadChatRequest {
 }
 
 type HandleUnreadChatResponse = Either<
-  ResourceNotFoundError | WAClientNotFoundError,
+  ResourceNotFoundError | WAServiceNotFoundError,
   {
     chat: Chat
   }
@@ -22,7 +22,7 @@ type HandleUnreadChatResponse = Either<
 export class HandleUnreadChat {
   constructor(
     private chatsRepository: ChatsRepository,
-    private waService: WAService,
+    private waManager: WAServiceManager,
     private chatEmitter: ChatEmitter,
   ) {}
 
@@ -40,9 +40,9 @@ export class HandleUnreadChat {
       return left(new ResourceNotFoundError(waChatId))
     }
 
-    const waClient = this.waService.get(chat.whatsAppId.toString())
+    const waClient = this.waManager.get(chat.whatsAppId)
     if (!waClient) {
-      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
+      return left(new WAServiceNotFoundError(chat.whatsAppId.toString()))
     }
 
     await waClient.chat.markUnreadById(chat.waChatId)

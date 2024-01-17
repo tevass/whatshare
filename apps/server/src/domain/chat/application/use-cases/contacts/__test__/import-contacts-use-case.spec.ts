@@ -2,12 +2,14 @@ import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryWhatsAppsRepository } from '@/test/repositories/in-memory-whats-apps-repository'
-import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { ImportContactsUseCase } from '../import-contacts-use-case'
+import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { FakeWAService } from '@/test/services/fake-wa-service'
 
 let inMemoryWhatsAppRepository: InMemoryWhatsAppsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
-let fakeWAService: FakeWAService
+let fakeWAServiceManager: FakeWAServiceManager
 
 let sut: ImportContactsUseCase
 
@@ -15,24 +17,25 @@ describe('ImportContactsUseCase', () => {
   beforeEach(() => {
     inMemoryWhatsAppRepository = new InMemoryWhatsAppsRepository()
     inMemoryContactsRepository = new InMemoryContactsRepository()
-    fakeWAService = new FakeWAService()
+    fakeWAServiceManager = new FakeWAServiceManager()
 
     sut = new ImportContactsUseCase(
       inMemoryWhatsAppRepository,
       inMemoryContactsRepository,
-      fakeWAService,
+      fakeWAServiceManager,
     )
   })
 
   it('should be able to import contacts from wa-client', async () => {
-    const whatsApp = makeWhatsApp()
+    const whatsAppId = makeUniqueEntityID()
+    const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
     inMemoryWhatsAppRepository.items.push(whatsApp)
 
-    const fakeWAClient = FakeWAClient.create(whatsApp.id)
-    fakeWAService.clients.set(whatsApp.id.toString(), fakeWAClient)
+    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
+    fakeWAServiceManager.services.set(whatsApp.id.toString(), fakeWAService)
 
     const waContacts = Array.from(Array(4)).map(() => makeWAContact())
-    fakeWAClient.contact.contacts.push(...waContacts)
+    fakeWAService.contact.contacts.push(...waContacts)
 
     inMemoryContactsRepository.items.push(
       ...waContacts.slice(2).map((waContact) => waContact.toContact()),

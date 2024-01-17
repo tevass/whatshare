@@ -3,3 +3,7 @@
 
 # Docker
 .docker
+
+# WAWebJS
+.wwebjs_auth
+.wwebjs_cache

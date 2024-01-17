@@ -1,106 +1,44 @@
+import { WAService } from '@/domain/chat/application/services/wa-service'
+import { FakeWAChatService } from './fake-wa-chat-service'
+import { FakeWAMessageService } from './fake-wa-message-service'
+import { FakeWAContactService } from './fake-wa-contact-service'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { WAChat } from '@/domain/chat/application/entities/wa-chat'
-import { WAContact } from '@/domain/chat/application/entities/wa-contact'
-import { WAMessage } from '@/domain/chat/application/entities/wa-message'
-import {
-  WAChatMethods,
-  WAClient,
-  WAContactMethods,
-  WAMessageMethods,
-  WAMessageSendTextParams,
-  WAService,
-} from '@/domain/chat/application/services/wa-service'
-import { makeWAMessage } from '../factories/make-wa-message'
-import { makeWAMessageID } from '../factories/make-wa-message-id'
+import { WhatsAppStatus } from '@/schemas/core/whats-app-status'
+import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 
-class FakeWAChatMethods implements WAChatMethods {
-  values: string[] = []
-  chats: WAChat[] = []
-
-  async sendSeenById(chatId: WAEntityID): Promise<void> {
-    this.values.push(chatId.toString())
-  }
-
-  async markUnreadById(chatId: WAEntityID): Promise<void> {
-    this.values.push(chatId.toString())
-  }
-
-  async clearById(chatId: WAEntityID): Promise<void> {
-    this.values.push(chatId.toString())
-  }
-
-  async getMany(): Promise<WAChat[]> {
-    return this.chats
-  }
+interface FakeWAServiceProps {
+  status: WhatsAppStatus
+  whatsAppId: UniqueEntityID
 }
 
-class FakeWAMessageMethods implements WAMessageMethods {
-  messages: WAMessage[] = []
+export class FakeWAService extends WAService {
+  private props: FakeWAServiceProps
 
-  async sendText(params: WAMessageSendTextParams): Promise<WAMessage> {
-    const { body, chatId, quotedId } = params
+  chat: FakeWAChatService
+  message: FakeWAMessageService
+  contact: FakeWAContactService
 
-    const message = makeWAMessage(
-      {
-        body,
-        chatId,
-        ...(quotedId && {
-          quoted: makeWAMessage({}, quotedId),
-        }),
-        isFromMe: true,
-        ack: 'sent',
-        contacts: [],
-        isBroadcast: false,
-        isForwarded: false,
-        isGif: false,
-        isStatus: false,
-        media: null,
-        type: 'text',
-      },
-      makeWAMessageID({ entityId: chatId, isFromMe: true }),
-    )
+  protected constructor(props: FakeWAServiceProps) {
+    super()
 
-    this.messages.push(message)
-
-    return message
+    this.props = props
+    this.chat = new FakeWAChatService()
+    this.message = new FakeWAMessageService()
+    this.contact = new FakeWAContactService()
   }
 
-  async getByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
-    return this.messages.filter((item) => item.chatId.equals(chatId))
-  }
-}
-
-class FakeWAContactMethods implements WAContactMethods {
-  contacts: WAContact[] = []
-
-  async getMany(): Promise<WAContact[]> {
-    return this.contacts
-  }
-}
-
-export class FakeWAClient implements WAClient {
-  protected constructor(id: UniqueEntityID) {
-    this.id = id
-    this.chat = new FakeWAChatMethods()
-    this.message = new FakeWAMessageMethods()
-    this.contact = new FakeWAContactMethods()
+  get status() {
+    return this.props.status
   }
 
-  id: UniqueEntityID
-  chat: FakeWAChatMethods
-  message: FakeWAMessageMethods
-  contact: FakeWAContactMethods
-
-  static create(id?: UniqueEntityID) {
-    return new FakeWAClient(id ?? new UniqueEntityID())
+  get whatsAppId() {
+    return this.props.whatsAppId
   }
-}
 
-export class FakeWAService implements WAService {
-  clients: Map<string, FakeWAClient> = new Map()
-
-  get(waClientId: string): FakeWAClient | null {
-    return this.clients.get(waClientId) ?? null
+  static createFromWhatsApp(whatsApp: WhatsApp) {
+    return new FakeWAService({
+      whatsAppId: whatsApp.id,
+      status: whatsApp.status,
+    })
   }
 }

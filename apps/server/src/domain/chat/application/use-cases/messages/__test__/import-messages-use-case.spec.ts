@@ -7,16 +7,18 @@ import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-rep
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
+import { makeWhatsApp } from '@/test/factories/make-whats-app'
+import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { FakeWAService } from '@/test/services/fake-wa-service'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
-let fakeWAService: FakeWAService
+let fakeWAServiceManager: FakeWAServiceManager
 let fakeUploader: FakeUploader
 
 let createMessageFromWAMessage: CreateMessageFromWAMessageUseCase
@@ -29,7 +31,7 @@ describe('ImportMessagesUseCase', () => {
     inMemoryContactsRepository = new InMemoryContactsRepository()
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
-    fakeWAService = new FakeWAService()
+    fakeWAServiceManager = new FakeWAServiceManager()
     fakeUploader = new FakeUploader()
 
     createMessageFromWAMessage = new CreateMessageFromWAMessageUseCase(
@@ -43,25 +45,26 @@ describe('ImportMessagesUseCase', () => {
     sut = new ImportMessagesUseCase(
       inMemoryChatsRepository,
       inMemoryMessagesRepository,
-      fakeWAService,
+      fakeWAServiceManager,
       createMessageFromWAMessage,
     )
   })
 
   it('should be able to import messages from wa-client', async () => {
     const whatsAppId = makeUniqueEntityID()
+    const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
     const waChat = makeWAChat({ waClientId: whatsAppId })
     const chat = makeChat({ whatsAppId, waChatId: waChat.id })
     inMemoryChatsRepository.items.push(chat)
 
-    const fakeWAClient = FakeWAClient.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
+    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
+    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
 
     const waMessages = Array.from(Array(4)).map(() =>
       makeWAMessage({ chatId: waChat.id }),
     )
-    fakeWAClient.message.messages.push(...waMessages)
+    fakeWAService.message.messages.push(...waMessages)
 
     inMemoryMessagesRepository.items.push(
       ...waMessages.slice(2).map((waMessage) =>

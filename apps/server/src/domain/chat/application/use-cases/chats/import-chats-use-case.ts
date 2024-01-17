@@ -1,19 +1,19 @@
 import { Either, left, right } from '@/core/either'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
-import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
+import { WAServiceNotFoundError } from '../../handlers/errors/wa-service-not-found-error'
 import { ChatsRepository } from '../../repositories/chats-repository'
 
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { WhatsAppsRepository } from '../../repositories/whats-apps-repository'
-import { WAService } from '../../services/wa-service'
+import { WAServiceManager } from '../../services/wa-service-manager'
 
 interface ImportChatsUseCaseRequest {
   whatsAppId: string
 }
 
 type ImportChatsUseCaseResponse = Either<
-  ResourceNotFoundError | WAClientNotFoundError,
+  ResourceNotFoundError | WAServiceNotFoundError,
   {
     chats: Chat[]
   }
@@ -24,7 +24,7 @@ export class ImportChatsUseCase {
     private whatsAppRepository: WhatsAppsRepository,
     private chatsRepository: ChatsRepository,
     private contactsRepository: ContactsRepository,
-    private waService: WAService,
+    private waManager: WAServiceManager,
   ) {}
 
   async execute(
@@ -37,9 +37,9 @@ export class ImportChatsUseCase {
       return left(new ResourceNotFoundError(whatsAppId))
     }
 
-    const waClient = this.waService.get(whatsAppId)
+    const waClient = this.waManager.get(whatsApp.id)
     if (!waClient) {
-      return left(new WAClientNotFoundError(whatsAppId))
+      return left(new WAServiceNotFoundError(whatsAppId))
     }
 
     const waChats = await waClient.chat.getMany()

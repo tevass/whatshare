@@ -3,6 +3,7 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { WhatsAppEmitter } from '../emitters/whats-app-emitter'
 import { WhatsAppsRepository } from '../repositories/whats-apps-repository'
+import { Injectable } from '@nestjs/common'
 
 interface HandleWAGenerateQRCodeRequest {
   whatsAppId: string
@@ -16,6 +17,7 @@ type HandleWAGenerateQRCodeResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleWAGenerateQRCode {
   constructor(
     private whatsAppsRepository: WhatsAppsRepository,

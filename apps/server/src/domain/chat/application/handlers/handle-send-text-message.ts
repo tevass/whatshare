@@ -10,8 +10,8 @@ import { MessageEmitter } from '../emitters/message-emitter'
 import { AttendantsRepository } from '../repositories/attendants-repository'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
-import { WAService } from '../services/wa-service'
-import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
+import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
+import { WAServiceManager } from '../services/wa-service-manager'
 
 interface HandleSendTextMessageRequest {
   waChatId: string
@@ -22,7 +22,7 @@ interface HandleSendTextMessageRequest {
 }
 
 type HandleSendTextMessageResponse = Either<
-  ResourceNotFoundError | WAClientNotFoundError,
+  ResourceNotFoundError | WAServiceNotFoundError,
   {
     message: Message
   }
@@ -33,7 +33,7 @@ export class HandleSendTextMessage {
     private messagesRepository: MessagesRepository,
     private chatsRepository: ChatsRepository,
     private attendantsRepository: AttendantsRepository,
-    private waService: WAService,
+    private waManager: WAServiceManager,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
   ) {}
@@ -58,7 +58,6 @@ export class HandleSendTextMessage {
         : null,
     ])
 
-    const hasPrevChat = !!chat
     if (!chat) {
       return left(new ResourceNotFoundError(waChatId))
     }
@@ -67,9 +66,9 @@ export class HandleSendTextMessage {
       return left(new ResourceNotFoundError(attendantId))
     }
 
-    const waClient = this.waService.get(chat.whatsAppId.toString())
+    const waClient = this.waManager.get(chat.whatsAppId)
     if (!waClient) {
-      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
+      return left(new WAServiceNotFoundError(chat.whatsAppId.toString()))
     }
 
     const tmpWAMessageId = new WAMessageID({
@@ -96,6 +95,7 @@ export class HandleSendTextMessage {
     })
 
     await this.messagesRepository.create(message)
+    const chatIsActive = chat.isActive()
 
     chat.interact(message)
     await this.chatsRepository.save(chat)
@@ -108,7 +108,7 @@ export class HandleSendTextMessage {
     })
 
     this.chatEmitter.emit({
-      event: 'chat:change',
+      event: chatIsActive ? 'chat:change' : 'chat:create',
       data: {
         chat,
       },
@@ -128,14 +128,14 @@ export class HandleSendTextMessage {
     await this.messagesRepository.save(message)
 
     this.messageEmitter.emit({
-      event: 'message:create',
+      event: 'message:change',
       data: {
         message,
       },
     })
 
     this.chatEmitter.emit({
-      event: hasPrevChat ? 'chat:change' : 'chat:create',
+      event: 'chat:change',
       data: {
         chat,
       },

@@ -3,11 +3,13 @@ import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
-import { FakeWAClient, FakeWAService } from '@/test/services/fake-wa-service'
 import { HandleUnreadChat } from '../handle-unread-chat'
+import { makeWhatsApp } from '@/test/factories/make-whats-app'
+import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { FakeWAService } from '@/test/services/fake-wa-service'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
-let fakeWAService: FakeWAService
+let fakeWAServiceManager: FakeWAServiceManager
 let fakeChatEmitter: FakeChatEmitter
 
 let sut: HandleUnreadChat
@@ -15,21 +17,22 @@ let sut: HandleUnreadChat
 describe('HandleUnreadChat', () => {
   beforeEach(() => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
-    fakeWAService = new FakeWAService()
+    fakeWAServiceManager = new FakeWAServiceManager()
     fakeChatEmitter = new FakeChatEmitter()
 
     sut = new HandleUnreadChat(
       inMemoryChatsRepository,
-      fakeWAService,
+      fakeWAServiceManager,
       fakeChatEmitter,
     )
   })
 
   it('should be able to set chat unread', async () => {
     const whatsAppId = makeUniqueEntityID()
+    const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
-    const fakeWAClient = FakeWAClient.create(whatsAppId)
-    fakeWAService.clients.set(whatsAppId.toString(), fakeWAClient)
+    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
+    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
 
     const waChatId = makeWAEntityID()
     inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
@@ -47,6 +50,6 @@ describe('HandleUnreadChat', () => {
     expect(chat.unreadCount).toBe(-1)
     expect(inMemoryChatsRepository.items[0]).toBe(chat)
     expect(fakeChatEmitter.events).toHaveLength(1)
-    expect(fakeWAClient.chat.values).toHaveLength(1)
+    expect(fakeWAService.chat.values).toHaveLength(1)
   })
 })

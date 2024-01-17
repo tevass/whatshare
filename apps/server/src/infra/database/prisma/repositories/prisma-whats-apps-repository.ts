@@ -32,6 +32,12 @@ export class PrismaWhatsAppsRepository implements WhatsAppsRepository {
     return raw.map(PrismaWhatsAppMapper.toDomain)
   }
 
+  async findAll(): Promise<WhatsApp[]> {
+    const raw = await this.prisma.whatsApp.findMany()
+
+    return raw.map(PrismaWhatsAppMapper.toDomain)
+  }
+
   async save(whatsApp: WhatsApp): Promise<void> {
     const data = PrismaWhatsAppMapper.toPrismaUpdate(whatsApp)
 

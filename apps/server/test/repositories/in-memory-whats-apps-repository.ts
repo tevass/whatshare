@@ -16,6 +16,10 @@ export class InMemoryWhatsAppsRepository implements WhatsAppsRepository {
     return this.items.filter((item) => ids.includes(item.id.toString()))
   }
 
+  async findAll(): Promise<WhatsApp[]> {
+    return this.items
+  }
+
   async create(whatsApp: WhatsApp): Promise<void> {
     this.items.push(whatsApp)
   }

@@ -52,6 +52,10 @@ export class Chat extends Entity<ChatProps> {
     return !!this.deletedAt
   }
 
+  isActive(): this is ChatProps & { deletedAt: null } {
+    return !this.deletedAt
+  }
+
   read() {
     this.set({ unreadCount: 0 })
   }

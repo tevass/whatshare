@@ -1,10 +1,15 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAChat } from '@/domain/chat/application/entities/wa-chat'
-import { WAChatMethods } from '@/domain/chat/application/services/wa-service'
-import WAWebJS from 'whatsapp-web.js'
+import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
+import { Client } from 'whatsapp-web.js'
+import { WAWebJSService } from '../wa-web-js'
 
-export class WAWebJSChatMethods implements WAChatMethods {
-  protected constructor(private client: WAWebJS.Client) {}
+export class WAWebJSChatService implements WAChatService {
+  private raw: Client
+
+  protected constructor(private waService: WAWebJSService) {
+    this.raw = waService.switchToRaw()
+  }
 
   sendSeenById(chatId: WAEntityID): Promise<void> {
     throw new Error('Method not implemented.')
@@ -22,7 +27,7 @@ export class WAWebJSChatMethods implements WAChatMethods {
     throw new Error('Method not implemented.')
   }
 
-  static create(client: WAWebJS.Client) {
-    return new WAWebJSChatMethods(client)
+  static create(client: WAWebJSService) {
+    return new WAWebJSChatService(client)
   }
 }
