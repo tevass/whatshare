@@ -1,3 +1,6 @@
 {
-  "extends": "@whatshare/tsconfig/node.json"
+  "extends": "@whatshare/tsconfig/node.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  }
 }

@@ -4,7 +4,14 @@
   "license": "ISC",
   "private": true,
   "exports": {
-
+    "./entities": {
+      "import": "./dist/entities/index.mjs",
+      "default": "./dist/entities/index.js"
+    },
+    "./events": {
+      "import": "./dist/events/index.mjs",
+      "default": "./dist/events/index.js"
+    }
   },
   "scripts": {
     "build": "tsup",
