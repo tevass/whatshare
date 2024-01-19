@@ -1,0 +1,3 @@
+{
+  "extends": "@whatshare/tsconfig/node.json"
+}

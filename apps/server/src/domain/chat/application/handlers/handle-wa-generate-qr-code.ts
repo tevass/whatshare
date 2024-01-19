@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { WhatsAppEmitter } from '../emitters/whats-app-emitter'
 import { WhatsAppsRepository } from '../repositories/whats-apps-repository'
-import { Injectable } from '@nestjs/common'
 
 interface HandleWAGenerateQRCodeRequest {
   whatsAppId: string
@@ -38,16 +38,7 @@ export class HandleWAGenerateQRCode {
     await this.whatsAppsRepository.save(whatsApp)
 
     this.whatsAppEmitter.emit({
-      namespace: 'admin',
-      event: 'whatsApp:change',
-      data: {
-        whatsApp,
-      },
-    })
-
-    this.whatsAppEmitter.emit({
-      namespace: 'chat',
-      event: 'whatsApp:change',
+      event: 'whatsApp:qrCode',
       data: {
         whatsApp,
       },

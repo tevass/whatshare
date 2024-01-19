@@ -1,0 +1,32 @@
+{
+  "name": "@whatshare/http-schemas",
+  "version": "1.0.0",
+  "license": "ISC",
+  "private": true,
+  "exports": {
+    "./entities": {
+      "import": "./dist/entities/index.mjs",
+      "require": "./dist/entities/index.js"
+    },
+    "./request": {
+      "import": "./dist/request/index.mjs",
+      "require": "./dist/request/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
+  },
+  "devDependencies": {
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "@whatshare/tsup-config": "workspace:^",
+    "tsup": "^8.0.1"
+  },
+  "dependencies": {
+    "@whatshare/shared-schemas": "workspace:^",
+    "zod": "^3.22.4"
+  }
+}

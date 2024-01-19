@@ -9,19 +9,11 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common'
-import isMongoId from 'validator/lib/isMongoId'
-import { z } from 'zod'
+import {
+  CreateAttendantBodySchema,
+  createAttendantBodySchema,
+} from '@whatshare/http-schemas/request'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-
-const createAttendantBodySchema = z.object({
-  email: z.string().email(),
-  name: z.string().min(1),
-  displayName: z.string().min(1),
-  password: z.string().min(1),
-  whatsAppsIds: z.array(z.string().refine(isMongoId)),
-})
-
-type CreateAttendantBodySchema = z.infer<typeof createAttendantBodySchema>
 
 @Controller('/attendants')
 export class CreateAttendantController {

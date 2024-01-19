@@ -1,11 +1,13 @@
 import { ChatEvents } from '@/schemas/events/chat-events'
 import { Chat } from '../../enterprise/entities/chat'
 
+interface ChatPayload {
+  chat: Chat
+}
+
 export interface ChatEmitParams {
   event: ChatEvents
-  data: {
-    chat: Chat
-  }
+  data: ChatPayload
 }
 
 export abstract class ChatEmitter {

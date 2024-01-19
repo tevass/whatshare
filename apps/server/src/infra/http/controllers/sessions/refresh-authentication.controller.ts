@@ -1,4 +1,10 @@
+import { RefreshAuthenticatedAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/refresh-authenticated-attendant-use-case'
 import { WrongCredentialsError } from '@/domain/chat/application/use-cases/errors/wrong-credentials-error'
+import { CurrentAttendant } from '@/infra/auth/decorators/current-attendant.decorator'
+import { Public } from '@/infra/auth/decorators/public.decorator'
+import { RefreshJwtAuthGuard } from '@/infra/auth/guards/refresh-jwt-auth.guard'
+import { EnvService } from '@/infra/env/env.service'
+import { AttendantPresenter } from '@/infra/presenters/attendant-presenter'
 import {
   BadRequestException,
   Controller,
@@ -8,14 +14,8 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
-import { AttendantViewModel } from '../../view-models/attendant-view-model'
-import { EnvService } from '@/infra/env/env.service'
-import { Cookie } from '../../utils/cookie'
-import { RefreshJwtAuthGuard } from '@/infra/auth/guards/refresh-jwt-auth.guard'
-import { CurrentAttendant } from '@/infra/auth/decorators/current-attendant.decorator'
-import { RefreshAuthenticatedAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/refresh-authenticated-attendant-use-case'
 import { Response } from 'express'
-import { Public } from '@/infra/auth/decorators/public.decorator'
+import { Cookie } from '../../utils/cookie'
 
 @Public()
 @Controller('/sessions/refresh')
@@ -61,7 +61,7 @@ export class RefreshAuthenticationController {
       .cookie(JWT_REFRESH_COOKIE_NAME, refreshToken, cookieOptions)
 
     return {
-      attendant: AttendantViewModel.toHttp(attendant),
+      attendant: AttendantPresenter.toHttp(attendant),
     }
   }
 }

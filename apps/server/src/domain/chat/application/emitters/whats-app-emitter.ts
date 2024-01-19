@@ -1,13 +1,13 @@
-import { NamespaceEvents } from '@/schemas/events/namespace-events'
 import { WhatsAppEvents } from '@/schemas/events/whats-app-events'
 import { WhatsApp } from '../../enterprise/entities/whats-app'
 
+interface WhatsAppPayload {
+  whatsApp: WhatsApp
+}
+
 export interface WhatsAppEmitParams {
-  namespace?: NamespaceEvents
   event: WhatsAppEvents
-  data: {
-    whatsApp: WhatsApp
-  }
+  data: WhatsAppPayload
 }
 
 export abstract class WhatsAppEmitter {

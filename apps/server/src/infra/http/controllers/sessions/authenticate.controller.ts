@@ -1,6 +1,8 @@
 import { AuthenticateAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/authenticate-attendant-use-case'
 import { WrongCredentialsError } from '@/domain/chat/application/use-cases/errors/wrong-credentials-error'
 import { Public } from '@/infra/auth/decorators/public.decorator'
+import { EnvService } from '@/infra/env/env.service'
+import { AttendantPresenter } from '@/infra/presenters/attendant-presenter'
 import {
   BadRequestException,
   Body,
@@ -11,19 +13,13 @@ import {
   UnauthorizedException,
   UsePipes,
 } from '@nestjs/common'
+import {
+  AuthenticateBodySchema,
+  authenticateBodySchema,
+} from '@whatshare/http-schemas/request'
 import type { Response } from 'express'
-import { z } from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { AttendantViewModel } from '../../view-models/attendant-view-model'
-import { EnvService } from '@/infra/env/env.service'
 import { Cookie } from '../../utils/cookie'
-
-const authenticateBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-})
-
-type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
 
 @Controller('/sessions')
 @Public()
@@ -72,7 +68,7 @@ export class AuthenticateController {
       .cookie(JWT_REFRESH_COOKIE_NAME, refreshToken, cookieOptions)
 
     return {
-      attendant: AttendantViewModel.toHttp(attendant),
+      attendant: AttendantPresenter.toHttp(attendant),
     }
   }
 }

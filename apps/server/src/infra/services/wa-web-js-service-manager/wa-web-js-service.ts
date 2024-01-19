@@ -69,7 +69,7 @@ export class WAWebJSService extends WAService {
     return this.raw.initialize()
   }
 
-  destroy() {
+  close() {
     return this.raw.destroy()
   }
 

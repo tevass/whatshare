@@ -1,6 +1,6 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import type { WhatsAppStatus } from '@/schemas/core/whats-app-status'
+import type { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import type { SetOptional } from 'type-fest'
 
 export interface WhatsAppProps {

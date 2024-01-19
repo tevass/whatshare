@@ -40,7 +40,7 @@ export class WAWebJSServiceManager
 
   async onModuleDestroy() {
     const waServicesArray = Array.from(this.waServices.values())
-    await Promise.all(waServicesArray.map((waService) => waService.destroy()))
+    await Promise.all(waServicesArray.map((waService) => waService.close()))
 
     this.logger.debug('WAServices disconnected successfully!')
   }

@@ -1,0 +1,26 @@
+{
+  "name": "@whatshare/wss-schemas",
+  "version": "1.0.0",
+  "license": "ISC",
+  "private": true,
+  "exports": {
+
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
+  },
+  "devDependencies": {
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "@whatshare/tsup-config": "workspace:^",
+    "tsup": "^8.0.1"
+  },
+  "dependencies": {
+    "@whatshare/shared-schemas": "workspace:^",
+    "@whatshare/core-schemas": "workspace:^",
+    "zod": "^3.22.4"
+  }
+}
