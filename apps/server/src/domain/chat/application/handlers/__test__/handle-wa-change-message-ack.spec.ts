@@ -37,6 +37,6 @@ describe('HandleWAChangeMessageAck', () => {
 
     const { message } = response.value
     expect(message.ack).toBe('sent')
-    expect(fakeMessageEmitter.events).toHaveLength(1)
+    expect(fakeMessageEmitter.payloads).toHaveLength(1)
   })
 })

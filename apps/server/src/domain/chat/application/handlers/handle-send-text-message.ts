@@ -10,8 +10,8 @@ import { MessageEmitter } from '../emitters/message-emitter'
 import { AttendantsRepository } from '../repositories/attendants-repository'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
-import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 import { WAServiceManager } from '../services/wa-service-manager'
+import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 
 interface HandleSendTextMessageRequest {
   waChatId: string
@@ -95,23 +95,18 @@ export class HandleSendTextMessage {
     })
 
     await this.messagesRepository.create(message)
-    const chatIsActive = chat.isActive()
+    const isPreviousActiveChat = chat.isActive()
 
     chat.interact(message)
     await this.chatsRepository.save(chat)
 
-    this.messageEmitter.emit({
-      event: 'message:create',
-      data: {
-        message,
-      },
+    this.messageEmitter.emitCreate({
+      message,
     })
 
-    this.chatEmitter.emit({
-      event: chatIsActive ? 'chat:change' : 'chat:create',
-      data: {
-        chat,
-      },
+    const chatEmitterEvent = isPreviousActiveChat ? 'emitChange' : 'emitCreate'
+    this.chatEmitter[chatEmitterEvent]({
+      chat,
     })
 
     const waMessage = await waClient.message.sendText({
@@ -127,18 +122,12 @@ export class HandleSendTextMessage {
 
     await this.messagesRepository.save(message)
 
-    this.messageEmitter.emit({
-      event: 'message:change',
-      data: {
-        message,
-      },
+    this.messageEmitter.emitChange({
+      message,
     })
 
-    this.chatEmitter.emit({
-      event: 'chat:change',
-      data: {
-        chat,
-      },
+    this.chatEmitter.emitChange({
+      chat,
     })
 
     return right({

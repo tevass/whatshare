@@ -52,7 +52,7 @@ export class HandleWAReceivedMessage {
       }),
     ])
 
-    const hasPrevChat = !!chat
+    const isPreviousActiveChat = !!chat && chat.isActive()
     if (!contact) {
       contact = waContact.toContact()
       await this.contactsRepository.create(contact)
@@ -63,11 +63,8 @@ export class HandleWAReceivedMessage {
       chat.set({ contact })
 
       await this.chatsRepository.create(chat)
-      this.chatEmitter.emit({
-        event: 'chat:create',
-        data: {
-          chat,
-        },
+      this.chatEmitter.emitCreate({
+        chat,
       })
     }
 
@@ -86,18 +83,13 @@ export class HandleWAReceivedMessage {
     chat.interact(message)
     await this.chatsRepository.save(chat)
 
-    this.messageEmitter.emit({
-      event: 'message:create',
-      data: {
-        message,
-      },
+    this.messageEmitter.emitCreate({
+      message,
     })
 
-    this.chatEmitter.emit({
-      event: hasPrevChat ? 'chat:change' : 'chat:create',
-      data: {
-        chat,
-      },
+    const chatEmitterEvent = isPreviousActiveChat ? 'emitChange' : 'emitCreate'
+    this.chatEmitter[chatEmitterEvent]({
+      chat,
     })
 
     return right({

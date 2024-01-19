@@ -4,8 +4,8 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
-import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 import { WAServiceManager } from '../services/wa-service-manager'
+import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 
 interface HandleUnreadChatRequest {
   waChatId: string
@@ -50,11 +50,8 @@ export class HandleUnreadChat {
     chat.unread()
     await this.chatsRepository.save(chat)
 
-    this.chatEmitter.emit({
-      event: 'chat:change',
-      data: {
-        chat,
-      },
+    this.chatEmitter.emitChange({
+      chat,
     })
 
     return right({

@@ -40,11 +40,8 @@ export class HandleWAChangeUnreadCount {
     chat.set({ unreadCount: waChat.unreadCount })
     await this.chatsRepository.save(chat)
 
-    this.chatEmitter.emit({
-      event: 'chat:change',
-      data: {
-        chat,
-      },
+    this.chatEmitter.emitChange({
+      chat,
     })
 
     return right({ chat })

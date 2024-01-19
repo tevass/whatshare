@@ -1,15 +1,10 @@
-import { MessageEvents } from '@/schemas/events/message-events'
 import { Message } from '../../enterprise/entities/message'
 
-interface MessagePayload {
+export interface MessageEmitterPayload {
   message: Message
 }
-
-export interface MessageEmitParams {
-  event: MessageEvents
-  data: MessagePayload
-}
-
 export abstract class MessageEmitter {
-  abstract emit(params: MessageEmitParams): void
+  abstract emitChange(payload: MessageEmitterPayload): void
+  abstract emitCreate(payload: MessageEmitterPayload): void
+  abstract emitRevoked(payload: MessageEmitterPayload): void
 }

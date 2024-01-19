@@ -37,11 +37,8 @@ export class HandleWAGenerateQRCode {
     whatsApp.set({ qrCode })
     await this.whatsAppsRepository.save(whatsApp)
 
-    this.whatsAppEmitter.emit({
-      event: 'whatsApp:qrCode',
-      data: {
-        whatsApp,
-      },
+    this.whatsAppEmitter.emitQrCode({
+      whatsApp,
     })
 
     return right({

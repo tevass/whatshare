@@ -42,6 +42,6 @@ describe('WAChangeChatUnreadHandler', () => {
 
     const { chat } = response.value
     expect(chat.unreadCount).toBe(3)
-    expect(fakeChatEmitter.events).toHaveLength(1)
+    expect(fakeChatEmitter.payloads).toHaveLength(1)
   })
 })

@@ -2,11 +2,11 @@ import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
-import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
-import { HandleReadChat } from '../handle-read-chat'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { FakeWAService } from '@/test/services/fake-wa-service'
+import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { HandleReadChat } from '../handle-read-chat'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let fakeWAServiceManager: FakeWAServiceManager
@@ -49,7 +49,7 @@ describe('HandleReadChat', () => {
 
     expect(chat.unreadCount).toBe(0)
     expect(inMemoryChatsRepository.items[0]).toBe(chat)
-    expect(fakeChatEmitter.events).toHaveLength(1)
+    expect(fakeChatEmitter.payloads).toHaveLength(1)
     expect(fakeWAService.chat.values).toHaveLength(1)
   })
 })

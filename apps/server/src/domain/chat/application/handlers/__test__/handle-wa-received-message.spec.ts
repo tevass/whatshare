@@ -75,8 +75,8 @@ describe('HandleWAReceivedMessage', () => {
 
     expect(response.isRight()).toBe(true)
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
-    expect(fakeMessageEmitter.events).toHaveLength(1)
-    expect(fakeChatEmitter.events).toHaveLength(1)
+    expect(fakeMessageEmitter.payloads).toHaveLength(1)
+    expect(fakeChatEmitter.payloads).toHaveLength(1)
   })
 
   it('should be able to create a contact and chat from received message', async () => {
@@ -99,6 +99,6 @@ describe('HandleWAReceivedMessage', () => {
     expect(inMemoryContactsRepository.items).toHaveLength(1)
     expect(inMemoryChatsRepository.items).toHaveLength(1)
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
-    expect(fakeChatEmitter.events).toHaveLength(2)
+    expect(fakeChatEmitter.payloads).toHaveLength(2)
   })
 })

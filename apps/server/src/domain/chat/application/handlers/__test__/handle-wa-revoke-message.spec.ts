@@ -61,7 +61,7 @@ describe('HandleWARevokeMessage', () => {
 
     const { message } = response.value
     expect(message.type).toBe('revoked')
-    expect(fakeMessageEmitter.events).toHaveLength(1)
+    expect(fakeMessageEmitter.payloads).toHaveLength(1)
   })
 
   it('should be able to delete message media from revoke message', async () => {

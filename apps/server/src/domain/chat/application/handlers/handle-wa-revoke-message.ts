@@ -62,11 +62,8 @@ export class HandleWARevokeMessage {
     message.revoke()
     await this.messagesRepository.save(message)
 
-    this.messageEmitter.emit({
-      event: 'message:revoked',
-      data: {
-        message,
-      },
+    this.messageEmitter.emitRevoked({
+      message,
     })
 
     return right({

@@ -1,13 +1,16 @@
 import {
-  WhatsAppEmitParams,
   WhatsAppEmitter,
+  WhatsAppEmitterPayload,
 } from '@/domain/chat/application/emitters/whats-app-emitter'
-import { WhatsAppEvents } from '@/schemas/events/whats-app-events'
 
 export class FakeWhatsAppEmitter implements WhatsAppEmitter {
-  events: WhatsAppEvents[] = []
+  payloads: WhatsAppEmitterPayload[] = []
 
-  emit({ event }: WhatsAppEmitParams): void {
-    this.events.push(event)
+  emitChange(payload: WhatsAppEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitQrCode(payload: WhatsAppEmitterPayload): void {
+    this.payloads.push(payload)
   }
 }

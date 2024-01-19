@@ -11,6 +11,10 @@
     "./events": {
       "import": "./dist/events/index.mjs",
       "default": "./dist/events/index.js"
+    },
+    "./namespace": {
+      "import": "./dist/namespace.mjs",
+      "default": "./dist/namespace.js"
     }
   },
   "scripts": {

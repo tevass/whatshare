@@ -1,13 +1,20 @@
 import {
-  MessageEmitParams,
   MessageEmitter,
+  MessageEmitterPayload,
 } from '@/domain/chat/application/emitters/message-emitter'
-import { MessageEvents } from '@/schemas/events/message-events'
 
 export class FakeMessageEmitter implements MessageEmitter {
-  events: MessageEvents[] = []
+  payloads: MessageEmitterPayload[] = []
 
-  emit({ event }: MessageEmitParams): void {
-    this.events.push(event)
+  emitChange(payload: MessageEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitCreate(payload: MessageEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitRevoked(payload: MessageEmitterPayload): void {
+    this.payloads.push(payload)
   }
 }

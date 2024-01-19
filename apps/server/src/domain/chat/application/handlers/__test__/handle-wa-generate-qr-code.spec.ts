@@ -36,6 +36,6 @@ describe('HandleWAGenerateQRCode', () => {
 
     const { whatsApp } = response.value
     expect(whatsApp.qrCode).toEqual(expect.any(String))
-    expect(fakeWhatsAppEmitter.events).toHaveLength(1)
+    expect(fakeWhatsAppEmitter.payloads).toHaveLength(1)
   })
 })

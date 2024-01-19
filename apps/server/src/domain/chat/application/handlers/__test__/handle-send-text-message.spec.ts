@@ -4,15 +4,15 @@ import { makeAttendant } from '@/test/factories/make-attendant'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
+import { FakeWAService } from '@/test/services/fake-wa-service'
+import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
 import { faker } from '@faker-js/faker'
 import { HandleSendTextMessage } from '../handle-send-text-message'
-import { makeWhatsApp } from '@/test/factories/make-whats-app'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
-import { FakeWAService } from '@/test/services/fake-wa-service'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
@@ -75,8 +75,8 @@ describe('HandleSendTextMessage', () => {
     expect(message.ack).toBe('sent')
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
 
-    expect(fakeMessageEmitter.events).toHaveLength(2)
-    expect(fakeChatEmitter.events).toHaveLength(2)
+    expect(fakeMessageEmitter.payloads).toHaveLength(2)
+    expect(fakeChatEmitter.payloads).toHaveLength(2)
     expect(fakeWAService.message.messages).toHaveLength(1)
   })
 

@@ -5,8 +5,8 @@ import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
-import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 import { WAServiceManager } from '../services/wa-service-manager'
+import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
 
 interface HandleClearChatRequest {
   waChatId: string
@@ -60,11 +60,8 @@ export class HandleClearChat {
     messages.forEach((message) => message.delete())
     await this.messagesRepository.saveMany(messages)
 
-    this.chatEmitter.emit({
-      event: 'chat:clear',
-      data: {
-        chat,
-      },
+    this.chatEmitter.emitClear({
+      chat,
     })
 
     return right({

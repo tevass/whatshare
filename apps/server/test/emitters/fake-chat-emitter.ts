@@ -1,13 +1,20 @@
 import {
-  ChatEmitParams,
   ChatEmitter,
+  ChatEmitterPayload,
 } from '@/domain/chat/application/emitters/chat-emitter'
-import { ChatEvents } from '@/schemas/events/chat-events'
 
 export class FakeChatEmitter implements ChatEmitter {
-  events: ChatEvents[] = []
+  payloads: ChatEmitterPayload[] = []
 
-  emit({ event }: ChatEmitParams): void {
-    this.events.push(event)
+  emitChange(payload: ChatEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitClear(payload: ChatEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitCreate(payload: ChatEmitterPayload): void {
+    this.payloads.push(payload)
   }
 }
