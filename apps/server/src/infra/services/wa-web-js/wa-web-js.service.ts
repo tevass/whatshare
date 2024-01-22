@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common'
 import { Client, LocalAuth } from 'whatsapp-web.js'
 import { args as BROWSER_ARGS } from './browser-args.json'
+import { WAWebJSClient } from './wa-web-js-client'
 import { WAWebJSEvent } from './wa-web-js-event'
-import { WAWebJSService } from './wa-web-js-service'
 
 @Injectable()
-export class WAWebJSServiceManager
+export class WAWebJSService
   implements WAServiceManager, OnModuleInit, OnModuleDestroy
 {
   constructor(
@@ -24,7 +24,7 @@ export class WAWebJSServiceManager
     private whatsAppsRepository: WhatsAppsRepository,
   ) {}
 
-  private waServices: Map<string, WAWebJSService> = new Map()
+  private waServices: Map<string, WAWebJSClient> = new Map()
 
   async onModuleInit() {
     const whatsApps = await this.whatsAppsRepository.findAll()
@@ -45,7 +45,7 @@ export class WAWebJSServiceManager
     this.logger.debug('WAServices disconnected successfully!')
   }
 
-  get(whatsAppId: UniqueEntityID): WAWebJSService | null {
+  get(whatsAppId: UniqueEntityID): WAWebJSClient | null {
     const waService = this.waServices.get(whatsAppId.toString())
     return waService && waService.isConnected() ? waService : null
   }
@@ -73,7 +73,7 @@ export class WAWebJSServiceManager
       },
     })
 
-    const waService = WAWebJSService.create({
+    const waService = WAWebJSClient.create({
       raw,
       whatsAppId: whatsApp.id,
     })

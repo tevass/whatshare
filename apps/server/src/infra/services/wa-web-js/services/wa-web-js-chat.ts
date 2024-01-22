@@ -3,13 +3,13 @@ import { WAChat } from '@/domain/chat/application/entities/wa-chat'
 import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
 import { Client } from 'whatsapp-web.js'
 import { WAWebJSChatMapper } from '../mappers/wa-web-js-chat-mapper'
-import { WAWebJSService } from '../wa-web-js-service'
+import { WAWebJSClient } from '../wa-web-js-client'
 
 export class WAWebJSChatService implements WAChatService {
   private raw: Client
 
-  protected constructor(private waService: WAWebJSService) {
-    this.raw = waService.switchToRaw()
+  protected constructor(private waClient: WAWebJSClient) {
+    this.raw = waClient.switchToRaw()
   }
 
   private async getById(chatId: WAEntityID) {
@@ -38,13 +38,13 @@ export class WAWebJSChatService implements WAChatService {
       waChats.map((raw) =>
         WAWebJSChatMapper.toDomain({
           raw,
-          waClientId: this.waService.whatsAppId,
+          waClientId: this.waClient.whatsAppId,
         }),
       ),
     )
   }
 
-  static create(client: WAWebJSService) {
+  static create(client: WAWebJSClient) {
     return new WAWebJSChatService(client)
   }
 }

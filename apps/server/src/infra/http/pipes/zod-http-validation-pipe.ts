@@ -1,9 +1,8 @@
-import { PipeTransform } from '@nestjs/common'
-import { WsException } from '@nestjs/websockets'
+import { BadRequestException, PipeTransform } from '@nestjs/common'
 import { ZodError, ZodSchema } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-export class ZodWssValidationPipe implements PipeTransform {
+export class ZodHttpValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
   transform(value: unknown) {
@@ -12,14 +11,14 @@ export class ZodWssValidationPipe implements PipeTransform {
       return parsedValue
     } catch (error) {
       if (error instanceof ZodError) {
-        throw new WsException({
+        throw new BadRequestException({
           message: 'Validation failed',
           statusCode: 400,
           errors: fromZodError(error),
         })
       }
 
-      throw new WsException('Validation failed')
+      throw new BadRequestException('Validation failed')
     }
   }
 }

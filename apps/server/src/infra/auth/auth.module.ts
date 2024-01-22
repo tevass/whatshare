@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy'
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { EnvModule } from '../env/env.module'
+import { WsJwtStrategy } from './strategies/ws-jwt.strategy'
 
 @Global()
 @Module({
@@ -31,6 +32,7 @@ import { EnvModule } from '../env/env.module'
     EnvService,
     JwtStrategy,
     RefreshJwtStrategy,
+    WsJwtStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

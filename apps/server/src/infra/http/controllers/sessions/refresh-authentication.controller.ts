@@ -1,6 +1,5 @@
 import { RefreshAuthenticatedAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/refresh-authenticated-attendant-use-case'
 import { WrongCredentialsError } from '@/domain/chat/application/use-cases/errors/wrong-credentials-error'
-import { CurrentAttendant } from '@/infra/auth/decorators/current-attendant.decorator'
 import { Public } from '@/infra/auth/decorators/public.decorator'
 import { RefreshJwtAuthGuard } from '@/infra/auth/guards/refresh-jwt-auth.guard'
 import { EnvService } from '@/infra/env/env.service'
@@ -16,6 +15,7 @@ import {
 } from '@nestjs/common'
 import { Response } from 'express'
 import { Cookie } from '../../utils/cookie'
+import { User } from '@/infra/auth/decorators/user.decorator'
 
 @Public()
 @Controller('/sessions/refresh')
@@ -29,7 +29,7 @@ export class RefreshAuthenticationController {
   @Patch()
   @HttpCode(200)
   async handle(
-    @CurrentAttendant('sub') attendantId: string,
+    @User('sub') attendantId: string,
     @Res({ passthrough: true }) response: Response,
   ) {
     const result = await this.refreshAuthenticatedAttendant.execute({

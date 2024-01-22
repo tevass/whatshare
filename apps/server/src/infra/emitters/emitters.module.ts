@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
-import { WssModule } from './wss/wss.module'
+import { WsModule } from './ws/ws.module'
 
 @Module({
-  imports: [WssModule],
-  exports: [WssModule],
+  imports: [WsModule],
+  exports: [WsModule],
 })
 export class EmittersModule {}

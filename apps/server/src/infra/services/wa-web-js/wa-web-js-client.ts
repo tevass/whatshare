@@ -10,7 +10,7 @@ import { WAWebJSChatService } from './services/wa-web-js-chat'
 import { WAWebJSContactService } from './services/wa-web-js-contact'
 import { WAWebJSMessageService } from './services/wa-web-js-message'
 
-interface WAWebJSServiceProps {
+interface WAWebJSClientProps {
   whatsAppId: UniqueEntityID
   status: WhatsAppStatus
   raw: Client
@@ -22,11 +22,11 @@ interface WAWebJSServices {
   contact: WAContactService
 }
 
-export class WAWebJSService extends WAService {
-  private props: WAWebJSServiceProps
+export class WAWebJSClient extends WAService {
+  private props: WAWebJSClientProps
   private services: WAWebJSServices
 
-  protected constructor(props: WAWebJSServiceProps) {
+  protected constructor(props: WAWebJSClientProps) {
     super()
 
     this.props = props
@@ -78,8 +78,8 @@ export class WAWebJSService extends WAService {
     this.props.status = 'disconnected'
   }
 
-  static create(props: SetOptional<WAWebJSServiceProps, 'status'>) {
-    return new WAWebJSService({
+  static create(props: SetOptional<WAWebJSClientProps, 'status'>) {
+    return new WAWebJSClient({
       ...props,
       status: props.status ?? 'disconnected',
     })

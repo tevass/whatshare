@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common'
-import { WAWebJSModule } from './wa-web-js-service-manager/wa-web-js.module'
+import { WAWebJSModule } from './wa-web-js/wa-web-js.module'
 
 @Global()
 @Module({

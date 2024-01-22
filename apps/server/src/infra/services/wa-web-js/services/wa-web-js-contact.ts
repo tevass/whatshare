@@ -2,13 +2,13 @@ import { WAContact } from '@/domain/chat/application/entities/wa-contact'
 import { WAContactService } from '@/domain/chat/application/services/wa-contact-service'
 import WAWebJS from 'whatsapp-web.js'
 import { WAWebJSContactMapper } from '../mappers/wa-web-js-contact-mapper'
-import { WAWebJSService } from '../wa-web-js-service'
+import { WAWebJSClient } from '../wa-web-js-client'
 
 export class WAWebJSContactService implements WAContactService {
   private raw: WAWebJS.Client
 
-  protected constructor(private waService: WAWebJSService) {
-    this.raw = waService.switchToRaw()
+  protected constructor(private waClient: WAWebJSClient) {
+    this.raw = waClient.switchToRaw()
   }
 
   async getMany(): Promise<WAContact[]> {
@@ -23,7 +23,7 @@ export class WAWebJSContactService implements WAContactService {
     )
   }
 
-  static create(client: WAWebJSService) {
+  static create(client: WAWebJSClient) {
     return new WAWebJSContactService(client)
   }
 }

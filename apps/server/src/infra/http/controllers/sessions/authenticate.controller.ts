@@ -18,8 +18,8 @@ import {
   authenticateBodySchema,
 } from '@whatshare/http-schemas/request'
 import type { Response } from 'express'
-import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Cookie } from '../../utils/cookie'
+import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
 @Controller('/sessions')
 @Public()
@@ -31,7 +31,7 @@ export class AuthenticateController {
 
   @Post()
   @HttpCode(200)
-  @UsePipes(new ZodValidationPipe(authenticateBodySchema))
+  @UsePipes(new ZodHttpValidationPipe(authenticateBodySchema))
   async handle(
     @Body() body: AuthenticateBodySchema,
     @Res({ passthrough: true }) response: Response,

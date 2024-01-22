@@ -1,17 +1,17 @@
 import { Server } from 'socket.io'
-import { WssNamespaceGateway } from '../decorators/wss-namespace-gateway.decorator'
-
+import { WsNamespaceWAGateway } from './decorators/ws-namespace-wa-gateway.decorator'
+import { WebSocketServer } from '@nestjs/websockets'
 import {
   WhatsAppEmitter,
   WhatsAppEmitterPayload,
 } from '@/domain/chat/application/emitters/whats-app-emitter'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { WhatsAppPresenter } from '@/infra/presenters/whats-app-presenter'
-import { WebSocketServer } from '@nestjs/websockets'
-import type { WhatsAppServerEvents } from '@whatshare/wss-schemas/events'
 
-@WssNamespaceGateway({ namespace: 'wa' })
-export class WssWhatsAppEmitter implements WhatsAppEmitter {
+import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
+
+@WsNamespaceWAGateway()
+export class WsWhatsAppEmitter implements WhatsAppEmitter {
   @WebSocketServer()
   private io!: Server<object, WhatsAppServerEvents>
 
@@ -21,7 +21,7 @@ export class WssWhatsAppEmitter implements WhatsAppEmitter {
     const roomId = this.getRoom(whatsApp)
 
     this.io.to(roomId).emit('whatsApp:change', {
-      whatsApp: WhatsAppPresenter.toWss(whatsApp),
+      whatsApp: WhatsAppPresenter.toWs(whatsApp),
     })
   }
 
@@ -29,7 +29,7 @@ export class WssWhatsAppEmitter implements WhatsAppEmitter {
     const roomId = this.getRoom(whatsApp)
 
     this.io.to(roomId).emit('whatsApp:qrCode', {
-      whatsApp: WhatsAppPresenter.toWss(whatsApp),
+      whatsApp: WhatsAppPresenter.toWs(whatsApp),
     })
   }
 }

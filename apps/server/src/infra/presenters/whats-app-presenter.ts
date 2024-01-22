@@ -1,9 +1,9 @@
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 
-import { WssWhatsApp } from '@whatshare/wss-schemas/entities'
+import { WsWhatsApp } from '@whatshare/ws-schemas/entities'
 
 export class WhatsAppPresenter {
-  static toWss(whatsApp: WhatsApp): WssWhatsApp {
+  static toWs(whatsApp: WhatsApp): WsWhatsApp {
     return {
       id: whatsApp.id.toString(),
       name: whatsApp.name,

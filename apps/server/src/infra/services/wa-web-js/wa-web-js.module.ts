@@ -1,15 +1,17 @@
 import { WAServiceManager } from '@/domain/chat/application/services/wa-service-manager'
 import { Logger, Module } from '@nestjs/common'
 import { WAHandleGenerateQrCodeEvent } from './events/wa-handle-generate-qr-code-event'
-import { WAWebJSServiceManager } from './wa-web-js-manager.service'
+import { WAWebJSService } from './wa-web-js.service'
+import { EmittersModule } from '@/infra/emitters/emitters.module'
 
 @Module({
+  imports: [EmittersModule],
   providers: [
     Logger,
-    WAWebJSServiceManager,
+    WAWebJSService,
     {
       provide: WAServiceManager,
-      useExisting: WAWebJSServiceManager,
+      useExisting: WAWebJSService,
     },
 
     // Events

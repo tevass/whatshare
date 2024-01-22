@@ -13,7 +13,7 @@ import {
   CreateAttendantBodySchema,
   createAttendantBodySchema,
 } from '@whatshare/http-schemas/request'
-import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
+import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
 @Controller('/attendants')
 export class CreateAttendantController {
@@ -21,7 +21,7 @@ export class CreateAttendantController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(createAttendantBodySchema))
+  @UsePipes(new ZodHttpValidationPipe(createAttendantBodySchema))
   async handle(@Body() body: CreateAttendantBodySchema) {
     const { displayName, email, name, password, whatsAppsIds } = body
 

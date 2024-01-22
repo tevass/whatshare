@@ -6,13 +6,13 @@ import {
 } from '@/domain/chat/application/services/wa-message-service'
 import { Client } from 'whatsapp-web.js'
 import { WAWebJSMessageMapper } from '../mappers/wa-web-js-message-mapper'
-import { WAWebJSService } from '../wa-web-js-service'
+import { WAWebJSClient } from '../wa-web-js-client'
 
 export class WAWebJSMessageService implements WAMessageService {
   private raw: Client
 
-  protected constructor(private waService: WAWebJSService) {
-    this.raw = waService.switchToRaw()
+  protected constructor(private waClient: WAWebJSClient) {
+    this.raw = waClient.switchToRaw()
   }
 
   private async getChatById(chatId: WAEntityID) {
@@ -42,7 +42,7 @@ export class WAWebJSMessageService implements WAMessageService {
     )
   }
 
-  static create(client: WAWebJSService) {
+  static create(client: WAWebJSClient) {
     return new WAWebJSMessageService(client)
   }
 }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "@test",
-  "entryFile": "main",
+  "sourceRoot": "src",
+  "entryFile": "infra/main",
   "compilerOptions": {
     "deleteOutDir": true
   }
