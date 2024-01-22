@@ -3,7 +3,7 @@ import { WAChatService } from '@/domain/chat/application/services/wa-chat-servic
 import { WAContactService } from '@/domain/chat/application/services/wa-contact-service'
 import { WAMessageService } from '@/domain/chat/application/services/wa-message-service'
 import { WAService } from '@/domain/chat/application/services/wa-service'
-import { WhatsAppStatus } from '@/schemas/core/whats-app-status'
+import type { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import type { SetOptional } from 'type-fest'
 import { Client } from 'whatsapp-web.js'
 import { WAWebJSChatService } from './services/wa-web-js-chat'

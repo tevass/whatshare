@@ -1,4 +1,4 @@
-import { MessageAck } from '@/schemas/core/message-ack'
+import type { MessageAck } from '@whatshare/core-schemas/enums'
 import { MessageAck as RawMessageAck } from 'whatsapp-web.js'
 
 const domainMapper: { [key in RawMessageAck]: MessageAck } = {

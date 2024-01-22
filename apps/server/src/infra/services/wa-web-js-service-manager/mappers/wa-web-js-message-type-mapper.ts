@@ -1,4 +1,4 @@
-import { MessageType } from '@/schemas/core/message-type'
+import type { MessageType } from '@whatshare/core-schemas/enums'
 import { MessageTypes as RawMessageType } from 'whatsapp-web.js'
 
 const domainMapper: Partial<{

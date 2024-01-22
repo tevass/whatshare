@@ -4,11 +4,9 @@ import { chatChangeServerEvent } from './chat-change-event'
 import { chatClearServerEvent } from './chat-clear-event'
 import { chatCreateServerEvent } from './chat-create-event'
 
-export const chatServerEvents = z.union([
-  chatChangeServerEvent,
-  chatClearServerEvent,
-  chatCreateServerEvent,
-])
+export const chatServerEvents = chatChangeServerEvent
+  .and(chatClearServerEvent)
+  .and(chatCreateServerEvent)
 
 export type ChatServerEvents = z.infer<typeof chatServerEvents>
 

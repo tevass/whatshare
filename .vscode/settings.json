@@ -6,6 +6,7 @@
     "Hasher",
     "tsup",
     "vcard",
+    "websockets",
     "whatshare"
   ]
 }

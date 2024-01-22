@@ -5,13 +5,8 @@ export class CustomExtractJwt {
   static fromCookie(name: string): JwtFromRequestFunction<Request> {
     return (req) => {
       const hasCookies = !!req.cookies
-      const cookie = req.cookies[name]
 
-      if (hasCookies && cookie) {
-        return cookie as string
-      }
-
-      return null
+      return hasCookies ? (req.cookies[name] as string) : null
     }
   }
 }

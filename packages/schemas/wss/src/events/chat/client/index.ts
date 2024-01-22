@@ -4,11 +4,9 @@ import { chatClearClientEvent } from './chat-clear-event'
 import { chatReadClientEvent } from './chat-read-event'
 import { chatUnreadClientEvent } from './chat-unread-event'
 
-export const chatClientEvents = z.union([
-  chatClearClientEvent,
-  chatReadClientEvent,
-  chatUnreadClientEvent,
-])
+export const chatClientEvents = chatClearClientEvent
+  .and(chatReadClientEvent)
+  .and(chatUnreadClientEvent)
 
 export type ChatClientEvents = z.infer<typeof chatClientEvents>
 

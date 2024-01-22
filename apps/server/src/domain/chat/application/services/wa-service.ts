@@ -1,8 +1,8 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import type { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WAChatService } from './wa-chat-service'
 import { WAContactService } from './wa-contact-service'
 import { WAMessageService } from './wa-message-service'
-import { WhatsAppStatus } from '@/schemas/core/whats-app-status'
 
 export abstract class WAService {
   abstract whatsAppId: UniqueEntityID

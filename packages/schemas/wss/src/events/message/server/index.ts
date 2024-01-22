@@ -4,11 +4,9 @@ import { messageChangeServerEvent } from './message-change-event'
 import { messageCreateServerEvent } from './message-create-event'
 import { messageRevokedServerEvent } from './message-revoked-event'
 
-export const messageServerEvents = z.union([
-  messageChangeServerEvent,
-  messageCreateServerEvent,
-  messageRevokedServerEvent,
-])
+export const messageServerEvents = messageChangeServerEvent
+  .and(messageCreateServerEvent)
+  .and(messageRevokedServerEvent)
 
 export type MessageServerEvents = z.infer<typeof messageServerEvents>
 
