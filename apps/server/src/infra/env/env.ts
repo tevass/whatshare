@@ -11,10 +11,10 @@ export const envSchema = z.object({
   JWT_COOKIE_NAME: z.string(),
   JWT_REFRESH_COOKIE_NAME: z.string(),
 
-  // WAWebJS
-  WA_WEB_JS_EXECUTABLE_PATH: z.string(),
-  WA_WEB_JS_WEB_VERSION: z.string(),
-  WA_WEB_JS_REMOTE_PATH: z.string().url(),
+  // WWJS
+  WWJS_EXECUTABLE_PATH: z.string(),
+  WWJS_WEB_VERSION: z.string(),
+  WWJS_REMOTE_PATH: z.string().url(),
 })
 
 export type Env = z.infer<typeof envSchema>

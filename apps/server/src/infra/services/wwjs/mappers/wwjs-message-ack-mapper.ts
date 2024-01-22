@@ -10,7 +10,7 @@ const domainMapper: { [key in RawMessageAck]: MessageAck } = {
   [RawMessageAck.ACK_PLAYED]: 'played',
 }
 
-export class WAWebJSMessageAckMapper {
+export class WWJSMessageAckMapper {
   static toDomain(raw: RawMessageAck): MessageAck {
     return domainMapper[raw]
   }

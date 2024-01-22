@@ -5,13 +5,13 @@ import {
   WAMessageService,
 } from '@/domain/chat/application/services/wa-message-service'
 import { Client } from 'whatsapp-web.js'
-import { WAWebJSMessageMapper } from '../mappers/wa-web-js-message-mapper'
-import { WAWebJSClient } from '../wa-web-js-client'
+import { WWJSClient } from '../client'
+import { WWJSMessageMapper } from '../mappers/wwjs-message-mapper'
 
-export class WAWebJSMessageService implements WAMessageService {
+export class WWJSMessageService implements WAMessageService {
   private raw: Client
 
-  protected constructor(private waClient: WAWebJSClient) {
+  protected constructor(private waClient: WWJSClient) {
     this.raw = waClient.switchToRaw()
   }
 
@@ -27,7 +27,7 @@ export class WAWebJSMessageService implements WAMessageService {
       quotedMessageId: quotedId?.toString(),
     })
 
-    return await WAWebJSMessageMapper.toDomain({ raw: waMessage, chatId })
+    return await WWJSMessageMapper.toDomain({ raw: waMessage, chatId })
   }
 
   async getManyByChatId(chatId: WAEntityID): Promise<WAMessage[]> {
@@ -38,11 +38,11 @@ export class WAWebJSMessageService implements WAMessageService {
     })
 
     return await Promise.all(
-      waMessages.map((raw) => WAWebJSMessageMapper.toDomain({ raw, chatId })),
+      waMessages.map((raw) => WWJSMessageMapper.toDomain({ raw, chatId })),
     )
   }
 
-  static create(client: WAWebJSClient) {
-    return new WAWebJSMessageService(client)
+  static create(client: WWJSClient) {
+    return new WWJSMessageService(client)
   }
 }

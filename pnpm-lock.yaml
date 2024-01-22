@@ -79,6 +79,9 @@ importers:
       validator:
         specifier: ^13.11.0
         version: 13.11.0
+      vcard4-esm:
+        specifier: ^1.0.0
+        version: 1.0.0
       vcard4-ts:
         specifier: ^0.4.1
         version: 0.4.1
@@ -6957,6 +6960,11 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  /vcard4-esm@1.0.0:
+    resolution: {integrity: sha512-uBj2Z+2NMQQoji4sI7QGwL1saINI+BU6Mvj3pOtyYSknskibJplcsa83CA+w4fOIahFBv+tVM5OXkQQcLbSRnQ==}
+    engines: {node: '>=16.0.0'}
+    dev: false
 
   /vcard4-ts@0.4.1:
     resolution: {integrity: sha512-dg2PWsDt+FNKPo6ZjfgDoWp9ylLDRn7c85db+ylI9srkXDp0pz1DTOmANE5ZzBQV3sDokILGZ6kBFZ16vYNwcw==}

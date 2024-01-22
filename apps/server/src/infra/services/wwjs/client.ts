@@ -6,34 +6,34 @@ import { WAService } from '@/domain/chat/application/services/wa-service'
 import type { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import type { SetOptional } from 'type-fest'
 import { Client } from 'whatsapp-web.js'
-import { WAWebJSChatService } from './services/wa-web-js-chat'
-import { WAWebJSContactService } from './services/wa-web-js-contact'
-import { WAWebJSMessageService } from './services/wa-web-js-message'
+import { WWJSChatService } from './services/wa-web-js-chat'
+import { WWJSContactService } from './services/wa-web-js-contact'
+import { WWJSMessageService } from './services/wa-web-js-message'
 
-interface WAWebJSClientProps {
+interface WWJSClientProps {
   whatsAppId: UniqueEntityID
   status: WhatsAppStatus
   raw: Client
 }
 
-interface WAWebJSServices {
+interface WWJSServices {
   chat: WAChatService
   message: WAMessageService
   contact: WAContactService
 }
 
-export class WAWebJSClient extends WAService {
-  private props: WAWebJSClientProps
-  private services: WAWebJSServices
+export class WWJSClient extends WAService {
+  private props: WWJSClientProps
+  private services: WWJSServices
 
-  protected constructor(props: WAWebJSClientProps) {
+  protected constructor(props: WWJSClientProps) {
     super()
 
     this.props = props
     this.services = {
-      chat: WAWebJSChatService.create(this),
-      message: WAWebJSMessageService.create(this),
-      contact: WAWebJSContactService.create(this),
+      chat: WWJSChatService.create(this),
+      message: WWJSMessageService.create(this),
+      contact: WWJSContactService.create(this),
     }
   }
 
@@ -78,8 +78,8 @@ export class WAWebJSClient extends WAService {
     this.props.status = 'disconnected'
   }
 
-  static create(props: SetOptional<WAWebJSClientProps, 'status'>) {
-    return new WAWebJSClient({
+  static create(props: SetOptional<WWJSClientProps, 'status'>) {
+    return new WWJSClient({
       ...props,
       status: props.status ?? 'disconnected',
     })

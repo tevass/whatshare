@@ -7,7 +7,7 @@ interface ContactToDomain {
   raw: Contact
 }
 
-export class WAWebJSContactMapper {
+export class WWJSContactMapper {
   static async toDomain({ raw }: ContactToDomain): Promise<WAContact> {
     const id = WAEntityID.createFromString(raw.id._serialized)
 

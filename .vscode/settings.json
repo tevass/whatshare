@@ -7,6 +7,9 @@
     "tsup",
     "vcard",
     "websockets",
-    "whatshare"
+    "whatsapp",
+    "whatshare",
+    "wwjs",
+    "WWJS"
   ]
 }

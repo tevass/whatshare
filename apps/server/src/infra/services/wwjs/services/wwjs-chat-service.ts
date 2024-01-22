@@ -2,13 +2,13 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAChat } from '@/domain/chat/application/entities/wa-chat'
 import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
 import { Client } from 'whatsapp-web.js'
-import { WAWebJSChatMapper } from '../mappers/wa-web-js-chat-mapper'
-import { WAWebJSClient } from '../wa-web-js-client'
+import { WWJSClient } from '../client'
+import { WWJSChatMapper } from '../mappers/wwjs-chat-mapper'
 
-export class WAWebJSChatService implements WAChatService {
+export class WWJSChatService implements WAChatService {
   private raw: Client
 
-  protected constructor(private waClient: WAWebJSClient) {
+  protected constructor(private waClient: WWJSClient) {
     this.raw = waClient.switchToRaw()
   }
 
@@ -36,7 +36,7 @@ export class WAWebJSChatService implements WAChatService {
 
     return await Promise.all(
       waChats.map((raw) =>
-        WAWebJSChatMapper.toDomain({
+        WWJSChatMapper.toDomain({
           raw,
           waClientId: this.waClient.whatsAppId,
         }),
@@ -44,7 +44,7 @@ export class WAWebJSChatService implements WAChatService {
     )
   }
 
-  static create(client: WAWebJSClient) {
-    return new WAWebJSChatService(client)
+  static create(client: WWJSClient) {
+    return new WWJSChatService(client)
   }
 }

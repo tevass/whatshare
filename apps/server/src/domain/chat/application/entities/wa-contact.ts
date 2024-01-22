@@ -1,7 +1,7 @@
 import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
-import * as vCardTS from 'vcard4-ts'
+import * as vCardTS from 'vcard4-esm'
 import { Contact } from '../../enterprise/entities/contact'
 import { ContactPhone } from '../../enterprise/entities/value-objects/contact-phone'
 

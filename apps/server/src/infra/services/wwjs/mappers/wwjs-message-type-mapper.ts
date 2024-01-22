@@ -18,7 +18,7 @@ const domainMapper: Partial<{
   [RawMessageType.VOICE]: 'voice',
 }
 
-export class WAWebJSMessageTypeMapper {
+export class WWJSMessageTypeMapper {
   static toDomain(raw: RawMessageType): MessageType {
     return domainMapper[raw] ?? 'unknown'
   }

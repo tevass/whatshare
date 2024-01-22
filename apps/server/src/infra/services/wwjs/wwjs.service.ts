@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common'
 import { Client, LocalAuth } from 'whatsapp-web.js'
 import { args as BROWSER_ARGS } from './browser-args.json'
-import { WAWebJSClient } from './wa-web-js-client'
-import { WAWebJSEvent } from './wa-web-js-event'
+import { WWJSClient } from './client'
+import { WWJSEvent } from './event'
 
 @Injectable()
-export class WAWebJSService
+export class WWJSService
   implements WAServiceManager, OnModuleInit, OnModuleDestroy
 {
   constructor(
@@ -24,13 +24,18 @@ export class WAWebJSService
     private whatsAppsRepository: WhatsAppsRepository,
   ) {}
 
-  private waServices: Map<string, WAWebJSClient> = new Map()
+  private waServices: Map<string, WWJSClient> = new Map()
+
+  get(whatsAppId: UniqueEntityID): WWJSClient | null {
+    const waService = this.waServices.get(whatsAppId.toString())
+    return waService && waService.isConnected() ? waService : null
+  }
 
   async onModuleInit() {
     const whatsApps = await this.whatsAppsRepository.findAll()
 
     const waServices = whatsApps.map((whatsApp) =>
-      this.createWAWebJSServiceFromWhatsApp(whatsApp),
+      this.createWWJSServiceFromWhatsApp(whatsApp),
     )
 
     Promise.all(waServices.map((waService) => waService.init())).then(() => {
@@ -45,35 +50,30 @@ export class WAWebJSService
     this.logger.debug('WAServices disconnected successfully!')
   }
 
-  get(whatsAppId: UniqueEntityID): WAWebJSClient | null {
-    const waService = this.waServices.get(whatsAppId.toString())
-    return waService && waService.isConnected() ? waService : null
-  }
+  private events: WWJSEvent[] = []
 
-  private events: WAWebJSEvent[] = []
-
-  addEvent(event: WAWebJSEvent) {
+  addEvent(event: WWJSEvent) {
     this.events.push(event)
   }
 
-  private createWAWebJSServiceFromWhatsApp(whatsApp: WhatsApp) {
+  private createWWJSServiceFromWhatsApp(whatsApp: WhatsApp) {
     const withoutHeadless = this.env.get('NODE_ENV') === 'production'
 
     const raw = new Client({
       authStrategy: new LocalAuth({ clientId: whatsApp.id.toString() }),
       puppeteer: {
         args: BROWSER_ARGS,
-        executablePath: this.env.get('WA_WEB_JS_EXECUTABLE_PATH'),
+        executablePath: this.env.get('WWJS_EXECUTABLE_PATH'),
         headless: withoutHeadless,
       },
-      webVersion: this.env.get('WA_WEB_JS_WEB_VERSION'),
+      webVersion: this.env.get('WWJS_WEB_VERSION'),
       webVersionCache: {
         type: 'remote',
-        remotePath: this.env.get('WA_WEB_JS_REMOTE_PATH'),
+        remotePath: this.env.get('WWJS_REMOTE_PATH'),
       },
     })
 
-    const waService = WAWebJSClient.create({
+    const waService = WWJSClient.create({
       raw,
       whatsAppId: whatsApp.id,
     })
