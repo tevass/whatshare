@@ -3,7 +3,7 @@ import { WsException } from '@nestjs/websockets'
 import { ZodError, ZodSchema } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-export class ZodWssValidationPipe implements PipeTransform {
+export class ZodWsValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
   transform(value: unknown) {

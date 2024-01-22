@@ -1,14 +1,14 @@
-import { Server } from 'socket.io'
-import { WsNamespaceWAGateway } from './decorators/ws-namespace-wa-gateway.decorator'
-import { WebSocketServer } from '@nestjs/websockets'
 import {
   WhatsAppEmitter,
   WhatsAppEmitterPayload,
 } from '@/domain/chat/application/emitters/whats-app-emitter'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { WhatsAppPresenter } from '@/infra/presenters/whats-app-presenter'
+import { WebSocketServer } from '@nestjs/websockets'
+import { Server } from 'socket.io'
 
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
+import { WsNamespaceWAGateway } from '../decorators/ws-namespace-wa-gateway.decorator'
 
 @WsNamespaceWAGateway()
 export class WsWhatsAppEmitter implements WhatsAppEmitter {
