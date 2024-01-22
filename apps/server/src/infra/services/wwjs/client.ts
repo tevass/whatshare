@@ -6,9 +6,9 @@ import { WAService } from '@/domain/chat/application/services/wa-service'
 import type { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import type { SetOptional } from 'type-fest'
 import { Client } from 'whatsapp-web.js'
-import { WWJSChatService } from './services/wa-web-js-chat'
-import { WWJSContactService } from './services/wa-web-js-contact'
-import { WWJSMessageService } from './services/wa-web-js-message'
+import { WWJSChatService } from './services/wwjs-chat-service'
+import { WWJSContactService } from './services/wwjs-contact-service'
+import { WWJSMessageService } from './services/wwjs-message-service'
 
 interface WWJSClientProps {
   whatsAppId: UniqueEntityID

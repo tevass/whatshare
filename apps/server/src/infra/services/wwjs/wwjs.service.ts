@@ -12,7 +12,7 @@ import {
 import { Client, LocalAuth } from 'whatsapp-web.js'
 import { args as BROWSER_ARGS } from './browser-args.json'
 import { WWJSClient } from './client'
-import { WWJSEvent } from './event'
+import { WWJSHandler } from './handler'
 
 @Injectable()
 export class WWJSService
@@ -50,10 +50,10 @@ export class WWJSService
     this.logger.debug('WAServices disconnected successfully!')
   }
 
-  private events: WWJSEvent[] = []
+  private handlers: WWJSHandler[] = []
 
-  addEvent(event: WWJSEvent) {
-    this.events.push(event)
+  addHandler(handler: WWJSHandler) {
+    this.handlers.push(handler)
   }
 
   private createWWJSServiceFromWhatsApp(whatsApp: WhatsApp) {
@@ -79,8 +79,8 @@ export class WWJSService
     })
 
     this.waServices.set(whatsApp.id.toString(), waService)
-    this.events.forEach((event) => {
-      raw.on(event.name, event.listener(waService))
+    this.handlers.forEach((handler) => {
+      raw.on(handler.event, handler.register(waService))
     })
 
     return waService
