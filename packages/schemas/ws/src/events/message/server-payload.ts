@@ -1,8 +1,8 @@
-import { wssMessage } from '@/entities'
+import { wsMessage } from '@/entities'
 import { z } from 'zod'
 
 export const messageServerPayload = z.object({
-  message: wssMessage,
+  message: wsMessage,
 })
 
 export type MessageServerPayload = z.infer<typeof messageServerPayload>

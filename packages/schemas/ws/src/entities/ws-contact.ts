@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { mongoId, waEntityId } from '@whatshare/shared-schemas'
 
-export const wssContact = z.object({
+export const wsContact = z.object({
   id: mongoId,
   waContactId: waEntityId,
   name: z.string(),
@@ -14,4 +14,4 @@ export const wssContact = z.object({
   isMyContact: z.boolean(),
 })
 
-export type WssContact = z.infer<typeof wssContact>
+export type WsContact = z.infer<typeof wsContact>

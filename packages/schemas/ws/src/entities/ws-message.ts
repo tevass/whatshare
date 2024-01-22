@@ -2,22 +2,22 @@ import { z } from 'zod'
 
 import { messageAck, messageType } from '@whatshare/core-schemas/enums'
 import { mongoId, waEntityId, waMessageId } from '@whatshare/shared-schemas'
-import { wssAttendantProfile } from './wss-attendant-profile'
-import { wssContact } from './wss-contact'
-import { wssMessageMedia } from './wss-message-media'
+import { wsAttendantProfile } from './ws-attendant-profile'
+import { wsContact } from './ws-contact'
+import { wsMessageMedia } from './ws-message-media'
 
-const baseWssMessage = z.object({
+const baseWsMessage = z.object({
   id: mongoId,
   waMessageId,
   waChatId: waEntityId,
   whatsAppId: mongoId,
   chatId: mongoId,
-  author: wssContact.nullable(),
+  author: wsContact.nullable(),
   ack: messageAck,
   type: messageType,
   body: z.string().nullable(),
-  contacts: wssContact.array().nullable(),
-  media: wssMessageMedia.nullable(),
+  contacts: wsContact.array().nullable(),
+  media: wsMessageMedia.nullable(),
   isBroadcast: z.boolean(),
   isForwarded: z.boolean(),
   isFromMe: z.boolean(),
@@ -26,12 +26,12 @@ const baseWssMessage = z.object({
   createdAt: z.date(),
   revokedAt: z.date().nullable(),
   deletedAt: z.date().nullable(),
-  senderBy: wssAttendantProfile.nullable(),
-  revokedBy: wssAttendantProfile.nullable(),
+  senderBy: wsAttendantProfile.nullable(),
+  revokedBy: wsAttendantProfile.nullable(),
 })
 
-export const wssMessage = baseWssMessage.extend({
-  quoted: baseWssMessage.nullable(),
+export const wsMessage = baseWsMessage.extend({
+  quoted: baseWsMessage.nullable(),
 })
 
-export type WssMessage = z.infer<typeof wssMessage>
+export type WsMessage = z.infer<typeof wsMessage>

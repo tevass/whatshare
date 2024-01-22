@@ -1,5 +1,5 @@
 {
-  "name": "@whatshare/wss-schemas",
+  "name": "@whatshare/ws-schemas",
   "version": "1.0.0",
   "license": "ISC",
   "private": true,

@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 import { mongoId } from '@whatshare/shared-schemas'
 
-export const wssMessageMedia = z.object({
+export const wsMessageMedia = z.object({
   id: mongoId,
   messageId: mongoId,
   key: z.string(),
   mimetype: z.string(),
 })
 
-export type WssMessageMedia = z.infer<typeof wssMessageMedia>
+export type WsMessageMedia = z.infer<typeof wsMessageMedia>

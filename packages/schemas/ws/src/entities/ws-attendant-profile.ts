@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { mongoId } from '@whatshare/shared-schemas'
 
-export const wssAttendantProfile = z.object({
+export const wsAttendantProfile = z.object({
   id: mongoId,
   attendantId: mongoId,
   displayName: z.string(),
@@ -10,4 +10,4 @@ export const wssAttendantProfile = z.object({
   name: z.string(),
 })
 
-export type WssAttendantProfile = z.infer<typeof wssAttendantProfile>
+export type WsAttendantProfile = z.infer<typeof wsAttendantProfile>
