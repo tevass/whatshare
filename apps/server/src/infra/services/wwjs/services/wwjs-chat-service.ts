@@ -38,7 +38,7 @@ export class WWJSChatService implements WAChatService {
       waChats.map((raw) =>
         WWJSChatMapper.toDomain({
           raw,
-          waClientId: this.waClient.whatsAppId,
+          waClientId: this.waClient.id,
         }),
       ),
     )

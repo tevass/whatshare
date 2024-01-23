@@ -13,4 +13,12 @@ export class FakeWhatsAppEmitter implements WhatsAppEmitter {
   emitQrCode(payload: WhatsAppEmitterPayload): void {
     this.payloads.push(payload)
   }
+
+  emitDisconnected(payload: WhatsAppEmitterPayload): void {
+    this.payloads.push(payload)
+  }
+
+  emitConnected(payload: WhatsAppEmitterPayload): void {
+    this.payloads.push(payload)
+  }
 }

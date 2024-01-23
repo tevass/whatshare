@@ -24,39 +24,21 @@ export class WWJSService
     private whatsAppsRepository: WhatsAppsRepository,
   ) {}
 
-  private waServices: Map<string, WWJSClient> = new Map()
-
-  get(whatsAppId: UniqueEntityID): WWJSClient | null {
-    const waService = this.waServices.get(whatsAppId.toString())
-    return waService && waService.isConnected() ? waService : null
-  }
-
   async onModuleInit() {
     const whatsApps = await this.whatsAppsRepository.findAll()
 
-    const waServices = whatsApps.map((whatsApp) =>
-      this.createWWJSServiceFromWhatsApp(whatsApp),
+    const wwjsClients = whatsApps.map((whatsApp) =>
+      this.createWWJSClient(whatsApp),
     )
 
-    Promise.all(waServices.map((waService) => waService.init())).then(() => {
-      this.logger.debug('WAServices initialized successfully!')
+    Promise.all(wwjsClients.map((waService) => waService.init())).then(() => {
+      this.logger.debug('WWJSClients initialized successfully!')
     })
   }
 
-  async onModuleDestroy() {
-    const waServicesArray = Array.from(this.waServices.values())
-    await Promise.all(waServicesArray.map((waService) => waService.close()))
+  wwjsClients: Map<string, WWJSClient> = new Map()
 
-    this.logger.debug('WAServices disconnected successfully!')
-  }
-
-  private handlers: WWJSHandler[] = []
-
-  addHandler(handler: WWJSHandler) {
-    this.handlers.push(handler)
-  }
-
-  createWWJSServiceFromWhatsApp(whatsApp: WhatsApp) {
+  private createWWJSClient(whatsApp: WhatsApp) {
     const withoutHeadless = this.env.get('NODE_ENV') === 'production'
 
     const raw = new Client({
@@ -73,16 +55,46 @@ export class WWJSService
       },
     })
 
-    const waService = WWJSClient.create({
-      raw,
-      whatsAppId: whatsApp.id,
-    })
+    const wwjsClient = WWJSClient.create(
+      {
+        raw,
+        name: whatsApp.name,
+        qrCode: whatsApp.qrCode,
+        status: whatsApp.status,
+      },
+      whatsApp.id,
+    )
 
-    this.waServices.set(whatsApp.id.toString(), waService)
+    this.wwjsClients.set(whatsApp.id.toString(), wwjsClient)
     this.handlers.forEach((handler) => {
-      raw.on(handler.event, handler.register(waService))
+      raw.on(handler.event, handler.register(wwjsClient))
     })
 
-    return waService
+    return wwjsClient
+  }
+
+  get(whatsAppId: UniqueEntityID): WWJSClient | null {
+    const waService = this.wwjsClients.get(whatsAppId.toString())
+    return waService && waService.isConnected() ? waService : null
+  }
+
+  updateFromWhatsApp(whatsApp: WhatsApp): void {
+    const wwjsClient = this.wwjsClients.get(whatsApp.id.toString())
+    if (!wwjsClient) return
+
+    wwjsClient.setFromWhatsApp(whatsApp)
+  }
+
+  private handlers: WWJSHandler[] = []
+
+  addHandler(handler: WWJSHandler) {
+    this.handlers.push(handler)
+  }
+
+  async onModuleDestroy() {
+    const wwjsClientsArray = Array.from(this.wwjsClients.values())
+    await Promise.all(wwjsClientsArray.map((waService) => waService.close()))
+
+    this.logger.debug('WWJSClients disconnected successfully!')
   }
 }

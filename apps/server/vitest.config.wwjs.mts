@@ -7,7 +7,8 @@ export default defineConfig(
     test: {
       include: ['**/*.wwjs-spec.ts'],
       setupFiles: ['./test/setup/mongo-memory-server.ts'],
-      hookTimeout: 1000 * 60 * 1, // 1 min
+      testTimeout: 1000 * 60 * 1, // 1 min
+      fileParallelism: false,
     },
     plugins: [
       swc.vite({

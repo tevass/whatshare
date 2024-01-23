@@ -1,3 +1,4 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
@@ -9,10 +10,13 @@ import { Socket, io } from 'socket.io-client'
 
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { WhatsAppStatus as PrismaWhatsAppStatus } from '@prisma/client'
+import { WWJSService } from '../../wwjs.service'
 
-describe('Handle Generate QR Code (WWJS)', () => {
+describe('Handle Ready (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
+  let wwjsService: WWJSService
   let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
@@ -26,11 +30,15 @@ describe('Handle Generate QR Code (WWJS)', () => {
 
     app = moduleRef.createNestApplication()
     prisma = moduleRef.get(PrismaService)
+    wwjsService = moduleRef.get(WWJSService)
     whatsAppFactory = app.get(FakeWhatsAppFactory)
 
     app.use(cookieParser)
 
-    whatsApp = await whatsAppFactory.makeWWJSWhatsApp()
+    whatsApp = await whatsAppFactory.makeWWJSWhatsApp(
+      {},
+      new UniqueEntityID('65afb96e1f5c3cda590f04e4'),
+    )
 
     await app.init()
 
@@ -51,16 +59,24 @@ describe('Handle Generate QR Code (WWJS)', () => {
     await app.close()
   })
 
-  it('[EVENT] QR_RECEIVED', async () => {
+  it('[EVENT] READY', async () => {
     return new Promise((resolve) => {
-      socket.on('whatsApp:qrCode', async ({ whatsApp }) => {
+      const _whatsApp = whatsApp
+
+      socket.on('whatsApp:connected', async ({ whatsApp }) => {
         const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
           where: { id: whatsApp.id },
         })
 
+        const wwjsClient = wwjsService.get(_whatsApp.id)
+        if (!wwjsClient) throw new Error('Not found WWJSClient')
+
         resolve([
-          expect(whatsApp.qrCode).toEqual(expect.any(String)),
-          expect(whatsAppOnDatabase.qrCode).toBeTruthy(),
+          expect(wwjsClient.isConnected()).toBe(true),
+          expect(whatsApp.isConnected).toBe(true),
+          expect(whatsAppOnDatabase.status).toBe(
+            'connected' as PrismaWhatsAppStatus,
+          ),
         ])
       })
     })

@@ -22,6 +22,14 @@ export class WhatsApp extends Entity<WhatsAppProps> {
     return this.props.qrCode
   }
 
+  connect() {
+    this.set({ status: 'connected', qrCode: null })
+  }
+
+  disconnect() {
+    this.set({ status: 'disconnected', qrCode: null })
+  }
+
   isDisconnected(): this is WhatsAppProps & { status: 'disconnected' } {
     return this.status === 'disconnected'
   }

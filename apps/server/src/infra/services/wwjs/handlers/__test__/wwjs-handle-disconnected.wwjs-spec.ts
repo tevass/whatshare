@@ -9,10 +9,18 @@ import { Socket, io } from 'socket.io-client'
 
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { WhatsAppStatus as PrismaWhatsAppStatus } from '@prisma/client'
+import { WWJSService } from '../../wwjs.service'
 
-describe('Handle Generate QR Code (WWJS)', () => {
+/**
+ * Issue/Pull about the disconnected event not fired on log out
+ * https://github.com/pedroslopez/whatsapp-web.js/pull/2661
+ */
+
+describe('Handle Disconnected (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
+  let wwjsService: WWJSService
   let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
@@ -26,6 +34,7 @@ describe('Handle Generate QR Code (WWJS)', () => {
 
     app = moduleRef.createNestApplication()
     prisma = moduleRef.get(PrismaService)
+    wwjsService = moduleRef.get(WWJSService)
     whatsAppFactory = app.get(FakeWhatsAppFactory)
 
     app.use(cookieParser)
@@ -51,17 +60,29 @@ describe('Handle Generate QR Code (WWJS)', () => {
     await app.close()
   })
 
-  it('[EVENT] QR_RECEIVED', async () => {
+  it('[EVENT] DISCONNECTED', async () => {
     return new Promise((resolve) => {
-      socket.on('whatsApp:qrCode', async ({ whatsApp }) => {
-        const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
-          where: { id: whatsApp.id },
+      const _whatsApp = whatsApp
+
+      socket.on('whatsApp:connected', async () => {
+        const wwjsClient = wwjsService.get(_whatsApp.id)
+        if (!wwjsClient) throw new Error('Not found WWJSClient')
+
+        socket.on('whatsApp:disconnected', async ({ whatsApp }) => {
+          const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
+            where: { id: whatsApp.id },
+          })
+
+          resolve([
+            expect(wwjsClient.isDisconnected()).toBe(true),
+            expect(whatsApp.isDisconnected).toBe(true),
+            expect(whatsAppOnDatabase.status).toBe(
+              'disconnected' as PrismaWhatsAppStatus,
+            ),
+          ])
         })
 
-        resolve([
-          expect(whatsApp.qrCode).toEqual(expect.any(String)),
-          expect(whatsAppOnDatabase.qrCode).toBeTruthy(),
-        ])
+        await wwjsClient.logout()
       })
     })
   })

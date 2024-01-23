@@ -1,3 +1,4 @@
+import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { WsException } from '@nestjs/websockets'
 import { mongoId } from '@whatshare/shared-schemas'
@@ -11,25 +12,33 @@ const headersSchema = z.object({
   [HEADER_ROOM]: mongoId,
 })
 
+interface HandleWSConnectionRequest {
+  socket: Socket
+}
+
+type HandleWSConnectionResponse = Either<WsException, null>
+
 @Injectable()
 export class HandleWSConnection {
-  async execute(socket: Socket) {
+  execute(request: HandleWSConnectionRequest): HandleWSConnectionResponse {
+    const { socket } = request
+
     const headers = headersSchema.safeParse(socket.handshake.headers)
 
     if (!headers.success) {
-      socket.emit(
-        'exception',
+      socket.disconnect()
+
+      return left(
         new WsException({
           message: 'Invalid room ID',
           errors: fromZodError(headers.error),
         }),
       )
-
-      return socket.disconnect()
     }
 
     const roomId = headers.data[HEADER_ROOM]
     socket.join(roomId)
-    socket.emit('join')
+
+    return right(null)
   }
 }

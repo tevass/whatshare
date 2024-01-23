@@ -1,13 +1,25 @@
-import { OnGatewayConnection } from '@nestjs/websockets'
+import { WebSocketServer } from '@nestjs/websockets'
 import { WsNamespaceWAGateway } from './decorators/ws-namespace-wa-gateway.decorator'
-import { Socket } from 'socket.io'
+import { Server } from 'socket.io'
 import { HandleWSConnection } from './handle-connection'
+import { OnModuleInit } from '@nestjs/common'
 
 @WsNamespaceWAGateway()
-export class WsGateway implements OnGatewayConnection {
+export class WsGateway implements OnModuleInit {
   constructor(private handleWSConnection: HandleWSConnection) {}
 
-  async handleConnection(socket: Socket) {
-    await this.handleWSConnection.execute(socket)
+  @WebSocketServer()
+  private server!: Server
+
+  onModuleInit() {
+    this.server.use((socket, next) => {
+      const response = this.handleWSConnection.execute({ socket })
+
+      if (response.isLeft()) {
+        return next(response.value)
+      }
+
+      next()
+    })
   }
 }

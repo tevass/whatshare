@@ -1,25 +1,24 @@
-import { HandleWAGenerateQRCode } from '@/domain/chat/application/handlers/handle-wa-generate-qr-code'
 import { Injectable } from '@nestjs/common'
 import { Events } from 'whatsapp-web.js'
 import { WWJSClient } from '../client'
 import { WWJSHandler, WWJSListener } from '../handler'
 import { WWJSService } from '../wwjs.service'
+import { HandleWAConnected } from '@/domain/chat/application/handlers/handle-wa-connected'
 
 @Injectable()
-export class WWJSHandleGenerateQrCode implements WWJSHandler {
+export class WWJSHandleReady implements WWJSHandler {
   constructor(
     private wwjsService: WWJSService,
-    private handleWAGenerateQRCode: HandleWAGenerateQRCode,
+    private handleWAConnected: HandleWAConnected,
   ) {
     this.wwjsService.addHandler(this)
   }
 
-  event = Events.QR_RECEIVED
+  event = Events.READY
 
   register(waClient: WWJSClient): WWJSListener {
-    return async (qrCode: string) => {
-      await this.handleWAGenerateQRCode.execute({
-        qrCode,
+    return async () => {
+      await this.handleWAConnected.execute({
         whatsAppId: waClient.id.toString(),
       })
     }

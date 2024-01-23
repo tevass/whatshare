@@ -32,4 +32,20 @@ export class WsWhatsAppEmitter implements WhatsAppEmitter {
       whatsApp: WhatsAppPresenter.toWs(whatsApp),
     })
   }
+
+  emitConnected({ whatsApp }: WhatsAppEmitterPayload): void {
+    const roomId = this.getRoom(whatsApp)
+
+    this.io.to(roomId).emit('whatsApp:connected', {
+      whatsApp: WhatsAppPresenter.toWs(whatsApp),
+    })
+  }
+
+  emitDisconnected({ whatsApp }: WhatsAppEmitterPayload): void {
+    const roomId = this.getRoom(whatsApp)
+
+    this.io.to(roomId).emit('whatsApp:disconnected', {
+      whatsApp: WhatsAppPresenter.toWs(whatsApp),
+    })
+  }
 }
