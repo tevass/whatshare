@@ -5,8 +5,10 @@ import { Socket } from 'socket.io'
 import { z } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
+const HEADER_ROOM = 'whatshare-room-id'
+
 const headersSchema = z.object({
-  '@whatshare-room-id': mongoId,
+  [HEADER_ROOM]: mongoId,
 })
 
 @Injectable()
@@ -26,7 +28,8 @@ export class HandleWSConnection {
       return socket.disconnect()
     }
 
-    const roomId = headers.data['@whatshare-room-id']
+    const roomId = headers.data[HEADER_ROOM]
     socket.join(roomId)
+    socket.emit('join')
   }
 }

@@ -26,7 +26,7 @@ export const makeAttendantProfile = (
 }
 
 @Injectable()
-export class FakeAttendantProfile {
+export class FakeAttendantProfileFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaAttendantProfile(

@@ -4,5 +4,6 @@ import { WWJSModule } from './wwjs/wwjs.module'
 @Global()
 @Module({
   imports: [WWJSModule],
+  exports: [WWJSModule],
 })
 export class ServicesModule {}

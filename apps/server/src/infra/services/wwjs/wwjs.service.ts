@@ -56,7 +56,7 @@ export class WWJSService
     this.handlers.push(handler)
   }
 
-  private createWWJSServiceFromWhatsApp(whatsApp: WhatsApp) {
+  createWWJSServiceFromWhatsApp(whatsApp: WhatsApp) {
     const withoutHeadless = this.env.get('NODE_ENV') === 'production'
 
     const raw = new Client({

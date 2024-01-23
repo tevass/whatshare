@@ -1,8 +1,8 @@
 import { HashGenerator } from '@/domain/chat/application/cryptography/hash-generator'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
-import { FakeAttendant } from '@/test/factories/make-attendant'
-import { FakeAttendantProfile } from '@/test/factories/make-attendant-profile'
+import { FakeAttendantFactory } from '@/test/factories/make-attendant'
+import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
 import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
@@ -11,24 +11,28 @@ import supertest from 'supertest'
 
 describe('Authenticate', () => {
   let app: INestApplication
-  let attendantFactory: FakeAttendant
+  let attendantFactory: FakeAttendantFactory
   let hasher: HashGenerator
   let env: EnvService
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [FakeAttendant, FakeAttendantProfile],
+      providers: [FakeAttendantFactory, FakeAttendantProfileFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
-    attendantFactory = app.get(FakeAttendant)
+    attendantFactory = app.get(FakeAttendantFactory)
     hasher = app.get(HashGenerator)
     env = app.get(EnvService)
 
     app.use(cookieParser())
 
     await app.init()
+  })
+
+  afterAll(async () => {
+    await app.close()
   })
 
   it('[POST] /sessions', async () => {

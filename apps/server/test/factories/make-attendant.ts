@@ -7,7 +7,7 @@ import { PrismaAttendantMapper } from '@/infra/database/prisma/mappers/prisma-at
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import {
-  FakeAttendantProfile,
+  FakeAttendantProfileFactory,
   makeAttendantProfile,
 } from './make-attendant-profile'
 
@@ -25,10 +25,10 @@ export const makeAttendant = (
 }
 
 @Injectable()
-export class FakeAttendant {
+export class FakeAttendantFactory {
   constructor(
     private prisma: PrismaService,
-    private fakeProfile: FakeAttendantProfile,
+    private fakeProfile: FakeAttendantProfileFactory,
   ) {}
 
   async makePrismaAttendant(

@@ -1,9 +1,9 @@
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { EnvService } from '@/infra/env/env.service'
-import { FakeAttendant } from '@/test/factories/make-attendant'
-import { FakeAttendantProfile } from '@/test/factories/make-attendant-profile'
-import { WhatsAppFactory } from '@/test/factories/make-whats-app'
+import { FakeAttendantFactory } from '@/test/factories/make-attendant'
+import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
+import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
@@ -14,28 +14,36 @@ import request from 'supertest'
 describe('Create Attendant (HTTP)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let whatsAppsFactory: WhatsAppFactory
-  let attendantFactory: FakeAttendant
+  let whatsAppsFactory: FakeWhatsAppFactory
+  let attendantFactory: FakeAttendantFactory
   let jwt: JwtService
   let env: EnvService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [WhatsAppFactory, FakeAttendant, FakeAttendantProfile],
+      providers: [
+        FakeWhatsAppFactory,
+        FakeAttendantFactory,
+        FakeAttendantProfileFactory,
+      ],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    whatsAppsFactory = moduleRef.get(WhatsAppFactory)
-    attendantFactory = app.get(FakeAttendant)
+    whatsAppsFactory = moduleRef.get(FakeWhatsAppFactory)
+    attendantFactory = app.get(FakeAttendantFactory)
     jwt = app.get(JwtService)
     env = app.get(EnvService)
 
     app.use(cookieParser())
 
     await app.init()
+  })
+
+  afterAll(async () => {
+    await app.close()
   })
 
   it('[POST] /attendants', async () => {
@@ -45,8 +53,8 @@ describe('Create Attendant (HTTP)', () => {
     const JWT_COOKIE_NAME = env.get('JWT_COOKIE_NAME')
 
     const whatsApps = [
-      await whatsAppsFactory.makePrismaAnswer({}),
-      await whatsAppsFactory.makePrismaAnswer({}),
+      await whatsAppsFactory.makePrismaWhatsApp({}),
+      await whatsAppsFactory.makePrismaWhatsApp({}),
     ]
 
     const email = faker.internet.email()
