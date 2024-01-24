@@ -27,18 +27,6 @@ export class FakeWhatsAppFactory {
 
   async makePrismaWhatsApp(
     data: Partial<WhatsAppProps> = {},
-  ): Promise<WhatsApp> {
-    const whatsApp = makeWhatsApp(data)
-
-    await this.prisma.whatsApp.create({
-      data: PrismaWhatsAppMapper.toPrismaCreate(whatsApp),
-    })
-
-    return whatsApp
-  }
-
-  async makeWWJSWhatsApp(
-    data: Partial<WhatsAppProps> = {},
     id?: UniqueEntityID,
   ): Promise<WhatsApp> {
     const whatsApp = makeWhatsApp(data, id)

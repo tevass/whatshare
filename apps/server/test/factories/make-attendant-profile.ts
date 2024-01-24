@@ -31,8 +31,9 @@ export class FakeAttendantProfileFactory {
 
   async makePrismaAttendantProfile(
     data: Partial<AttendantProfileProps> = {},
+    id?: UniqueEntityID,
   ): Promise<AttendantProfile> {
-    const profile = makeAttendantProfile(data)
+    const profile = makeAttendantProfile(data, id)
 
     await this.prisma.attendantProfile.create({
       data: PrismaAttendantProfileMapper.toPrismaCreate(profile),

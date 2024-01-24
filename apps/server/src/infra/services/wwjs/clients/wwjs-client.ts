@@ -1,9 +1,6 @@
 import WWJS from 'whatsapp-web.js'
 import type { SetOptional } from 'type-fest'
 
-import { WAChatClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-chat-client'
-import { WAMessageClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-message-client'
-import { WAContactClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-contact-client'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WWJSChatClient } from './wwjs-chat-client'
 import { WWJSMessageClient } from './wwjs-message-client'
@@ -20,9 +17,9 @@ interface WWJSClientProps extends WAClientProps {
 }
 
 export class WWJSClient extends WAClient<WWJSClientProps> {
-  chat: WAChatClient
-  message: WAMessageClient
-  contact: WAContactClient
+  chat: WWJSChatClient
+  message: WWJSMessageClient
+  contact: WWJSContactClient
 
   protected constructor(props: WWJSClientProps, id: UniqueEntityID) {
     super(props, id)
@@ -41,7 +38,7 @@ export class WWJSClient extends WAClient<WWJSClientProps> {
   }
 
   init() {
-    return this.raw.initialize()
+    this.raw.initialize()
   }
 
   close() {

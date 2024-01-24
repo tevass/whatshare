@@ -20,9 +20,9 @@ describe('Handle Ready (WWJS)', () => {
   let prisma: PrismaService
   let env: EnvService
   let wwjsManager: WWJSClientManager
-  let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
+
   let socket: Socket<WhatsAppServerEvents>
   let wwjsClient: WWJSClient
 
@@ -33,13 +33,15 @@ describe('Handle Ready (WWJS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+
     prisma = moduleRef.get(PrismaService)
     env = moduleRef.get(EnvService)
     wwjsManager = moduleRef.get(WWJSClientManager)
-    whatsAppFactory = app.get(FakeWhatsAppFactory)
+
+    const whatsAppFactory = app.get(FakeWhatsAppFactory)
 
     const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
-    whatsApp = await whatsAppFactory.makeWWJSWhatsApp(
+    whatsApp = await whatsAppFactory.makePrismaWhatsApp(
       {},
       new UniqueEntityID(WWJS_TEST_CLIENT_ID),
     )

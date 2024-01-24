@@ -1,11 +1,16 @@
+import { Module } from '@nestjs/common'
+
+import { PrismaService } from './prisma.service'
+
 import { AttendantProfilesRepository } from '@/domain/chat/application/repositories/attendant-profiles-repository'
 import { AttendantsRepository } from '@/domain/chat/application/repositories/attendants-repository'
 import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
-import { Module } from '@nestjs/common'
-import { PrismaService } from './prisma.service'
+import { ChatsRepository } from '@/domain/chat/application/repositories/chats-repository'
+
 import { PrismaAttendantProfilesRepository } from './repositories/prisma-attendant-profiles-repository'
 import { PrismaAttendantsRepository } from './repositories/prisma-attendants-repository'
 import { PrismaWhatsAppsRepository } from './repositories/prisma-whats-apps-repository'
+import { PrismaChatsRepository } from './repositories/prisma-chats-repository'
 
 @Module({
   providers: [
@@ -16,12 +21,14 @@ import { PrismaWhatsAppsRepository } from './repositories/prisma-whats-apps-repo
     },
     { provide: AttendantsRepository, useClass: PrismaAttendantsRepository },
     { provide: WhatsAppsRepository, useClass: PrismaWhatsAppsRepository },
+    { provide: ChatsRepository, useClass: PrismaChatsRepository },
   ],
   exports: [
     PrismaService,
     AttendantProfilesRepository,
     AttendantsRepository,
     WhatsAppsRepository,
+    ChatsRepository,
   ],
 })
 export class PrismaModule {}

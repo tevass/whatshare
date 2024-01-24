@@ -15,6 +15,7 @@ import { WWJSClient } from '../../clients/wwjs-client'
 
 /**
  * Issue/Pull about the disconnected event not fired on logout
+ *
  * https://github.com/pedroslopez/whatsapp-web.js/pull/2661
  */
 
@@ -22,9 +23,9 @@ describe('Handle Disconnected (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let wwjsManager: WWJSClientManager
-  let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
+
   let socket: Socket<WhatsAppServerEvents>
   let wwjsClient: WWJSClient
 
@@ -35,11 +36,12 @@ describe('Handle Disconnected (WWJS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+
     prisma = moduleRef.get(PrismaService)
     wwjsManager = moduleRef.get(WWJSClientManager)
-    whatsAppFactory = app.get(FakeWhatsAppFactory)
+    const whatsAppFactory = app.get(FakeWhatsAppFactory)
 
-    whatsApp = await whatsAppFactory.makeWWJSWhatsApp()
+    whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 
     app.use(cookieParser)
     await app.init()

@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { WAChat } from '../entities/wa-chat'
 import { ChatsRepository } from '../repositories/chats-repository'
+import { Injectable } from '@nestjs/common'
 
 interface HandleWAChangeUnreadCountRequest {
   waChat: WAChat
@@ -17,6 +18,7 @@ type HandleWAChangeUnreadCountResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleWAChangeUnreadCount {
   constructor(
     private chatsRepository: ChatsRepository,

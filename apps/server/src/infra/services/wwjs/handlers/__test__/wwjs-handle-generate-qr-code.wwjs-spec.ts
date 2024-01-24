@@ -13,7 +13,6 @@ import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 describe('Handle Generate QR Code (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<WhatsAppServerEvents>
@@ -25,8 +24,9 @@ describe('Handle Generate QR Code (WWJS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+
     prisma = moduleRef.get(PrismaService)
-    whatsAppFactory = app.get(FakeWhatsAppFactory)
+    const whatsAppFactory = app.get(FakeWhatsAppFactory)
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 

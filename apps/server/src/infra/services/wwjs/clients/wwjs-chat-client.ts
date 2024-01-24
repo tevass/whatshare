@@ -4,6 +4,7 @@ import { Client } from 'whatsapp-web.js'
 import { WWJSChatMapper } from '../mappers/wwjs-chat-mapper'
 import { WAChatClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-chat-client'
 import { WWJSClient } from './wwjs-client'
+import { Time } from '@/infra/utils/time'
 
 export class WWJSChatClient implements WAChatClient {
   private raw: Client
@@ -19,16 +20,19 @@ export class WWJSChatClient implements WAChatClient {
   async sendSeenById(chatId: WAEntityID): Promise<void> {
     const waChat = await this.getById(chatId)
     await waChat.sendSeen()
+    await Time.delay()
   }
 
   async markUnreadById(chatId: WAEntityID): Promise<void> {
     const waChat = await this.getById(chatId)
     await waChat.markUnread()
+    await Time.delay()
   }
 
   async clearById(chatId: WAEntityID): Promise<void> {
     const waChat = await this.getById(chatId)
     await waChat.clearMessages()
+    await Time.delay()
   }
 
   async getMany(): Promise<WAChat[]> {

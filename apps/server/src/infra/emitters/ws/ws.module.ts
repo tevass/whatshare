@@ -1,8 +1,13 @@
-import { WhatsAppEmitter } from '@/domain/chat/application/emitters/whats-app-emitter'
 import { Module } from '@nestjs/common'
-import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
+
 import { WsGateway } from './ws.gateway'
 import { WSJoinRoomMiddleware } from './ws-join-room-middleware'
+
+import { WhatsAppEmitter } from '@/domain/chat/application/emitters/whats-app-emitter'
+import { ChatEmitter } from '@/domain/chat/application/emitters/chat-emitter'
+
+import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
+import { WsChatEmitter } from './emitters/ws-chat-emitter'
 
 @Module({
   providers: [
@@ -12,7 +17,11 @@ import { WSJoinRoomMiddleware } from './ws-join-room-middleware'
       provide: WhatsAppEmitter,
       useClass: WsWhatsAppEmitter,
     },
+    {
+      provide: ChatEmitter,
+      useClass: WsChatEmitter,
+    },
   ],
-  exports: [WhatsAppEmitter],
+  exports: [WhatsAppEmitter, ChatEmitter],
 })
 export class WsModule {}

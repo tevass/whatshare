@@ -11,6 +11,8 @@ import { WWJSHandleReady } from './handlers/wwjs-handle-ready'
 import { WWJSClientService } from './wwjs-client.service'
 import { WWJSClientManager } from './wwjs-client-manager.service'
 import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
+import { WWJSHandleUnreadCount } from './handlers/wwjs-handle-unread-count'
+import { HandleWAChangeUnreadCount } from '@/domain/chat/application/handlers/handle-wa-change-chat-unread-count'
 
 @Module({
   imports: [EmittersModule],
@@ -30,6 +32,8 @@ import { WAClientManager } from '@/domain/chat/application/services/wa-client-ma
     HandleWADisconnected,
     WWJSHandleLoadingScreen,
     HandleWAConnecting,
+    WWJSHandleUnreadCount,
+    HandleWAChangeUnreadCount,
   ],
   exports: [WAClientManager],
 })

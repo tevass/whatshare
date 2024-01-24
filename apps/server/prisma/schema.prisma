@@ -22,6 +22,7 @@ model WhatsApp {
   attendantsIds String[] @map("attedants_ids") @db.ObjectId
 
   attendants Attendant[] @relation(fields: [attendantsIds], references: [id])
+  chats      Chat[]
 
   @@map("whats_apps")
 }
@@ -48,4 +49,39 @@ model Attendant {
   whatsApps WhatsApp[]       @relation(fields: [whatsAppsIds], references: [id])
 
   @@map("attendants")
+}
+
+model Contact {
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  waContactId    String  @unique @map("wa_contact_id")
+  name           String
+  phone          String  @unique
+  formattedPhone String  @map("formatted_phone")
+  imageUrl       String? @map("image_url")
+
+  isGroup      Boolean @map("is_group")
+  isBusiness   Boolean @map("is_business")
+  isEnterprise Boolean @map("is_enterprise")
+  isMyContact  Boolean @map("is_my_contact")
+
+  chats Chat[]
+
+  @@map("contacts")
+}
+
+model Chat {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  waChatId        String    @map("wa_chat_id")
+  whatsAppId      String    @map("whats_app_id") @db.ObjectId
+  contactId       String    @map("contact_id") @db.ObjectId
+  unreadCount     Int       @map("unread_count")
+  lastInteraction DateTime  @map("last_interaction_date")
+  deletedAt       DateTime? @map("deleted_at")
+
+  contact  Contact  @relation(fields: [contactId], references: [id])
+  whatsApp WhatsApp @relation(fields: [whatsAppId], references: [id])
+
+  @@unique([waChatId, whatsAppId])
+  @@index([waChatId])
+  @@map("chats")
 }

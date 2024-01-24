@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Events } from 'whatsapp-web.js'
+import WWJS from 'whatsapp-web.js'
 import { HandleWADisconnected } from '@/domain/chat/application/handlers/handle-wa-disconnected'
 import { WWJSHandler, WWJSListener } from '../wwjs-handler'
 import { WWJSClientService } from '../wwjs-client.service'
@@ -14,7 +14,7 @@ export class WWJSHandleDisconnected implements WWJSHandler {
     this.wwjsClientService.addHandler(this)
   }
 
-  event = Events.DISCONNECTED
+  event = WWJS.Events.DISCONNECTED
 
   register(waClient: WWJSClient): WWJSListener {
     return async () => {
