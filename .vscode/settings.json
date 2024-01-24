@@ -6,11 +6,12 @@
     "Hasher",
     "tsup",
     "vcard",
+    "WAID",
     "websockets",
     "whatsapp",
     "whatshare",
+    "wwebjs",
     "wwjs",
     "WWJS"
   ],
-  "window.commandCenter": false
 }

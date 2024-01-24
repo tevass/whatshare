@@ -4,12 +4,12 @@ import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryWhatsAppsRepository } from '@/test/repositories/in-memory-whats-apps-repository'
 import { HandleWAConnecting } from '../handle-wa-connecting'
 import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
-import { FakeWAService } from '@/test/services/fake-wa-service'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 
 let inMemoryWhatsAppsRepository: InMemoryWhatsAppsRepository
 let fakeWhatsAppEmitter: FakeWhatsAppEmitter
-let fakeWAServiceManager: FakeWAServiceManager
+let fakeWAClientManager: FakeWAClientManager
 
 let sut: HandleWAConnecting
 
@@ -17,12 +17,12 @@ describe('HandleWAConnecting', () => {
   beforeEach(() => {
     inMemoryWhatsAppsRepository = new InMemoryWhatsAppsRepository()
     fakeWhatsAppEmitter = new FakeWhatsAppEmitter()
-    fakeWAServiceManager = new FakeWAServiceManager()
+    fakeWAClientManager = new FakeWAClientManager()
 
     sut = new HandleWAConnecting(
       inMemoryWhatsAppsRepository,
       fakeWhatsAppEmitter,
-      fakeWAServiceManager,
+      fakeWAClientManager,
     )
   })
 
@@ -31,9 +31,9 @@ describe('HandleWAConnecting', () => {
 
     const _whatsApp = makeWhatsApp({}, whatsAppId)
 
-    fakeWAServiceManager.services.set(
+    fakeWAClientManager.clients.set(
       whatsAppId.toString(),
-      FakeWAService.createFromWhatsApp(_whatsApp),
+      FakeWAClient.createFromWhatsApp(_whatsApp),
     )
     inMemoryWhatsAppsRepository.items.push(_whatsApp)
 

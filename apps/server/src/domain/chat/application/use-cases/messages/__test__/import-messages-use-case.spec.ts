@@ -11,14 +11,14 @@ import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
-import { FakeWAService } from '@/test/services/fake-wa-service'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
-let fakeWAServiceManager: FakeWAServiceManager
+let fakeWAClientManager: FakeWAClientManager
 let fakeUploader: FakeUploader
 
 let createMessageFromWAMessage: CreateMessageFromWAMessageUseCase
@@ -31,7 +31,7 @@ describe('ImportMessagesUseCase', () => {
     inMemoryContactsRepository = new InMemoryContactsRepository()
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
-    fakeWAServiceManager = new FakeWAServiceManager()
+    fakeWAClientManager = new FakeWAClientManager()
     fakeUploader = new FakeUploader()
 
     createMessageFromWAMessage = new CreateMessageFromWAMessageUseCase(
@@ -45,7 +45,7 @@ describe('ImportMessagesUseCase', () => {
     sut = new ImportMessagesUseCase(
       inMemoryChatsRepository,
       inMemoryMessagesRepository,
-      fakeWAServiceManager,
+      fakeWAClientManager,
       createMessageFromWAMessage,
     )
   })
@@ -58,13 +58,13 @@ describe('ImportMessagesUseCase', () => {
     const chat = makeChat({ whatsAppId, waChatId: waChat.id })
     inMemoryChatsRepository.items.push(chat)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waMessages = Array.from(Array(4)).map(() =>
       makeWAMessage({ chatId: waChat.id }),
     )
-    fakeWAService.message.messages.push(...waMessages)
+    fakeWAClient.message.messages.push(...waMessages)
 
     inMemoryMessagesRepository.items.push(
       ...waMessages.slice(2).map((waMessage) =>

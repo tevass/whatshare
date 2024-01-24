@@ -1,7 +1,7 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { WAChat } from '../entities/wa-chat'
+import { WAChat } from '../../../entities/wa-chat'
 
-export abstract class WAChatService {
+export abstract class WAChatClient {
   abstract sendSeenById(chatId: WAEntityID): Promise<void>
 
   abstract markUnreadById(chatId: WAEntityID): Promise<void>

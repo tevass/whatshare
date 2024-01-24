@@ -1,10 +1,11 @@
-import { WAContact } from '@/domain/chat/application/entities/wa-contact'
-import { WAContactService } from '@/domain/chat/application/services/wa-contact-service'
 import WWJS from 'whatsapp-web.js'
-import { WWJSClient } from '../client'
-import { WWJSContactMapper } from '../mappers/wwjs-contact-mapper'
 
-export class WWJSContactService implements WAContactService {
+import { WAContact } from '@/domain/chat/application/entities/wa-contact'
+import { WWJSContactMapper } from '../mappers/wwjs-contact-mapper'
+import { WAContactClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-contact-client'
+import { WWJSClient } from './wwjs-client'
+
+export class WWJSContactClient implements WAContactClient {
   private raw: WWJS.Client
 
   protected constructor(private waClient: WWJSClient) {
@@ -24,6 +25,6 @@ export class WWJSContactService implements WAContactService {
   }
 
   static create(client: WWJSClient) {
-    return new WWJSContactService(client)
+    return new WWJSContactClient(client)
   }
 }

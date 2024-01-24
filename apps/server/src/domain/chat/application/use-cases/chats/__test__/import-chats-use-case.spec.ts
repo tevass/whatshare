@@ -5,13 +5,13 @@ import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-rep
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryWhatsAppsRepository } from '@/test/repositories/in-memory-whats-apps-repository'
 import { ImportChatsUseCase } from '../import-chats-use-case'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
-import { FakeWAService } from '@/test/services/fake-wa-service'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 
 let inMemoryWhatsAppRepository: InMemoryWhatsAppsRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
-let fakeWAServiceManager: FakeWAServiceManager
+let fakeWAClientManager: FakeWAClientManager
 
 let sut: ImportChatsUseCase
 
@@ -20,13 +20,13 @@ describe('ImportChatsUseCase', () => {
     inMemoryWhatsAppRepository = new InMemoryWhatsAppsRepository()
     inMemoryChatsRepository = new InMemoryChatsRepository()
     inMemoryContactsRepository = new InMemoryContactsRepository()
-    fakeWAServiceManager = new FakeWAServiceManager()
+    fakeWAClientManager = new FakeWAClientManager()
 
     sut = new ImportChatsUseCase(
       inMemoryWhatsAppRepository,
       inMemoryChatsRepository,
       inMemoryContactsRepository,
-      fakeWAServiceManager,
+      fakeWAClientManager,
     )
   })
 
@@ -34,8 +34,8 @@ describe('ImportChatsUseCase', () => {
     const whatsApp = makeWhatsApp({ status: 'connected' })
     inMemoryWhatsAppRepository.items.push(whatsApp)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsApp.id.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsApp.id.toString(), fakeWAClient)
 
     const waContacts = Array.from(Array(4)).map(() =>
       makeWAContact({ isMyContact: true }),
@@ -45,7 +45,7 @@ describe('ImportChatsUseCase', () => {
     )
 
     const waChats = waContacts.map((contact) => makeWAChat({ contact }))
-    fakeWAService.chat.chats.push(...waChats)
+    fakeWAClient.chat.chats.push(...waChats)
 
     inMemoryChatsRepository.items.push(
       ...waChats.slice(2).map((waChat) => waChat.toChat()),

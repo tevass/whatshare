@@ -1,13 +1,13 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
 import {
+  WAMessageClient,
   WAMessageSendTextParams,
-  WAMessageService,
-} from '@/domain/chat/application/services/wa-message-service'
-import { makeWAMessage } from '../factories/make-wa-message'
-import { makeWAMessageID } from '../factories/make-wa-message-id'
+} from '@/domain/chat/application/services/wa-client-manager/clients/wa-message-client'
+import { makeWAMessage } from '@/test/factories/make-wa-message'
+import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
 
-export class FakeWAMessageService implements WAMessageService {
+export class FakeWAMessageClient implements WAMessageClient {
   messages: WAMessage[] = []
 
   async sendText(params: WAMessageSendTextParams): Promise<WAMessage> {

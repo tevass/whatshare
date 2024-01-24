@@ -1,11 +1,11 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAChat } from '@/domain/chat/application/entities/wa-chat'
-import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
 import { Client } from 'whatsapp-web.js'
-import { WWJSClient } from '../client'
 import { WWJSChatMapper } from '../mappers/wwjs-chat-mapper'
+import { WAChatClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-chat-client'
+import { WWJSClient } from './wwjs-client'
 
-export class WWJSChatService implements WAChatService {
+export class WWJSChatClient implements WAChatClient {
   private raw: Client
 
   protected constructor(private waClient: WWJSClient) {
@@ -45,6 +45,6 @@ export class WWJSChatService implements WAChatService {
   }
 
   static create(client: WWJSClient) {
-    return new WWJSChatService(client)
+    return new WWJSChatClient(client)
   }
 }

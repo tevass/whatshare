@@ -6,9 +6,15 @@ export default defineConfig(
   mergeConfig(config, {
     test: {
       include: ['**/*.wwjs-spec.ts'],
-      setupFiles: ['./test/setup/mongo-memory-server.ts'],
-      testTimeout: 1000 * 60 * 1, // 1 min
+      setupFiles: [
+        './test/setup/mongo-memory-server.ts',
+        './test/setup/wwjs-session.ts',
+      ],
+      testTimeout: 1000 * 40, // 40 seconds
       fileParallelism: false,
+      sequence: {
+        setupFiles: 'list',
+      },
     },
     plugins: [
       swc.vite({

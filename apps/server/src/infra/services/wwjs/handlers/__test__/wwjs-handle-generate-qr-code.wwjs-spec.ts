@@ -28,16 +28,15 @@ describe('Handle Generate QR Code (WWJS)', () => {
     prisma = moduleRef.get(PrismaService)
     whatsAppFactory = app.get(FakeWhatsAppFactory)
 
+    whatsApp = await whatsAppFactory.makePrismaWhatsApp()
+
     app.use(cookieParser)
-
-    whatsApp = await whatsAppFactory.makeWWJSWhatsApp()
-
     await app.init()
 
     const address = Server.getAddressFromApp(app)
     socket = io(`${address}/wa`, {
-      extraHeaders: {
-        'whatshare-room-id': whatsApp.id.toString(),
+      query: {
+        room: whatsApp.id.toString(),
       },
     })
 

@@ -2,23 +2,24 @@ import { HandleWAConnected } from '@/domain/chat/application/handlers/handle-wa-
 import { HandleWAConnecting } from '@/domain/chat/application/handlers/handle-wa-connecting'
 import { HandleWADisconnected } from '@/domain/chat/application/handlers/handle-wa-disconnected'
 import { HandleWAGenerateQRCode } from '@/domain/chat/application/handlers/handle-wa-generate-qr-code'
-import { WAServiceManager } from '@/domain/chat/application/services/wa-service-manager'
 import { EmittersModule } from '@/infra/emitters/emitters.module'
-import { Logger, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { WWJSHandleDisconnected } from './handlers/wwjs-handle-disconnected'
 import { WWJSHandleGenerateQrCode } from './handlers/wwjs-handle-generate-qr-code'
 import { WWJSHandleLoadingScreen } from './handlers/wwjs-handle-loading-screen'
 import { WWJSHandleReady } from './handlers/wwjs-handle-ready'
-import { WWJSService } from './wwjs.service'
+import { WWJSClientService } from './wwjs-client.service'
+import { WWJSClientManager } from './wwjs-client-manager.service'
+import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
 
 @Module({
   imports: [EmittersModule],
   providers: [
-    Logger,
-    WWJSService,
+    WWJSClientService,
+    WWJSClientManager,
     {
-      provide: WAServiceManager,
-      useExisting: WWJSService,
+      provide: WAClientManager,
+      useExisting: WWJSClientManager,
     },
 
     WWJSHandleGenerateQrCode,
@@ -30,6 +31,6 @@ import { WWJSService } from './wwjs.service'
     WWJSHandleLoadingScreen,
     HandleWAConnecting,
   ],
-  exports: [WAServiceManager],
+  exports: [WAClientManager],
 })
 export class WWJSModule {}

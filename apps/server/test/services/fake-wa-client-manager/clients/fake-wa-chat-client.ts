@@ -1,8 +1,8 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAChat } from '@/domain/chat/application/entities/wa-chat'
-import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
+import { WAChatClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-chat-client'
 
-export class FakeWAChatService implements WAChatService {
+export class FakeWAChatClient implements WAChatClient {
   values: string[] = []
   chats: WAChat[] = []
 

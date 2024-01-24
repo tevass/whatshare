@@ -9,16 +9,16 @@ import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memo
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import { FakeWAService } from '@/test/services/fake-wa-service'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
 import { faker } from '@faker-js/faker'
 import { HandleSendTextMessage } from '../handle-send-text-message'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
-let fakeWAServiceManager: FakeWAServiceManager
+let fakeWAClientManager: FakeWAClientManager
 let fakeMessageEmitter: FakeMessageEmitter
 let fakeChatEmitter: FakeChatEmitter
 
@@ -33,7 +33,7 @@ describe('HandleSendTextMessage', () => {
     inMemoryAttendantsRepository = new InMemoryAttendantsRepository(
       inMemoryAttendantProfilesRepository,
     )
-    fakeWAServiceManager = new FakeWAServiceManager()
+    fakeWAClientManager = new FakeWAClientManager()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()
 
@@ -41,7 +41,7 @@ describe('HandleSendTextMessage', () => {
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
       inMemoryAttendantsRepository,
-      fakeWAServiceManager,
+      fakeWAClientManager,
       fakeMessageEmitter,
       fakeChatEmitter,
     )
@@ -51,8 +51,8 @@ describe('HandleSendTextMessage', () => {
     const whatsAppId = makeUniqueEntityID()
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)
@@ -77,15 +77,15 @@ describe('HandleSendTextMessage', () => {
 
     expect(fakeMessageEmitter.payloads).toHaveLength(2)
     expect(fakeChatEmitter.payloads).toHaveLength(2)
-    expect(fakeWAService.message.messages).toHaveLength(1)
+    expect(fakeWAClient.message.messages).toHaveLength(1)
   })
 
   it('should be able to create message from send text quoting other message', async () => {
     const whatsAppId = makeUniqueEntityID()
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)

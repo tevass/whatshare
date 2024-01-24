@@ -6,13 +6,13 @@ import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
-import { FakeWAService } from '@/test/services/fake-wa-service'
-import { FakeWAServiceManager } from '@/test/services/fake-wa-service-manager'
 import { HandleClearChat } from '../handle-clear-chat'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryMessagesRepository: InMemoryMessagesRepository
-let fakeWAServiceManager: FakeWAServiceManager
+let fakeWAClientManager: FakeWAClientManager
 let fakeChatEmitter: FakeChatEmitter
 
 let sut: HandleClearChat
@@ -21,13 +21,13 @@ describe('HandleClearChat', () => {
   beforeEach(() => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
-    fakeWAServiceManager = new FakeWAServiceManager()
+    fakeWAClientManager = new FakeWAClientManager()
     fakeChatEmitter = new FakeChatEmitter()
 
     sut = new HandleClearChat(
       inMemoryChatsRepository,
       inMemoryMessagesRepository,
-      fakeWAServiceManager,
+      fakeWAClientManager,
       fakeChatEmitter,
     )
   })
@@ -36,8 +36,8 @@ describe('HandleClearChat', () => {
     const whatsAppId = makeUniqueEntityID()
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waChatId = makeWAEntityID()
     inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
@@ -62,15 +62,15 @@ describe('HandleClearChat', () => {
 
     expect(inMemoryChatsRepository.items[0]).toBe(chat)
     expect(fakeChatEmitter.payloads).toHaveLength(1)
-    expect(fakeWAService.chat.values).toHaveLength(1)
+    expect(fakeWAClient.chat.values).toHaveLength(1)
   })
 
   it('should be able to update messages from chat', async () => {
     const whatsAppId = makeUniqueEntityID()
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
-    const fakeWAService = FakeWAService.createFromWhatsApp(whatsApp)
-    fakeWAServiceManager.services.set(whatsAppId.toString(), fakeWAService)
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waChatId = makeWAEntityID()
     const chat = makeChat({ whatsAppId, waChatId })

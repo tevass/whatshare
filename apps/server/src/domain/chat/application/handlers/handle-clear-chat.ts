@@ -5,8 +5,8 @@ import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
-import { WAServiceManager } from '../services/wa-service-manager'
-import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
+import { WAClientManager } from '../services/wa-client-manager'
+import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleClearChatRequest {
   waChatId: string
@@ -14,7 +14,7 @@ interface HandleClearChatRequest {
 }
 
 type HandleClearChatResponse = Either<
-  ResourceNotFoundError | WAServiceNotFoundError,
+  ResourceNotFoundError | WAClientNotFoundError,
   {
     chat: Chat
   }
@@ -24,7 +24,7 @@ export class HandleClearChat {
   constructor(
     private chatsRepository: ChatsRepository,
     private messagesRepository: MessagesRepository,
-    private waManager: WAServiceManager,
+    private waManager: WAClientManager,
     private chatEmitter: ChatEmitter,
   ) {}
 
@@ -42,9 +42,9 @@ export class HandleClearChat {
       return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
-    const waClient = this.waManager.get(chat.whatsAppId)
+    const waClient = this.waManager.getConnected(chat.whatsAppId)
     if (!waClient) {
-      return left(new WAServiceNotFoundError(chat.whatsAppId.toString()))
+      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
     await waClient.chat.clearById(chat.waChatId)

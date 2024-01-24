@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { Events } from 'whatsapp-web.js'
-import { WWJSClient } from '../client'
-import { WWJSHandler, WWJSListener } from '../handler'
-import { WWJSService } from '../wwjs.service'
 import { HandleWAConnected } from '@/domain/chat/application/handlers/handle-wa-connected'
+import { WWJSHandler, WWJSListener } from '../wwjs-handler'
+import { WWJSClientService } from '../wwjs-client.service'
+import { WWJSClient } from '../clients/wwjs-client'
 
 @Injectable()
 export class WWJSHandleReady implements WWJSHandler {
   constructor(
-    private wwjsService: WWJSService,
+    private wwjsClientService: WWJSClientService,
     private handleWAConnected: HandleWAConnected,
   ) {
-    this.wwjsService.addHandler(this)
+    this.wwjsClientService.addHandler(this)
   }
 
   event = Events.READY

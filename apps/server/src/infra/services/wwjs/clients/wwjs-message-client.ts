@@ -1,15 +1,15 @@
+import WWJS from 'whatsapp-web.js'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
-import {
-  WAMessageSendTextParams,
-  WAMessageService,
-} from '@/domain/chat/application/services/wa-message-service'
-import { Client } from 'whatsapp-web.js'
-import { WWJSClient } from '../client'
 import { WWJSMessageMapper } from '../mappers/wwjs-message-mapper'
+import {
+  WAMessageClient,
+  WAMessageSendTextParams,
+} from '@/domain/chat/application/services/wa-client-manager/clients/wa-message-client'
+import { WWJSClient } from './wwjs-client'
 
-export class WWJSMessageService implements WAMessageService {
-  private raw: Client
+export class WWJSMessageClient implements WAMessageClient {
+  private raw: WWJS.Client
 
   protected constructor(private waClient: WWJSClient) {
     this.raw = waClient.switchToRaw()
@@ -43,6 +43,6 @@ export class WWJSMessageService implements WAMessageService {
   }
 
   static create(client: WWJSClient) {
-    return new WWJSMessageService(client)
+    return new WWJSMessageClient(client)
   }
 }

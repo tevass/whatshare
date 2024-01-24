@@ -11,16 +11,20 @@ import { Socket, io } from 'socket.io-client'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
-import { WWJSService } from '../../wwjs.service'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { EnvService } from '@/infra/env/env.service'
+import { WWJSClient } from '../../clients/wwjs-client'
 
 describe('Handle Loading Screen (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let wwjsService: WWJSService
+  let env: EnvService
+  let wwjsManager: WWJSClientManager
   let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<WhatsAppServerEvents>
+  let wwjsClient: WWJSClient
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -30,22 +34,25 @@ describe('Handle Loading Screen (WWJS)', () => {
 
     app = moduleRef.createNestApplication()
     prisma = moduleRef.get(PrismaService)
-    wwjsService = moduleRef.get(WWJSService)
+    env = moduleRef.get(EnvService)
+    wwjsManager = moduleRef.get(WWJSClientManager)
     whatsAppFactory = app.get(FakeWhatsAppFactory)
 
-    app.use(cookieParser)
-
+    const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
     whatsApp = await whatsAppFactory.makeWWJSWhatsApp(
       {},
-      new UniqueEntityID('65afb96e1f5c3cda590f04e4'),
+      new UniqueEntityID(WWJS_TEST_CLIENT_ID),
     )
 
+    app.use(cookieParser)
     await app.init()
+
+    wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
 
     const address = Server.getAddressFromApp(app)
     socket = io(`${address}/wa`, {
-      extraHeaders: {
-        'whatshare-room-id': whatsApp.id.toString(),
+      query: {
+        room: whatsApp.id.toString(),
       },
     })
 
@@ -60,16 +67,11 @@ describe('Handle Loading Screen (WWJS)', () => {
   })
 
   it('[EVENT] LOADING SCREEN', async () => {
-    return new Promise((resolve, reject) => {
-      const _whatsApp = whatsApp
-
+    return new Promise((resolve) => {
       socket.on('whatsApp:change', async ({ whatsApp }) => {
         const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
           where: { id: whatsApp.id },
         })
-
-        const wwjsClient = wwjsService.wwjsClients.get(_whatsApp.id.toString())
-        if (!wwjsClient) return reject(new Error('Not found WWJSClient'))
 
         const wwjsClientStatus = wwjsClient.status
 

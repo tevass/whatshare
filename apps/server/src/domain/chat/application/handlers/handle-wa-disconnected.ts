@@ -4,7 +4,7 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { Injectable } from '@nestjs/common'
 import { WhatsAppEmitter } from '../emitters/whats-app-emitter'
 import { WhatsAppsRepository } from '../repositories/whats-apps-repository'
-import { WAServiceManager } from '../services/wa-service-manager'
+import { WAClientManager } from '../services/wa-client-manager'
 
 interface HandleWADisconnectedRequest {
   whatsAppId: string
@@ -22,7 +22,7 @@ export class HandleWADisconnected {
   constructor(
     private whatsAppsRepository: WhatsAppsRepository,
     private whatsAppEmitter: WhatsAppEmitter,
-    private waManager: WAServiceManager,
+    private waManager: WAClientManager,
   ) {}
 
   async execute(
@@ -37,7 +37,7 @@ export class HandleWADisconnected {
 
     whatsApp.disconnect()
     await this.whatsAppsRepository.save(whatsApp)
-    this.waManager.updateFromWhatsApp(whatsApp)
+    this.waManager.setFromWhatsApp(whatsApp)
 
     this.whatsAppEmitter.emitDisconnected({
       whatsApp,

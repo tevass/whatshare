@@ -10,21 +10,23 @@ import { Socket, io } from 'socket.io-client'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
-import { WWJSService } from '../../wwjs.service'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { WWJSClient } from '../../clients/wwjs-client'
 
 /**
- * Issue/Pull about the disconnected event not fired on log out
+ * Issue/Pull about the disconnected event not fired on logout
  * https://github.com/pedroslopez/whatsapp-web.js/pull/2661
  */
 
 describe('Handle Disconnected (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let wwjsService: WWJSService
+  let wwjsManager: WWJSClientManager
   let whatsAppFactory: FakeWhatsAppFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<WhatsAppServerEvents>
+  let wwjsClient: WWJSClient
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -34,56 +36,53 @@ describe('Handle Disconnected (WWJS)', () => {
 
     app = moduleRef.createNestApplication()
     prisma = moduleRef.get(PrismaService)
-    wwjsService = moduleRef.get(WWJSService)
+    wwjsManager = moduleRef.get(WWJSClientManager)
     whatsAppFactory = app.get(FakeWhatsAppFactory)
-
-    app.use(cookieParser)
 
     whatsApp = await whatsAppFactory.makeWWJSWhatsApp()
 
+    app.use(cookieParser)
     await app.init()
+
+    wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
 
     const address = Server.getAddressFromApp(app)
     socket = io(`${address}/wa`, {
-      extraHeaders: {
-        'whatshare-room-id': whatsApp.id.toString(),
+      query: {
+        room: whatsApp.id.toString(),
       },
     })
 
     return new Promise((resolve, reject) => {
-      socket.on('connect', resolve)
+      socket.on('connect', () => {
+        socket.on('whatsApp:connected', () => resolve())
+      })
+
       socket.on('connect_error', reject)
     })
-  })
+  }, 1000 * 30) // 30 seconds
 
   afterAll(async () => {
     await app.close()
   })
 
   it('[EVENT] DISCONNECTED', async () => {
-    return new Promise((resolve, reject) => {
-      const _whatsApp = whatsApp
-
-      socket.on('whatsApp:connected', async () => {
-        const wwjsClient = wwjsService.get(_whatsApp.id)
-        if (!wwjsClient) return reject(new Error('Not found WWJSClient'))
-
-        socket.on('whatsApp:disconnected', async ({ whatsApp }) => {
-          const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
-            where: { id: whatsApp.id },
-          })
-
-          resolve([
-            expect(wwjsClient.isDisconnected()).toBe(true),
-            expect(whatsApp.isDisconnected).toBe(true),
-            expect(whatsAppOnDatabase.status).toBe(
-              'disconnected' as WhatsAppStatus,
-            ),
-          ])
+    return new Promise((resolve) => {
+      socket.on('whatsApp:disconnected', async ({ whatsApp }) => {
+        const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
+          where: { id: whatsApp.id },
         })
 
-        await wwjsClient.logout()
+        resolve([
+          expect(wwjsClient.isDisconnected()).toBe(true),
+          expect(whatsApp.isDisconnected).toBe(true),
+          expect(whatsAppOnDatabase.status).toBe(
+            'disconnected' as WhatsAppStatus,
+          ),
+        ])
       })
+
+      wwjsClient.logout()
     })
   })
 })

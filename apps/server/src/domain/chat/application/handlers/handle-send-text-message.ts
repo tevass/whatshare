@@ -10,8 +10,8 @@ import { MessageEmitter } from '../emitters/message-emitter'
 import { AttendantsRepository } from '../repositories/attendants-repository'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
-import { WAServiceManager } from '../services/wa-service-manager'
-import { WAServiceNotFoundError } from './errors/wa-service-not-found-error'
+import { WAClientManager } from '../services/wa-client-manager'
+import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
 
 interface HandleSendTextMessageRequest {
   waChatId: string
@@ -22,7 +22,7 @@ interface HandleSendTextMessageRequest {
 }
 
 type HandleSendTextMessageResponse = Either<
-  ResourceNotFoundError | WAServiceNotFoundError,
+  ResourceNotFoundError | WAClientNotFoundError,
   {
     message: Message
   }
@@ -33,7 +33,7 @@ export class HandleSendTextMessage {
     private messagesRepository: MessagesRepository,
     private chatsRepository: ChatsRepository,
     private attendantsRepository: AttendantsRepository,
-    private waManager: WAServiceManager,
+    private waManager: WAClientManager,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
   ) {}
@@ -66,9 +66,9 @@ export class HandleSendTextMessage {
       return left(new ResourceNotFoundError(attendantId))
     }
 
-    const waClient = this.waManager.get(chat.whatsAppId)
+    const waClient = this.waManager.getConnected(chat.whatsAppId)
     if (!waClient) {
-      return left(new WAServiceNotFoundError(chat.whatsAppId.toString()))
+      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
     const tmpWAMessageId = new WAMessageID({
