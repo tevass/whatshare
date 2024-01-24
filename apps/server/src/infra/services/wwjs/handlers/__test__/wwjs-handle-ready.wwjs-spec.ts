@@ -8,9 +8,9 @@ import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 import { Socket, io } from 'socket.io-client'
 
-import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { WhatsAppStatus as PrismaWhatsAppStatus } from '@prisma/client'
+import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
+import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { WWJSService } from '../../wwjs.service'
 
 describe('Handle Ready (WWJS)', () => {
@@ -60,7 +60,7 @@ describe('Handle Ready (WWJS)', () => {
   })
 
   it('[EVENT] READY', async () => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const _whatsApp = whatsApp
 
       socket.on('whatsApp:connected', async ({ whatsApp }) => {
@@ -69,14 +69,12 @@ describe('Handle Ready (WWJS)', () => {
         })
 
         const wwjsClient = wwjsService.get(_whatsApp.id)
-        if (!wwjsClient) throw new Error('Not found WWJSClient')
+        if (!wwjsClient) return reject(new Error('Not found WWJSClient'))
 
         resolve([
           expect(wwjsClient.isConnected()).toBe(true),
           expect(whatsApp.isConnected).toBe(true),
-          expect(whatsAppOnDatabase.status).toBe(
-            'connected' as PrismaWhatsAppStatus,
-          ),
+          expect(whatsAppOnDatabase.status).toBe('connected' as WhatsAppStatus),
         ])
       })
     })

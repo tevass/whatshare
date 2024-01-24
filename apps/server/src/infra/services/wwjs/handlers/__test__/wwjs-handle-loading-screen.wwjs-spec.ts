@@ -1,3 +1,4 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
@@ -12,12 +13,7 @@ import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { WWJSService } from '../../wwjs.service'
 
-/**
- * Issue/Pull about the disconnected event not fired on log out
- * https://github.com/pedroslopez/whatsapp-web.js/pull/2661
- */
-
-describe('Handle Disconnected (WWJS)', () => {
+describe('Handle Loading Screen (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let wwjsService: WWJSService
@@ -39,7 +35,10 @@ describe('Handle Disconnected (WWJS)', () => {
 
     app.use(cookieParser)
 
-    whatsApp = await whatsAppFactory.makeWWJSWhatsApp()
+    whatsApp = await whatsAppFactory.makeWWJSWhatsApp(
+      {},
+      new UniqueEntityID('65afb96e1f5c3cda590f04e4'),
+    )
 
     await app.init()
 
@@ -60,29 +59,28 @@ describe('Handle Disconnected (WWJS)', () => {
     await app.close()
   })
 
-  it('[EVENT] DISCONNECTED', async () => {
+  it('[EVENT] LOADING SCREEN', async () => {
     return new Promise((resolve, reject) => {
       const _whatsApp = whatsApp
 
-      socket.on('whatsApp:connected', async () => {
-        const wwjsClient = wwjsService.get(_whatsApp.id)
+      socket.on('whatsApp:change', async ({ whatsApp }) => {
+        const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
+          where: { id: whatsApp.id },
+        })
+
+        const wwjsClient = wwjsService.wwjsClients.get(_whatsApp.id.toString())
         if (!wwjsClient) return reject(new Error('Not found WWJSClient'))
 
-        socket.on('whatsApp:disconnected', async ({ whatsApp }) => {
-          const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
-            where: { id: whatsApp.id },
-          })
+        const wwjsClientStatus = wwjsClient.status
 
+        socket.on('whatsApp:connected', () => {
           resolve([
-            expect(wwjsClient.isDisconnected()).toBe(true),
-            expect(whatsApp.isDisconnected).toBe(true),
+            expect(wwjsClientStatus).toBe('connecting' as WhatsAppStatus),
             expect(whatsAppOnDatabase.status).toBe(
-              'disconnected' as WhatsAppStatus,
+              'connecting' as WhatsAppStatus,
             ),
           ])
         })
-
-        await wwjsClient.logout()
       })
     })
   })

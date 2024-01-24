@@ -1,14 +1,14 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAChatService } from '@/domain/chat/application/services/wa-chat-service'
 import { WAContactService } from '@/domain/chat/application/services/wa-contact-service'
 import { WAMessageService } from '@/domain/chat/application/services/wa-message-service'
 import { WAService } from '@/domain/chat/application/services/wa-service'
+import { WhatsAppProps } from '@/domain/chat/enterprise/entities/whats-app'
 import type { SetOptional } from 'type-fest'
 import { Client } from 'whatsapp-web.js'
 import { WWJSChatService } from './services/wwjs-chat-service'
 import { WWJSContactService } from './services/wwjs-contact-service'
 import { WWJSMessageService } from './services/wwjs-message-service'
-import { WhatsAppProps } from '@/domain/chat/enterprise/entities/whats-app'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 interface WWJSClientProps extends WhatsAppProps {
   raw: Client

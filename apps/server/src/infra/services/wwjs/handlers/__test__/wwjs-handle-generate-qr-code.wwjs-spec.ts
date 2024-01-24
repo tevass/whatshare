@@ -7,8 +7,8 @@ import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 import { Socket, io } from 'socket.io-client'
 
-import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 
 describe('Handle Generate QR Code (WWJS)', () => {
   let app: INestApplication

@@ -1,6 +1,7 @@
 import { RefreshAuthenticatedAttendantUseCase } from '@/domain/chat/application/use-cases/attendants/refresh-authenticated-attendant-use-case'
 import { WrongCredentialsError } from '@/domain/chat/application/use-cases/errors/wrong-credentials-error'
 import { Public } from '@/infra/auth/decorators/public.decorator'
+import { User } from '@/infra/auth/decorators/user.decorator'
 import { RefreshJwtAuthGuard } from '@/infra/auth/guards/refresh-jwt-auth.guard'
 import { EnvService } from '@/infra/env/env.service'
 import { AttendantPresenter } from '@/infra/presenters/attendant-presenter'
@@ -13,9 +14,8 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
-import { Response } from 'express'
+import type { Response } from 'express'
 import { Cookie } from '../../utils/cookie'
-import { User } from '@/infra/auth/decorators/user.decorator'
 
 @Public()
 @Controller('/sessions/refresh')
