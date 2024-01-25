@@ -23,6 +23,12 @@ export const envSchema = z
     WWJS_TEST_CLIENT_WAID: waEntityId.optional(),
     WWJS_TEST_HELPER_CLIENT_ID: mongoId.optional(),
     WWJS_TEST_HELPER_CLIENT_WAID: waEntityId.optional(),
+
+    //  Upload (AWS / Cloudflare)
+    CLOUDFLARE_ACCOUNT_ID: z.string(),
+    AWS_BUCKET_NAME: z.string(),
+    AWS_ACCESS_KEY_ID: z.string(),
+    AWS_SECRET_ACCESS_KEY: z.string(),
   })
   .refine((env) => {
     const {

@@ -1,14 +1,14 @@
-import { Stream } from 'node:stream'
+import { Readable } from 'node:stream'
 import { MimeType } from '../../enterprise/entities/value-objects/mime-type'
 
 export interface UploaderUploadParams {
   fileName: string
   mimetype: MimeType
-  body: Stream
+  body: Readable
 }
 
 export interface UploaderRemoveParams {
-  url: string
+  key: string
 }
 
 export abstract class Uploader {
