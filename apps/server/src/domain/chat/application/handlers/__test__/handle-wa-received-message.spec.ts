@@ -68,7 +68,6 @@ describe('HandleWAReceivedMessage', () => {
 
     const response = await sut.execute({
       waChat,
-      waContact,
       waMessage,
       whatsAppId: whatsAppId.toString(),
     })
@@ -89,7 +88,6 @@ describe('HandleWAReceivedMessage', () => {
 
     const response = await sut.execute({
       waChat,
-      waContact,
       waMessage,
       whatsAppId: whatsAppId.toString(),
     })

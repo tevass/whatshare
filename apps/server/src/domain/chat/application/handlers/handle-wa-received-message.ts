@@ -4,7 +4,6 @@ import { ResourceNotFoundError } from '@/domain/shared/application/errors/resour
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { MessageEmitter } from '../emitters/message-emitter'
 import { WAChat } from '../entities/wa-chat'
-import { WAContact } from '../entities/wa-contact'
 import { WAMessage } from '../entities/wa-message'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { ContactsRepository } from '../repositories/contacts-repository'
@@ -12,7 +11,6 @@ import { CreateMessageFromWAMessageUseCase } from '../use-cases/messages/create-
 
 interface HandleWAReceivedMessageRequest {
   waChat: WAChat
-  waContact: WAContact
   waMessage: WAMessage
   whatsAppId: string
 }
@@ -36,7 +34,8 @@ export class HandleWAReceivedMessage {
   async execute(
     request: HandleWAReceivedMessageRequest,
   ): Promise<HandleWAReceivedMessageResponse> {
-    const { waChat, waMessage, whatsAppId, waContact } = request
+    const { waChat, waMessage, whatsAppId } = request
+    const waContact = waChat.contact
 
     let [contact, chat] = await Promise.all([
       waContact.isMyContact
