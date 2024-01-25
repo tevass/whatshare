@@ -1,9 +1,13 @@
 import {
   ContactsRepository,
+  CountManyParams,
   FindByWAContactIdParams,
   FindManyByWAContactsIdsParams,
+  FindManyParams,
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { Text } from '../utils/text'
 
 export class InMemoryContactsRepository implements ContactsRepository {
   items: Contact[] = []
@@ -36,6 +40,22 @@ export class InMemoryContactsRepository implements ContactsRepository {
     )
 
     return contacts
+  }
+
+  async findMany(params: FindManyParams): Promise<Contact[]> {
+    const { page, take, query } = params
+
+    return this.items
+      .filter((item) => (query ? Text.includes(item.name, query) : true))
+      .slice(Pagination.skip({ limit: take, page }), page * take)
+  }
+
+  async countMany(params: CountManyParams): Promise<number> {
+    const { query } = params
+
+    return this.items.filter((item) =>
+      query ? Text.includes(item.name, query) : true,
+    ).length
   }
 
   async create(contact: Contact): Promise<void> {

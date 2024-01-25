@@ -1,4 +1,6 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
+import { SearchParams } from '@/domain/shared/application/repositories/search-params'
 import { Contact } from '../../enterprise/entities/contact'
 
 interface ContactsRepositoryMethodsParams {
@@ -15,6 +17,15 @@ export interface FindManyByWAContactsIdsParams
   waContactsIds: WAEntityID[]
 }
 
+export interface FindManyParams
+  extends ContactsRepositoryMethodsParams,
+    PaginationParams,
+    SearchParams {}
+
+export interface CountManyParams
+  extends ContactsRepositoryMethodsParams,
+    SearchParams {}
+
 export abstract class ContactsRepository {
   abstract findByWAContactId(
     params: FindByWAContactIdParams,
@@ -23,6 +34,10 @@ export abstract class ContactsRepository {
   abstract findManyByWAContactsIds(
     params: FindManyByWAContactsIdsParams,
   ): Promise<Contact[]>
+
+  abstract findMany(params: FindManyParams): Promise<Contact[]>
+
+  abstract countMany(params: CountManyParams): Promise<number>
 
   abstract create(contact: Contact): Promise<void>
 
