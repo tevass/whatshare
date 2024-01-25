@@ -19,7 +19,10 @@ import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
 export class PrismaMessagesRepository implements MessagesRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Where>(where: Where, findDeleted: boolean = false) {
+  private resolveWhere<Method extends { where: unknown }>(
+    where: Method['where'],
+    findDeleted: boolean = false,
+  ) {
     return {
       ...where,
       ...(!findDeleted && {
@@ -65,7 +68,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
     const { waMessageId, findDeleted } = params
 
     const raw = await this.prisma.message.findUnique({
-      where: this.resolveWhere<Prisma.MessageFindUniqueArgs['where']>(
+      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
         { waMessageId: waMessageId.toString() },
         findDeleted,
       ),
@@ -83,8 +86,26 @@ export class PrismaMessagesRepository implements MessagesRepository {
     throw new Error('Method not implemented.')
   }
 
-  findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
-    throw new Error('Method not implemented.')
+  async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
+    const { createdAt, waChatId, whatsAppId, findDeleted } = params
+
+    const raw = await this.prisma.message.findUnique({
+      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
+        {
+          waChatId_whatsAppId_createdAt: {
+            waChatId: waChatId.toString(),
+            whatsAppId,
+            createdAt,
+          },
+        },
+        findDeleted,
+      ),
+      include: this.aggregate,
+    })
+
+    if (!raw) return null
+
+    return PrismaMessageMapper.toDomain(raw)
   }
 
   async save(message: Message): Promise<void> {

@@ -3,7 +3,7 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
-import { INestApplication } from '@nestjs/common'
+import { Global, INestApplication, Module } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 import { WWJSClient } from '../../clients/wwjs-client'
@@ -17,15 +17,37 @@ import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeMessageFactory } from '@/test/factories/make-message'
 import { MessageServerEvents } from '@whatshare/ws-schemas/events'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
+import {
+  Uploader,
+  UploaderRemoveParams,
+  UploaderUploadParams,
+} from '@/domain/chat/application/storage/uploader'
+import { MessageType } from '@whatshare/core-schemas/enums'
 import { Time } from '@/infra/utils/time'
 
-/**
- * For the MESSAGE_ACK event to be fired, active read confirmation is required
- *
- * Enable it in Settings > Privacy > Read confirmation
- */
+class MockUploader implements Uploader {
+  async upload(params: UploaderUploadParams): Promise<{ url: string }> {
+    return { url: params.fileName }
+  }
 
-describe('Handle Message Ack (WWJS)', () => {
+  // eslint-disable-next-line prettier/prettier, @typescript-eslint/no-unused-vars
+  async remove(params: UploaderRemoveParams): Promise<void> {
+  }
+}
+
+@Global()
+@Module({
+  providers: [
+    {
+      provide: Uploader,
+      useClass: MockUploader,
+    },
+  ],
+  exports: [Uploader],
+})
+class MockUploadModule {}
+
+describe('Handle Revoked Every One (WWJS)', () => {
   let app: INestApplication
 
   let contactFactory: FakeContactFactory
@@ -41,7 +63,7 @@ describe('Handle Message Ack (WWJS)', () => {
   beforeEach(
     async () => {
       const moduleRef = await Test.createTestingModule({
-        imports: [AppModule],
+        imports: [AppModule, MockUploadModule],
         providers: [
           FakeWhatsAppFactory,
           FakeContactFactory,
@@ -126,7 +148,7 @@ describe('Handle Message Ack (WWJS)', () => {
     await app.close()
   })
 
-  it('[EVENT] MESSAGE_ACK', async () => {
+  it('[EVENT] MESSAGE_REVOKED_EVERYONE', async () => {
     const helperWWJSClientWAId = WAEntityID.createFromString(
       helperWWJSClient.switchToRaw().info.wid._serialized,
     )
@@ -161,12 +183,27 @@ describe('Handle Message Ack (WWJS)', () => {
       body: makeMessageBody({ content: waMessage.body! }),
     })
 
-    return new Promise((resolve) => {
-      socket.on('message:change', async () => {
-        await Time.delay()
+    const wwjsChat = await wwjsClient
+      .switchToRaw()
+      .getChatById(helperWWJSClientWAId.toString())
 
-        resolve(true)
+    const wwjsMessage = (
+      await wwjsChat.fetchMessages({
+        fromMe: true,
+        limit: 1,
       })
+    )[0]
+
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      socket.on('message:revoked', ({ message }) => {
+        resolve([
+          expect(message.type).toBe('revoked' as MessageType),
+          expect(message.revokedAt).toEqual(expect.any(Date)),
+        ])
+      })
+
+      await wwjsMessage.delete(true)
     })
   })
 })

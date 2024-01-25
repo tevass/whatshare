@@ -28,16 +28,16 @@ export class WWJSHandleUnreadCount implements WWJSHandler {
 
   event = WWJS.Events.UNREAD_COUNT
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async (chat: WWJS.Chat) => {
       const waChat = await WWJSChatMapper.toDomain({
         raw: chat,
-        waClientId: waClient.id,
+        waClientId: wwjsClient.id,
       })
 
       await this.handleWAChangeUnreadCount.execute({
         waChat,
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

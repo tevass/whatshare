@@ -8,6 +8,7 @@ import { WAMessage } from '../entities/wa-message'
 import { MessageMediasRepository } from '../repositories/message-medias-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { Uploader } from '../storage/uploader'
+import { Injectable } from '@nestjs/common'
 
 interface HandleWARevokeMessageRequest {
   waRevokedMessage: WAMessage
@@ -22,6 +23,7 @@ type HandleWARevokeMessageResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleWARevokeMessage {
   constructor(
     private messagesRepository: MessagesRepository,
@@ -53,6 +55,7 @@ export class HandleWARevokeMessage {
 
     if (message.hasMedia()) {
       const media = message.media
+
       await Promise.all([
         this.messageMediasRepository.delete(media),
         this.uploader.remove({ url: media.key }),

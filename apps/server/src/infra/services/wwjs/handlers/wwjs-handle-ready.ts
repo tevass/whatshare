@@ -16,10 +16,10 @@ export class WWJSHandleReady implements WWJSHandler {
 
   event = WWJS.Events.READY
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async () => {
       await this.handleWAConnected.execute({
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

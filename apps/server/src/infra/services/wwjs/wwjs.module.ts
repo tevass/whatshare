@@ -1,23 +1,31 @@
+import { Module } from '@nestjs/common'
+
+import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
+
+import { EmittersModule } from '@/infra/emitters/emitters.module'
+import { AdaptersModule } from '@/infra/adapters/adapters.module'
+
+import { WWJSClientService } from './wwjs-client.service'
+import { WWJSClientManager } from './wwjs-client-manager.service'
+
 import { HandleWAConnected } from '@/domain/chat/application/handlers/handle-wa-connected'
 import { HandleWAConnecting } from '@/domain/chat/application/handlers/handle-wa-connecting'
 import { HandleWADisconnected } from '@/domain/chat/application/handlers/handle-wa-disconnected'
 import { HandleWAGenerateQRCode } from '@/domain/chat/application/handlers/handle-wa-generate-qr-code'
-import { EmittersModule } from '@/infra/emitters/emitters.module'
-import { Module } from '@nestjs/common'
+import { HandleWAChangeUnreadCount } from '@/domain/chat/application/handlers/handle-wa-change-chat-unread-count'
+import { HandleWAChangeMessageAck } from '@/domain/chat/application/handlers/handle-wa-change-message-ack'
+import { HandleWARevokeMessage } from '@/domain/chat/application/handlers/handle-wa-revoke-message'
+
 import { WWJSHandleDisconnected } from './handlers/wwjs-handle-disconnected'
 import { WWJSHandleGenerateQrCode } from './handlers/wwjs-handle-generate-qr-code'
 import { WWJSHandleLoadingScreen } from './handlers/wwjs-handle-loading-screen'
 import { WWJSHandleReady } from './handlers/wwjs-handle-ready'
-import { WWJSClientService } from './wwjs-client.service'
-import { WWJSClientManager } from './wwjs-client-manager.service'
-import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
 import { WWJSHandleUnreadCount } from './handlers/wwjs-handle-unread-count'
-import { HandleWAChangeUnreadCount } from '@/domain/chat/application/handlers/handle-wa-change-chat-unread-count'
 import { WWJSHandleMessageAck } from './handlers/wwjs-handle-message-ack'
-import { HandleWAChangeMessageAck } from '@/domain/chat/application/handlers/handle-wa-change-message-ack'
+import { WWJSHandleMessageRevokedEveryone } from './handlers/wwjs-handle-message-revoke-everyone'
 
 @Module({
-  imports: [EmittersModule],
+  imports: [EmittersModule, AdaptersModule],
   providers: [
     WWJSClientService,
     WWJSClientManager,
@@ -38,6 +46,8 @@ import { HandleWAChangeMessageAck } from '@/domain/chat/application/handlers/han
     HandleWAChangeUnreadCount,
     WWJSHandleMessageAck,
     HandleWAChangeMessageAck,
+    WWJSHandleMessageRevokedEveryone,
+    HandleWARevokeMessage,
   ],
   exports: [WAClientManager],
 })
