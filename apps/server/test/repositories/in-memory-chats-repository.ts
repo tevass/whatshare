@@ -14,13 +14,13 @@ export class InMemoryChatsRepository implements ChatsRepository {
   async findManyByWhatsAppId(
     params: FindManyByWhatsAppIdParams,
   ): Promise<Chat[]> {
-    const { whatsAppId, page, take, includeDeleted = false } = params
+    const { whatsAppId, page, take, findDeleted = false } = params
 
     return this.items
       .filter(
         (item) =>
           item.whatsAppId.toString() === whatsAppId &&
-          (includeDeleted ? true : !item.isDeleted()),
+          (findDeleted ? true : !item.isDeleted()),
       )
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
@@ -28,25 +28,25 @@ export class InMemoryChatsRepository implements ChatsRepository {
   async countManyByWhatsAppId(
     params: CountManyByWhatsAppIdParams,
   ): Promise<number> {
-    const { whatsAppId, includeDeleted = false } = params
+    const { whatsAppId, findDeleted = false } = params
 
     return this.items.filter(
       (item) =>
         item.whatsAppId.toString() === whatsAppId &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     ).length
   }
 
   async findByWAChatIdAndWhatsAppId(
     params: FindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null> {
-    const { waChatId, whatsAppId, includeDeleted = false } = params
+    const { waChatId, whatsAppId, findDeleted = false } = params
 
     const chat = this.items.find(
       (item) =>
         item.whatsAppId.toString() === whatsAppId &&
         item.waChatId.equals(waChatId) &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
 
     if (!chat) return null
@@ -57,12 +57,12 @@ export class InMemoryChatsRepository implements ChatsRepository {
   async findManyByWAChatsIds(
     params: FindManyByWAChatsIdsParams,
   ): Promise<Chat[]> {
-    const { waChatsIds, includeDeleted = false } = params
+    const { waChatsIds, findDeleted = false } = params
 
     return this.items.filter(
       (item) =>
         waChatsIds.includes(item.waChatId) &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
   }
 

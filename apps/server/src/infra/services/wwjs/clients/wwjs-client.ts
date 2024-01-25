@@ -38,7 +38,7 @@ export class WWJSClient extends WAClient<WWJSClientProps> {
   }
 
   init() {
-    this.raw.initialize()
+    return this.raw.initialize()
   }
 
   close() {

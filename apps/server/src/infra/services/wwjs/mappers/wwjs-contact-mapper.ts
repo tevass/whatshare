@@ -1,7 +1,7 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAContact } from '@/domain/chat/application/entities/wa-contact'
+import { Text } from '@/infra/utils/text'
 import { Contact } from 'whatsapp-web.js'
-import { Text } from '../utils/text'
 
 interface ContactToDomain {
   raw: Contact
@@ -25,9 +25,9 @@ export class WWJSContactMapper {
         isGroup: raw.isGroup,
         isMyContact: raw.isMyContact,
         number: raw.number,
-        name: Text.getStringOrNull(raw.name),
-        pushName: Text.getStringOrNull(raw.pushname),
-        shortName: Text.getStringOrNull(raw.shortName),
+        name: Text.nonEmptyOrNull(raw.name),
+        pushName: Text.nonEmptyOrNull(raw.pushname),
+        shortName: Text.nonEmptyOrNull(raw.shortName),
       },
       id,
     )

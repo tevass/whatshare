@@ -9,17 +9,17 @@ import {
 } from '@/domain/chat/application/repositories/chats-repository'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { PrismaChatMapper } from '../mappers/prisma-chat-mapper'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class PrismaChatsRepository implements ChatsRepository {
   constructor(private prisma: PrismaService) {}
 
-  private getDeletedWhere = (include: boolean) => {
+  private resolveWhere<Where>(where: Where, findDeleted: boolean = false) {
     return {
-      ...(include && {
-        deletedAt: {
-          not: null,
-        },
+      ...where,
+      ...(!findDeleted && {
+        deletedAt: null,
       }),
     }
   }
@@ -35,16 +35,18 @@ export class PrismaChatsRepository implements ChatsRepository {
   async findByWAChatIdAndWhatsAppId(
     params: FindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null> {
-    const { waChatId, whatsAppId, includeDeleted = false } = params
+    const { waChatId, whatsAppId, findDeleted } = params
 
     const raw = await this.prisma.chat.findUnique({
-      where: {
-        waChatId_whatsAppId: {
-          whatsAppId,
-          waChatId: waChatId.toString(),
+      where: this.resolveWhere<Prisma.ChatFindUniqueArgs['where']>(
+        {
+          waChatId_whatsAppId: {
+            whatsAppId,
+            waChatId: waChatId.toString(),
+          },
         },
-        ...this.getDeletedWhere(includeDeleted),
-      },
+        findDeleted,
+      ),
       include: {
         contact: true,
       },

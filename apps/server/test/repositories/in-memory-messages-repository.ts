@@ -16,12 +16,11 @@ export class InMemoryMessagesRepository implements MessagesRepository {
   items: Message[] = []
 
   async findById(params: FindByIdParams): Promise<Message | null> {
-    const { id, includeDeleted = false } = params
+    const { id, findDeleted = false } = params
 
     const item = this.items.find(
       (item) =>
-        item.id.toString() === id &&
-        (includeDeleted ? true : !item.isDeleted()),
+        item.id.toString() === id && (findDeleted ? true : !item.isDeleted()),
     )
 
     if (!item) return null
@@ -30,46 +29,46 @@ export class InMemoryMessagesRepository implements MessagesRepository {
   }
 
   async findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]> {
-    const { chatId, page, take, includeDeleted = false } = params
+    const { chatId, page, take, findDeleted = false } = params
 
     return this.items
       .filter(
         (item) =>
           item.chatId.toString() === chatId &&
-          (includeDeleted ? true : !item.isDeleted()),
+          (findDeleted ? true : !item.isDeleted()),
       )
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
   async countManyByChatId(params: CountManyByChatIdParams): Promise<number> {
-    const { chatId, includeDeleted = false } = params
+    const { chatId, findDeleted = false } = params
 
     return this.items.filter(
       (item) =>
         item.chatId.toString() === chatId &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     ).length
   }
 
   async findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]> {
-    const { chatId, includeDeleted = false } = params
+    const { chatId, findDeleted = false } = params
 
     return this.items.filter(
       (item) =>
         item.chatId.toString() === chatId &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
   }
 
   async findByWAMessageId(
     params: FindByWAMessageIdParams,
   ): Promise<Message | null> {
-    const { waMessageId, includeDeleted = false } = params
+    const { waMessageId, findDeleted = false } = params
 
     const item = this.items.find(
       (item) =>
         item.waMessageId.equals(waMessageId) &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
 
     if (!item) return null
@@ -80,24 +79,24 @@ export class InMemoryMessagesRepository implements MessagesRepository {
   async findManyByWAMessagesIds(
     params: FindManyByWAMessagesIdsParams,
   ): Promise<Message[]> {
-    const { waMessagesIds, includeDeleted } = params
+    const { waMessagesIds, findDeleted } = params
 
     return this.items.filter(
       (item) =>
         waMessagesIds.includes(item.waMessageId) &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
   }
 
   async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
-    const { createdAt, waChatId, whatsAppId, includeDeleted = false } = params
+    const { createdAt, waChatId, whatsAppId, findDeleted = false } = params
 
     const message = this.items.find(
       (item) =>
         item.waChatId.equals(waChatId) &&
         item.whatsAppId.toString() === whatsAppId &&
         dayjs(createdAt).isSame(item.createdAt) &&
-        (includeDeleted ? true : !item.isDeleted()),
+        (findDeleted ? true : !item.isDeleted()),
     )
 
     if (!message) return null

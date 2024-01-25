@@ -24,7 +24,6 @@ describe('Handle Unread Count (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let env: EnvService
-  let wwjsManager: WWJSClientManager
 
   let contactFactory: FakeContactFactory
   let chatFactory: FakeChatFactory
@@ -45,10 +44,11 @@ describe('Handle Unread Count (WWJS)', () => {
 
       prisma = moduleRef.get(PrismaService)
       env = moduleRef.get(EnvService)
-      wwjsManager = moduleRef.get(WWJSClientManager)
 
       contactFactory = app.get(FakeContactFactory)
       chatFactory = app.get(FakeChatFactory)
+
+      const wwjsManager = moduleRef.get(WWJSClientManager)
       const whatsAppFactory = app.get(FakeWhatsAppFactory)
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
@@ -77,8 +77,8 @@ describe('Handle Unread Count (WWJS)', () => {
         socket.on('connect_error', reject)
       })
     },
-    1000 * 60 * 1,
-  ) // 1 minute
+    1000 * 60 * 1, // 1 minute
+  )
 
   afterAll(async () => {
     await app.close()
@@ -89,20 +89,21 @@ describe('Handle Unread Count (WWJS)', () => {
       'WWJS_TEST_HELPER_CLIENT_WAID',
     )!
 
-    const helpWAId = WAEntityID.createFromString(WWJS_TEST_HELPER_CLIENT_WAID)
+    const helperWAId = WAEntityID.createFromString(WWJS_TEST_HELPER_CLIENT_WAID)
 
     const contact = await contactFactory.makePrismaContact({
-      waContactId: helpWAId,
+      waContactId: helperWAId,
     })
 
     await chatFactory.makePrismaChat({
-      waChatId: helpWAId,
+      waChatId: helperWAId,
       whatsAppId: whatsApp.id,
       contact,
       unreadCount: 0,
     })
 
-    return new Promise((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
       socket.on('chat:change', async ({ chat }) => {
         const chatOnDatabase = await prisma.chat.findUniqueOrThrow({
           where: { id: chat.id },
@@ -114,7 +115,7 @@ describe('Handle Unread Count (WWJS)', () => {
         ])
       })
 
-      wwjsClient.chat.markUnreadById(helpWAId)
+      await wwjsClient.chat.markUnreadById(helperWAId)
     })
   })
 })

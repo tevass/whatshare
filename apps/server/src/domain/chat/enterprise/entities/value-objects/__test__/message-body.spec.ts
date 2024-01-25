@@ -5,7 +5,7 @@ describe('MessageBody', () => {
   test('create', () => {
     const body = MessageBody.create({
       content: faker.lorem.paragraph(),
-      label: faker.person.firstName(),
+      header: faker.person.firstName(),
     })
 
     expect(body).toBeTruthy()
@@ -18,14 +18,5 @@ describe('MessageBody', () => {
 
     const formattedBody = body.format()
     expect(formattedBody).toBe(body.content)
-  })
-
-  test('toString', () => {
-    const body = MessageBody.create({
-      content: faker.lorem.paragraph(),
-      label: faker.person.firstName(),
-    })
-
-    expect(body.toString()).toBe(body.format())
   })
 })

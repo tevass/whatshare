@@ -8,6 +8,8 @@ import { ChatEmitter } from '@/domain/chat/application/emitters/chat-emitter'
 
 import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
 import { WsChatEmitter } from './emitters/ws-chat-emitter'
+import { MessageEmitter } from '@/domain/chat/application/emitters/message-emitter'
+import { WsMessageEmitter } from './emitters/ws-message-emitter'
 
 @Module({
   providers: [
@@ -21,7 +23,11 @@ import { WsChatEmitter } from './emitters/ws-chat-emitter'
       provide: ChatEmitter,
       useClass: WsChatEmitter,
     },
+    {
+      provide: MessageEmitter,
+      useClass: WsMessageEmitter,
+    },
   ],
-  exports: [WhatsAppEmitter, ChatEmitter],
+  exports: [WhatsAppEmitter, ChatEmitter, MessageEmitter],
 })
 export class WsModule {}

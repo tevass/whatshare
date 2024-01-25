@@ -43,7 +43,7 @@ export class CreateMessageFromWAMessageUseCase {
     const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
       waChatId: WAEntityID.createFromString(waChatId),
       whatsAppId,
-      includeDeleted: true,
+      findDeleted: true,
     })
 
     if (!chat) {
@@ -75,7 +75,7 @@ export class CreateMessageFromWAMessageUseCase {
 
       const quotedMessage = await this.messagesRepository.findByWAMessageId({
         waMessageId: waQuotedMessage.id,
-        includeDeleted: true,
+        findDeleted: true,
       })
 
       if (quotedMessage) message.set({ quoted: quotedMessage })

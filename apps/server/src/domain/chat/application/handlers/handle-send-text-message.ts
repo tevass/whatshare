@@ -47,13 +47,13 @@ export class HandleSendTextMessage {
       this.chatsRepository.findByWAChatIdAndWhatsAppId({
         waChatId: WAEntityID.createFromString(waChatId),
         whatsAppId,
-        includeDeleted: true,
+        findDeleted: true,
       }),
       this.attendantsRepository.findById(attendantId),
       quotedId
         ? this.messagesRepository.findById({
             id: quotedId,
-            includeDeleted: true,
+            findDeleted: true,
           })
         : null,
     ])
@@ -79,7 +79,7 @@ export class HandleSendTextMessage {
 
     const messageBody = MessageBody.create({
       content: body,
-      label: attendant.profile.displayName,
+      header: attendant.profile.displayName,
     })
 
     const message = Message.create({
@@ -110,7 +110,7 @@ export class HandleSendTextMessage {
     })
 
     const waMessage = await waClient.message.sendText({
-      body: messageBody.toString(),
+      body: messageBody.format(),
       chatId: chat.waChatId,
       quotedId: quotedMessage?.waMessageId,
     })

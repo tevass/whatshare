@@ -22,7 +22,6 @@ import { WWJSClient } from '../../clients/wwjs-client'
 describe('Handle Disconnected (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let wwjsManager: WWJSClientManager
 
   let whatsApp: WhatsApp
 
@@ -38,7 +37,7 @@ describe('Handle Disconnected (WWJS)', () => {
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    wwjsManager = moduleRef.get(WWJSClientManager)
+    const wwjsManager = moduleRef.get(WWJSClientManager)
     const whatsAppFactory = app.get(FakeWhatsAppFactory)
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
@@ -69,7 +68,8 @@ describe('Handle Disconnected (WWJS)', () => {
   })
 
   it('[EVENT] DISCONNECTED', async () => {
-    return new Promise((resolve) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
       socket.on('whatsApp:disconnected', async ({ whatsApp }) => {
         const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
           where: { id: whatsApp.id },
@@ -84,7 +84,7 @@ describe('Handle Disconnected (WWJS)', () => {
         ])
       })
 
-      wwjsClient.logout()
+      await wwjsClient.logout()
     })
   })
 })

@@ -3,7 +3,7 @@ import { PaginationParams } from '@/domain/shared/application/repositories/pagin
 import { Chat } from '../../enterprise/entities/chat'
 
 interface ChatsRepositoryMethodsParams {
-  includeDeleted?: boolean
+  findDeleted?: boolean
 }
 
 export interface FindManyByWhatsAppIdParams

@@ -4,7 +4,7 @@ import { PaginationParams } from '@/domain/shared/application/repositories/pagin
 import { Message } from '../../enterprise/entities/message'
 
 interface MessagesRepositoryMethodsParams {
-  includeDeleted?: boolean
+  findDeleted?: boolean
 }
 
 export interface FindByIdParams extends MessagesRepositoryMethodsParams {

@@ -19,7 +19,6 @@ describe('Handle Loading Screen (WWJS)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let env: EnvService
-  let wwjsManager: WWJSClientManager
 
   let whatsApp: WhatsApp
 
@@ -36,7 +35,7 @@ describe('Handle Loading Screen (WWJS)', () => {
 
     prisma = moduleRef.get(PrismaService)
     env = moduleRef.get(EnvService)
-    wwjsManager = moduleRef.get(WWJSClientManager)
+    const wwjsManager = moduleRef.get(WWJSClientManager)
 
     const whatsAppFactory = app.get(FakeWhatsAppFactory)
 

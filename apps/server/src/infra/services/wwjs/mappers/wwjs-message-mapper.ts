@@ -3,10 +3,10 @@ import { WAMessageID } from '@/core/entities/wa-message-id'
 import { WAContact } from '@/domain/chat/application/entities/wa-contact'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
 import { Message } from 'whatsapp-web.js'
-import { Text } from '../utils/text'
 import { WWJSMessageAckMapper } from './wwjs-message-ack-mapper'
 import { WWJSMessageMediaMapper } from './wwjs-message-media-mapper'
 import { WWJSMessageTypeMapper } from './wwjs-message-type-mapper'
+import { Text } from '@/infra/utils/text'
 
 interface WAMessageToDomain {
   raw: Message
@@ -43,7 +43,7 @@ export class WWJSMessageMapper {
         isStatus: raw.isStatus,
         timestamp: raw.timestamp,
         type: WWJSMessageTypeMapper.toDomain(raw.type),
-        body: Text.getStringOrNull(raw.body),
+        body: Text.nonEmptyOrNull(raw.body),
         media: media ? WWJSMessageMediaMapper.toDomain(media) : null,
         contacts: hasContacts
           ? raw.vCards.map(WAContact.createFromVCard)

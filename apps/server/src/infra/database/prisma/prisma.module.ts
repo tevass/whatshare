@@ -11,6 +11,8 @@ import { PrismaAttendantProfilesRepository } from './repositories/prisma-attenda
 import { PrismaAttendantsRepository } from './repositories/prisma-attendants-repository'
 import { PrismaWhatsAppsRepository } from './repositories/prisma-whats-apps-repository'
 import { PrismaChatsRepository } from './repositories/prisma-chats-repository'
+import { MessagesRepository } from '@/domain/chat/application/repositories/messages-repository'
+import { PrismaMessagesRepository } from './repositories/prisma-messages-repository'
 
 @Module({
   providers: [
@@ -22,6 +24,7 @@ import { PrismaChatsRepository } from './repositories/prisma-chats-repository'
     { provide: AttendantsRepository, useClass: PrismaAttendantsRepository },
     { provide: WhatsAppsRepository, useClass: PrismaWhatsAppsRepository },
     { provide: ChatsRepository, useClass: PrismaChatsRepository },
+    { provide: MessagesRepository, useClass: PrismaMessagesRepository },
   ],
   exports: [
     PrismaService,
@@ -29,6 +32,7 @@ import { PrismaChatsRepository } from './repositories/prisma-chats-repository'
     AttendantsRepository,
     WhatsAppsRepository,
     ChatsRepository,
+    MessagesRepository,
   ],
 })
 export class PrismaModule {}

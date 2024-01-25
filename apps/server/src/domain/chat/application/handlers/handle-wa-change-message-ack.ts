@@ -5,6 +5,7 @@ import { MessageAck } from '@whatshare/core-schemas/enums'
 import { MessageEmitter } from '../emitters/message-emitter'
 import { WAMessage } from '../entities/wa-message'
 import { MessagesRepository } from '../repositories/messages-repository'
+import { Injectable } from '@nestjs/common'
 
 interface HandleWAChangeMessageAckRequest {
   waMessage: WAMessage
@@ -18,6 +19,7 @@ type HandleWAChangeMessageAckResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleWAChangeMessageAck {
   constructor(
     private messagesRepository: MessagesRepository,

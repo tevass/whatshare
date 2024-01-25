@@ -48,7 +48,7 @@ export class HandleWAReceivedMessage {
       this.chatsRepository.findByWAChatIdAndWhatsAppId({
         whatsAppId,
         waChatId: waChat.id,
-        includeDeleted: true,
+        findDeleted: true,
       }),
     ])
 
