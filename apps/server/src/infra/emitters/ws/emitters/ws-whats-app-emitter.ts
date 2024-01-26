@@ -8,9 +8,9 @@ import { WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
-import { WsNamespaceWAGateway } from '../decorators/ws-namespace-wa-gateway.decorator'
+import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
 
-@WsNamespaceWAGateway()
+@WsNamespaceGateway({ namespace: 'wa' })
 export class WsWhatsAppEmitter implements WhatsAppEmitter {
   @WebSocketServer()
   private io!: Server<object, WhatsAppServerEvents>

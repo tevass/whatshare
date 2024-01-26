@@ -24,7 +24,10 @@ export class WSJoinRoomMiddleware implements WSMiddleware {
       )
     }
 
-    socket.join(query.data.room)
+    const roomId = query.data.room
+    socket.join(roomId)
+
+    socket.handshake.query = query.data
 
     next()
   }

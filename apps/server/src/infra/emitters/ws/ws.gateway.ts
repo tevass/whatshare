@@ -1,10 +1,10 @@
 import { WebSocketServer } from '@nestjs/websockets'
-import { WsNamespaceWAGateway } from './decorators/ws-namespace-wa-gateway.decorator'
 import { Server } from 'socket.io'
 import { OnModuleInit } from '@nestjs/common'
 import { WSJoinRoomMiddleware } from './ws-join-room-middleware'
+import { WsNamespaceGateway } from './decorators/ws-namespace-gateway.decorator'
 
-@WsNamespaceWAGateway()
+@WsNamespaceGateway({ namespace: 'wa' })
 export class WsGateway implements OnModuleInit {
   constructor(private joinRoomMiddleware: WSJoinRoomMiddleware) {}
 

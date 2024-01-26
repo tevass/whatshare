@@ -2,15 +2,15 @@ import { WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 
 import { MessageServerEvents } from '@whatshare/ws-schemas/events'
-import { WsNamespaceWAGateway } from '../decorators/ws-namespace-wa-gateway.decorator'
 import {
   MessageEmitter,
   MessageEmitterPayload,
 } from '@/domain/chat/application/emitters/message-emitter'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { MessagePresenter } from '@/infra/presenters/message-presenter'
+import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
 
-@WsNamespaceWAGateway()
+@WsNamespaceGateway({ namespace: 'wa' })
 export class WsMessageEmitter implements MessageEmitter {
   @WebSocketServer()
   private io!: Server<object, MessageServerEvents>

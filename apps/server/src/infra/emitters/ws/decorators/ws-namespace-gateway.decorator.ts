@@ -7,5 +7,6 @@ interface WsNamespaceGatewayMetadata extends GatewayMetadata {
   namespace: WsNamespace
 }
 
-export const WsNamespaceGateway = (opts: WsNamespaceGatewayMetadata) =>
-  applyDecorators(WebSocketGateway(opts))
+export function WsNamespaceGateway(opts: WsNamespaceGatewayMetadata) {
+  return applyDecorators(WebSocketGateway(opts))
+}

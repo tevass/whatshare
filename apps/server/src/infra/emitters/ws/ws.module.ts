@@ -10,6 +10,8 @@ import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
 import { WsChatEmitter } from './emitters/ws-chat-emitter'
 import { MessageEmitter } from '@/domain/chat/application/emitters/message-emitter'
 import { WsMessageEmitter } from './emitters/ws-message-emitter'
+import { WsHandleClearChat } from './handlers/ws-handle-clear-chat'
+import { HandleClearChat } from '@/domain/chat/application/handlers/handle-clear-chat'
 
 @Module({
   providers: [
@@ -27,6 +29,9 @@ import { WsMessageEmitter } from './emitters/ws-message-emitter'
       provide: MessageEmitter,
       useClass: WsMessageEmitter,
     },
+
+    WsHandleClearChat,
+    HandleClearChat,
   ],
   exports: [WhatsAppEmitter, ChatEmitter, MessageEmitter],
 })

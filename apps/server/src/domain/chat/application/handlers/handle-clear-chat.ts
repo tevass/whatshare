@@ -7,6 +7,7 @@ import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAClientManager } from '../services/wa-client-manager'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 interface HandleClearChatRequest {
   waChatId: string
@@ -20,6 +21,7 @@ type HandleClearChatResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleClearChat {
   constructor(
     private chatsRepository: ChatsRepository,

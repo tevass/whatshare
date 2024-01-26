@@ -2,15 +2,15 @@ import { WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 
 import { ChatServerEvents } from '@whatshare/ws-schemas/events'
-import { WsNamespaceWAGateway } from '../decorators/ws-namespace-wa-gateway.decorator'
 import {
   ChatEmitter,
   ChatEmitterPayload,
 } from '@/domain/chat/application/emitters/chat-emitter'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { ChatPresenter } from '@/infra/presenters/chat-presenter'
+import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
 
-@WsNamespaceWAGateway()
+@WsNamespaceGateway({ namespace: 'wa' })
 export class WsChatEmitter implements ChatEmitter {
   @WebSocketServer()
   private io!: Server<object, ChatServerEvents>
