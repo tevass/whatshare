@@ -38,7 +38,7 @@ describe('Handle Disconnected (WWJS)', () => {
 
     prisma = moduleRef.get(PrismaService)
     const wwjsManager = moduleRef.get(WWJSClientManager)
-    const whatsAppFactory = app.get(FakeWhatsAppFactory)
+    const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 

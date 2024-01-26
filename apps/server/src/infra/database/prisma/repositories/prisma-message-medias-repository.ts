@@ -2,7 +2,9 @@ import { MessageMediasRepository } from '@/domain/chat/application/repositories/
 import { PrismaService } from '../prisma.service'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
 import { PrismaMessageMediaMapper } from '../mappers/prisma-message-media-mapper'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class PrismaMessageMediasRepository implements MessageMediasRepository {
   constructor(private prisma: PrismaService) {}
 

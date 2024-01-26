@@ -1,33 +1,25 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
-import { EnvService } from '@/infra/env/env.service'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
-import { WWJSClient } from '../../clients/wwjs-client'
-import { WWJSClientManager } from '../../wwjs-client-manager.service'
-import { WWJSClientService } from '../../wwjs-client.service'
-import { Server } from '@/test/utils/server'
-import { Socket, io } from 'socket.io-client'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeChatFactory } from '@/test/factories/make-chat'
-import { FakeMessageFactory } from '@/test/factories/make-message'
-import { MessageServerEvents } from '@whatshare/ws-schemas/events'
-import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
-import { Time } from '@/infra/utils/time'
 
-describe('Handle Message Ack (WWJS)', () => {
+import { afterAll } from 'vitest'
+import { WWJSClient } from '../../clients/wwjs-client'
+import { Socket, io } from 'socket.io-client'
+import { EnvService } from '@/infra/env/env.service'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { Server } from '@/test/utils/server'
+import { Time } from '@/infra/utils/time'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { ChatServerEvents } from '@whatshare/ws-schemas/events'
+
+describe('Handle Message Received (WWJS)', () => {
   let app: INestApplication
 
-  let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
-  let messageFactory: FakeMessageFactory
-
-  let whatsApp: WhatsApp
-  let socket: Socket<MessageServerEvents>
+  let socket: Socket<ChatServerEvents>
 
   let wwjsClient: WWJSClient
   let helperWWJSClient: WWJSClient
@@ -36,24 +28,14 @@ describe('Handle Message Ack (WWJS)', () => {
     async () => {
       const moduleRef = await Test.createTestingModule({
         imports: [AppModule],
-        providers: [
-          FakeWhatsAppFactory,
-          FakeContactFactory,
-          FakeChatFactory,
-          FakeMessageFactory,
-        ],
+        providers: [FakeWhatsAppFactory],
       }).compile()
 
       app = moduleRef.createNestApplication()
-
       const env = moduleRef.get(EnvService)
 
-      contactFactory = moduleRef.get(FakeContactFactory)
-      chatFactory = moduleRef.get(FakeChatFactory)
-      messageFactory = moduleRef.get(FakeMessageFactory)
-
-      const wwjsManager = moduleRef.get(WWJSClientManager)
       const wwjsService = moduleRef.get(WWJSClientService)
+      const wwjsManager = moduleRef.get(WWJSClientManager)
 
       const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
@@ -61,7 +43,7 @@ describe('Handle Message Ack (WWJS)', () => {
       await app.init()
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
-      whatsApp = await whatsAppFactory.makePrismaWhatsApp(
+      const whatsApp = await whatsAppFactory.makePrismaWhatsApp(
         {},
         new UniqueEntityID(WWJS_TEST_CLIENT_ID),
       )
@@ -96,8 +78,8 @@ describe('Handle Message Ack (WWJS)', () => {
         socket.on('connect_error', reject)
       })
     },
-    1000 * 60 * 1, // 1 minute
-  )
+    1000 * 60 * 1,
+  ) // 1 minute
 
   afterEach(async () => {
     const wwjsRawClient = wwjsClient.switchToRaw()
@@ -120,46 +102,17 @@ describe('Handle Message Ack (WWJS)', () => {
     await app.close()
   })
 
-  it('[EVENT] MESSAGE_ACK', async () => {
-    const helperWWJSClientWAId = WAEntityID.createFromString(
-      helperWWJSClient.switchToRaw().info.wid._serialized,
+  it('[EVENT] MESSAGE_RECEIVED', async () => {
+    const wwjsClientWAId = WAEntityID.createFromString(
+      wwjsClient.switchToRaw().info.wid._serialized,
     )
 
-    const contact = await contactFactory.makePrismaContact({
-      waContactId: helperWWJSClientWAId,
-    })
-
-    const chat = await chatFactory.makePrismaChat({
-      waChatId: helperWWJSClientWAId,
-      whatsAppId: whatsApp.id,
-      contact,
-      unreadCount: 0,
-    })
-
-    const waMessage = await wwjsClient.message.sendText({
-      chatId: helperWWJSClientWAId,
-      body: '@test',
-    })
-
-    await messageFactory.makePrismaMessage({
-      waMessageId: waMessage.id,
-      type: 'text',
-      ack: 'sent',
-      whatsAppId: whatsApp.id,
-      chatId: chat.id,
-      waChatId: chat.waChatId,
-      author: null,
-      media: null,
-      quoted: null,
-      contacts: null,
-      body: makeMessageBody({ content: waMessage.body! }),
-    })
-
-    return new Promise((resolve) => {
-      socket.on('message:change', async () => {
-        await Time.delay()
-
-        resolve(true)
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve) => {
+      socket.on('chat:create', resolve)
+      await helperWWJSClient.message.sendText({
+        chatId: wwjsClientWAId,
+        body: '@test',
       })
     })
   })

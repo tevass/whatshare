@@ -8,6 +8,7 @@ import { WhatsAppsRepository } from '@/domain/chat/application/repositories/what
 import { ChatsRepository } from '@/domain/chat/application/repositories/chats-repository'
 import { MessagesRepository } from '@/domain/chat/application/repositories/messages-repository'
 import { MessageMediasRepository } from '@/domain/chat/application/repositories/message-medias-repository'
+import { ContactsRepository } from '@/domain/chat/application/repositories/contacts-repository'
 
 import { PrismaAttendantProfilesRepository } from './repositories/prisma-attendant-profiles-repository'
 import { PrismaAttendantsRepository } from './repositories/prisma-attendants-repository'
@@ -15,6 +16,7 @@ import { PrismaWhatsAppsRepository } from './repositories/prisma-whats-apps-repo
 import { PrismaChatsRepository } from './repositories/prisma-chats-repository'
 import { PrismaMessagesRepository } from './repositories/prisma-messages-repository'
 import { PrismaMessageMediasRepository } from './repositories/prisma-message-medias-repository'
+import { PrismaContactsRepository } from './repositories/prisma-contacts-repository'
 
 @Module({
   providers: [
@@ -31,6 +33,10 @@ import { PrismaMessageMediasRepository } from './repositories/prisma-message-med
       provide: MessageMediasRepository,
       useClass: PrismaMessageMediasRepository,
     },
+    {
+      provide: ContactsRepository,
+      useClass: PrismaContactsRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -40,6 +46,7 @@ import { PrismaMessageMediasRepository } from './repositories/prisma-message-med
     ChatsRepository,
     MessagesRepository,
     MessageMediasRepository,
+    ContactsRepository,
   ],
 })
 export class PrismaModule {}

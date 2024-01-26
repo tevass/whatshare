@@ -22,9 +22,9 @@ describe('Authenticate', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
-    attendantFactory = app.get(FakeAttendantFactory)
-    hasher = app.get(HashGenerator)
-    env = app.get(EnvService)
+    attendantFactory = moduleRef.get(FakeAttendantFactory)
+    hasher = moduleRef.get(HashGenerator)
+    env = moduleRef.get(EnvService)
 
     app.use(cookieParser())
 

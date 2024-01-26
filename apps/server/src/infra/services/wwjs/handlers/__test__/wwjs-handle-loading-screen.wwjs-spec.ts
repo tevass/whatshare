@@ -37,7 +37,7 @@ describe('Handle Loading Screen (WWJS)', () => {
     env = moduleRef.get(EnvService)
     const wwjsManager = moduleRef.get(WWJSClientManager)
 
-    const whatsAppFactory = app.get(FakeWhatsAppFactory)
+    const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
     const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
     whatsApp = await whatsAppFactory.makePrismaWhatsApp(

@@ -60,7 +60,6 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
       waChatId: this.id,
       unreadCount: this.unreadCount,
       whatsAppId: this.waClientId,
-      lastInteraction: new Date(this.timestamp * 1000),
     })
   }
 

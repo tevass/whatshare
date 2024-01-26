@@ -13,6 +13,7 @@ import { MessageMediasRepository } from '../../repositories/message-medias-repos
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
 import { DateAdapter } from '../../adapters/date-adapter'
+import { Injectable } from '@nestjs/common'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -27,6 +28,7 @@ type CreateMessageFromWAMessageUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateMessageFromWAMessageUseCase {
   constructor(
     private messagesRepository: MessagesRepository,

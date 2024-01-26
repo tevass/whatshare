@@ -6,7 +6,7 @@ export default defineConfig(
   mergeConfig(config, {
     test: {
       include: ['**/*.e2e-spec.ts'],
-      setupFiles: ['./test/setup/mongo-memory-server.ts'],
+      setupFiles: ['./test/setup/mongo-database-test.ts'],
     },
     plugins: [
       swc.vite({

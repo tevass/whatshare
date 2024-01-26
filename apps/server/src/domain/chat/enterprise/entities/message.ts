@@ -39,7 +39,7 @@ export interface MessageProps {
   revokedBy: AttendantProfile | null
 }
 
-const MediaTypes = new Set<MessageType>([
+const MEDIA_TYPES = new Set<MessageType>([
   'image',
   'video',
   'voice',
@@ -114,7 +114,7 @@ export class Message extends Entity<MessageProps> {
   }
 
   hasMedia(): this is SetNonNullable<MessageProps, 'media'> {
-    return !!this.media && MediaTypes.has(this.type)
+    return !!this.media && MEDIA_TYPES.has(this.type)
   }
 
   get isBroadcast() {

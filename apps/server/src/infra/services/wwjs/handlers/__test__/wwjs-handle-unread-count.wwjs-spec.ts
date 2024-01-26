@@ -45,11 +45,11 @@ describe('Handle Unread Count (WWJS)', () => {
       prisma = moduleRef.get(PrismaService)
       env = moduleRef.get(EnvService)
 
-      contactFactory = app.get(FakeContactFactory)
-      chatFactory = app.get(FakeChatFactory)
+      contactFactory = moduleRef.get(FakeContactFactory)
+      chatFactory = moduleRef.get(FakeChatFactory)
 
       const wwjsManager = moduleRef.get(WWJSClientManager)
-      const whatsAppFactory = app.get(FakeWhatsAppFactory)
+      const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
       whatsApp = await whatsAppFactory.makePrismaWhatsApp(

@@ -53,14 +53,14 @@ describe('Handle Revoked Every One (WWJS)', () => {
       dateAdapter = moduleRef.get(DateAdapter)
       const env = moduleRef.get(EnvService)
 
-      contactFactory = app.get(FakeContactFactory)
-      chatFactory = app.get(FakeChatFactory)
-      messageFactory = app.get(FakeMessageFactory)
+      contactFactory = moduleRef.get(FakeContactFactory)
+      chatFactory = moduleRef.get(FakeChatFactory)
+      messageFactory = moduleRef.get(FakeMessageFactory)
 
-      const wwjsManager = app.get(WWJSClientManager)
-      const wwjsService = app.get(WWJSClientService)
+      const wwjsManager = moduleRef.get(WWJSClientManager)
+      const wwjsService = moduleRef.get(WWJSClientService)
 
-      const whatsAppFactory = app.get(FakeWhatsAppFactory)
+      const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
       app.use(cookieParser)
       await app.init()
@@ -106,7 +106,6 @@ describe('Handle Revoked Every One (WWJS)', () => {
 
   afterEach(async () => {
     const wwjsRawClient = wwjsClient.switchToRaw()
-
     const helperWWJSRawClient = helperWWJSClient.switchToRaw()
 
     const chats = await Promise.all([

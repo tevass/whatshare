@@ -19,8 +19,8 @@ import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
 export class PrismaMessagesRepository implements MessagesRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Method extends { where: unknown }>(
-    where: Method['where'],
+  private resolveWhere<Method extends { where?: object }>(
+    where: Method['where'] = {},
     findDeleted: boolean = false,
   ) {
     return {
@@ -123,7 +123,11 @@ export class PrismaMessagesRepository implements MessagesRepository {
     throw new Error('Method not implemented.')
   }
 
-  create(message: Message): Promise<void> {
-    throw new Error('Method not implemented.')
+  async create(message: Message): Promise<void> {
+    const data = PrismaMessageMapper.toPrismaCreate(message)
+
+    await this.prisma.message.create({
+      data,
+    })
   }
 }

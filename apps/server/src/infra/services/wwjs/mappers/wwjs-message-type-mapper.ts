@@ -20,6 +20,6 @@ const domainMapper: Partial<{
 
 export class WWJSMessageTypeMapper {
   static toDomain(raw: RawMessageType): MessageType {
-    return domainMapper[raw] ?? 'unknown'
+    return domainMapper[raw] as MessageType
   }
 }

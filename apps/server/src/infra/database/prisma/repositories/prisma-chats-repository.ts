@@ -15,7 +15,10 @@ import { Prisma } from '@prisma/client'
 export class PrismaChatsRepository implements ChatsRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Where>(where: Where, findDeleted: boolean = false) {
+  private resolveWhere<Method extends { where?: object }>(
+    where: Method['where'] = {},
+    findDeleted: boolean = false,
+  ) {
     return {
       ...where,
       ...(!findDeleted && {
@@ -38,7 +41,7 @@ export class PrismaChatsRepository implements ChatsRepository {
     const { waChatId, whatsAppId, findDeleted } = params
 
     const raw = await this.prisma.chat.findUnique({
-      where: this.resolveWhere<Prisma.ChatFindUniqueArgs['where']>(
+      where: this.resolveWhere<Prisma.ChatFindUniqueArgs>(
         {
           waChatId_whatsAppId: {
             whatsAppId,
@@ -72,8 +75,12 @@ export class PrismaChatsRepository implements ChatsRepository {
     })
   }
 
-  create(chat: Chat): Promise<void> {
-    throw new Error('Method not implemented.')
+  async create(chat: Chat): Promise<void> {
+    const data = PrismaChatMapper.toPrismaCreate(chat)
+
+    await this.prisma.chat.create({
+      data,
+    })
   }
 
   createMany(chats: Chat[]): Promise<void> {

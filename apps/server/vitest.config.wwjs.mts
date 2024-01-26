@@ -7,7 +7,7 @@ export default defineConfig(
     test: {
       include: ['**/*.wwjs-spec.ts'],
       setupFiles: [
-        './test/setup/mongo-memory-server.ts',
+        './test/setup/mongo-database-test.ts',
         './test/setup/wwjs-session.ts',
       ],
       testTimeout: 1000 * 40, // 40 seconds

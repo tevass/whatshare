@@ -15,6 +15,7 @@ import { HandleWAConnecting } from '@/domain/chat/application/handlers/handle-wa
 import { HandleWADisconnected } from '@/domain/chat/application/handlers/handle-wa-disconnected'
 import { HandleWAGenerateQRCode } from '@/domain/chat/application/handlers/handle-wa-generate-qr-code'
 import { HandleWARevokeMessage } from '@/domain/chat/application/handlers/handle-wa-revoke-message'
+import { HandleWAReceivedMessage } from '@/domain/chat/application/handlers/handle-wa-received-message'
 
 import { StorageModule } from '@/infra/storage/storage.module'
 import { WWJSHandleDisconnected } from './handlers/wwjs-handle-disconnected'
@@ -24,6 +25,8 @@ import { WWJSHandleMessageAck } from './handlers/wwjs-handle-message-ack'
 import { WWJSHandleMessageRevokedEveryone } from './handlers/wwjs-handle-message-revoke-everyone'
 import { WWJSHandleReady } from './handlers/wwjs-handle-ready'
 import { WWJSHandleUnreadCount } from './handlers/wwjs-handle-unread-count'
+import { WWJSHandleMessageReceived } from './handlers/wwjs-handle-message-received'
+import { CreateMessageFromWAMessageUseCase } from '@/domain/chat/application/use-cases/messages/create-message-from-wa-message-use-case'
 
 @Module({
   imports: [EmittersModule, AdaptersModule, StorageModule],
@@ -49,6 +52,9 @@ import { WWJSHandleUnreadCount } from './handlers/wwjs-handle-unread-count'
     HandleWAChangeMessageAck,
     WWJSHandleMessageRevokedEveryone,
     HandleWARevokeMessage,
+    WWJSHandleMessageReceived,
+    HandleWAReceivedMessage,
+    CreateMessageFromWAMessageUseCase,
   ],
   exports: [WAClientManager],
 })

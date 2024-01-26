@@ -8,6 +8,7 @@ import { WAMessage } from '../entities/wa-message'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { ContactsRepository } from '../repositories/contacts-repository'
 import { CreateMessageFromWAMessageUseCase } from '../use-cases/messages/create-message-from-wa-message-use-case'
+import { Injectable } from '@nestjs/common'
 
 interface HandleWAReceivedMessageRequest {
   waChat: WAChat
@@ -22,6 +23,7 @@ type HandleWAReceivedMessageResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleWAReceivedMessage {
   constructor(
     private contactsRepository: ContactsRepository,

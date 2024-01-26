@@ -1,5 +1,5 @@
 import { ValueObject } from '@/core/entities/value-object'
-import mime from 'mime'
+import mime from 'mime-types'
 
 export class MimeType extends ValueObject<string> {
   get value() {
@@ -7,7 +7,7 @@ export class MimeType extends ValueObject<string> {
   }
 
   extension() {
-    return mime.getExtension(this.value) ?? 'unknown'
+    return mime.extension(this.value) || 'unknown'
   }
 
   toString() {
@@ -15,7 +15,7 @@ export class MimeType extends ValueObject<string> {
   }
 
   static createFromFilename(filename: string) {
-    const mimetype = mime.getType(filename)
+    const mimetype = mime.lookup(filename)
     if (!mimetype) throw new Error(`Invalid mimetype of "${filename}"`)
 
     return new MimeType(mimetype)

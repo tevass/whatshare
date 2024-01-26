@@ -26,7 +26,7 @@ describe('Handle Generate QR Code (WWJS)', () => {
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    const whatsAppFactory = app.get(FakeWhatsAppFactory)
+    const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 

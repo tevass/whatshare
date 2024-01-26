@@ -33,9 +33,9 @@ describe('Create Attendant (HTTP)', () => {
 
     prisma = moduleRef.get(PrismaService)
     whatsAppsFactory = moduleRef.get(FakeWhatsAppFactory)
-    attendantFactory = app.get(FakeAttendantFactory)
-    jwt = app.get(JwtService)
-    env = app.get(EnvService)
+    attendantFactory = moduleRef.get(FakeAttendantFactory)
+    jwt = moduleRef.get(JwtService)
+    env = moduleRef.get(EnvService)
 
     app.use(cookieParser())
 

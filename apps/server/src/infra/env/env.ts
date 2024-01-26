@@ -17,6 +17,9 @@ export const envSchema = z.object({
   NODE_ENV: nodeEnvSchema,
   PORT: z.coerce.number().optional().default(3333),
 
+  // Prisma
+  DATABASE_URL: z.string().url(),
+
   // JWT
   JWT_SECRET: z.string(),
   JWT_COOKIE_NAME: z.string(),

@@ -22,9 +22,9 @@ describe('Refresh Authentication', () => {
 
     app = moduleRef.createNestApplication()
 
-    attendantFactory = app.get(FakeAttendantFactory)
-    jwt = app.get(JwtService)
-    env = app.get(EnvService)
+    attendantFactory = moduleRef.get(FakeAttendantFactory)
+    jwt = moduleRef.get(JwtService)
+    env = moduleRef.get(EnvService)
 
     app.use(cookieParser())
 
