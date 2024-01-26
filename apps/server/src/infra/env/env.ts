@@ -1,56 +1,43 @@
 import { mongoId, waEntityId } from '@whatshare/shared-schemas'
-import { z } from 'zod'
+import { ZodSchema, z } from 'zod'
 
-export const envSchema = z
-  .object({
-    PORT: z.coerce.number().optional().default(3333),
-    NODE_ENV: z
-      .enum(['development', 'test', 'production'])
-      .default('development'),
+const nodeEnvSchema = z
+  .enum(['development', 'test', 'production'])
+  .default('development')
 
-    // JWT
-    JWT_SECRET: z.string(),
-    JWT_COOKIE_NAME: z.string(),
-    JWT_REFRESH_COOKIE_NAME: z.string(),
+const NODE_ENV = nodeEnvSchema.parse(process.env.NODE_ENV)
 
-    // WWJS
-    WWJS_EXECUTABLE_PATH: z.string(),
-    WWJS_WEB_VERSION: z.string(),
-    WWJS_REMOTE_PATH: z.string().url(),
-
-    // WWJS (TEST)
-    WWJS_TEST_CLIENT_ID: mongoId.optional(),
-    WWJS_TEST_CLIENT_WAID: waEntityId.optional(),
-    WWJS_TEST_HELPER_CLIENT_ID: mongoId.optional(),
-    WWJS_TEST_HELPER_CLIENT_WAID: waEntityId.optional(),
-
-    //  Upload (AWS / Cloudflare)
-    CLOUDFLARE_ACCOUNT_ID: z.string(),
-    AWS_BUCKET_NAME: z.string(),
-    AWS_ACCESS_KEY_ID: z.string(),
-    AWS_SECRET_ACCESS_KEY: z.string(),
+function requiredValueInTest(schema: ZodSchema) {
+  return schema.refine((value) => (NODE_ENV !== 'test' ? true : !!value), {
+    message: 'Required in test',
   })
-  .refine((env) => {
-    const {
-      NODE_ENV,
-      WWJS_TEST_CLIENT_ID,
-      WWJS_TEST_CLIENT_WAID,
-      WWJS_TEST_HELPER_CLIENT_ID,
-      WWJS_TEST_HELPER_CLIENT_WAID,
-    } = env
+}
 
-    if (NODE_ENV !== 'test') return true
+export const envSchema = z.object({
+  NODE_ENV: nodeEnvSchema,
+  PORT: z.coerce.number().optional().default(3333),
 
-    const requiredValuesInTest = [
-      WWJS_TEST_CLIENT_ID,
-      WWJS_TEST_CLIENT_WAID,
-      WWJS_TEST_HELPER_CLIENT_ID,
-      WWJS_TEST_HELPER_CLIENT_WAID,
-    ]
+  // JWT
+  JWT_SECRET: z.string(),
+  JWT_COOKIE_NAME: z.string(),
+  JWT_REFRESH_COOKIE_NAME: z.string(),
 
-    const hasAllValues = requiredValuesInTest.every((value) => !!value)
+  // WWJS
+  WWJS_EXECUTABLE_PATH: z.string(),
+  WWJS_WEB_VERSION: z.string(),
+  WWJS_REMOTE_PATH: z.string().url(),
 
-    return hasAllValues
-  })
+  // WWJS (TEST)
+  WWJS_TEST_CLIENT_ID: requiredValueInTest(mongoId.optional()),
+  WWJS_TEST_CLIENT_WAID: requiredValueInTest(waEntityId.optional()),
+  WWJS_TEST_HELPER_CLIENT_ID: requiredValueInTest(mongoId.optional()),
+  WWJS_TEST_HELPER_CLIENT_WAID: requiredValueInTest(waEntityId.optional()),
+
+  //  Upload (AWS / Cloudflare)
+  CLOUDFLARE_ACCOUNT_ID: z.string(),
+  AWS_BUCKET_NAME: z.string(),
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY: z.string(),
+})
 
 export type Env = z.infer<typeof envSchema>
