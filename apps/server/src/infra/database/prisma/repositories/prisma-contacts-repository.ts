@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma.service'
 import { Prisma } from '@prisma/client'
 import { PrismaContactMapper } from '../mappers/prisma-contact-mapper'
 import { Injectable } from '@nestjs/common'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 
 @Injectable()
 export class PrismaContactsRepository implements ContactsRepository {
@@ -65,12 +66,46 @@ export class PrismaContactsRepository implements ContactsRepository {
     return raw.map(PrismaContactMapper.toDomain)
   }
 
-  findMany(params: FindManyParams): Promise<Contact[]> {
-    throw new Error('Method not implemented.')
+  async findMany(params: FindManyParams): Promise<Contact[]> {
+    const { page, take, includeUnknowns, query } = params
+
+    const raw = await this.prisma.contact.findMany({
+      where: this.resolveWhere<Prisma.ContactFindManyArgs>(
+        {
+          ...(query && {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          }),
+        },
+        includeUnknowns,
+      ),
+      take,
+      skip: Pagination.skip({ limit: take, page }),
+    })
+
+    return raw.map(PrismaContactMapper.toDomain)
   }
 
-  countMany(params: CountManyParams): Promise<number> {
-    throw new Error('Method not implemented.')
+  async countMany(params: CountManyParams): Promise<number> {
+    const { includeUnknowns, query } = params
+
+    const rows = await this.prisma.contact.count({
+      where: this.resolveWhere<Prisma.ContactCountArgs>(
+        {
+          ...(query && {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          }),
+        },
+        includeUnknowns,
+      ),
+    })
+
+    return rows
   }
 
   async create(contact: Contact): Promise<void> {

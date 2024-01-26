@@ -14,6 +14,7 @@ import {
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Prisma } from '@prisma/client'
 import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 
 @Injectable()
 export class PrismaMessagesRepository implements MessagesRepository {
@@ -46,20 +47,71 @@ export class PrismaMessagesRepository implements MessagesRepository {
     senderBy: true,
   }
 
-  findById(params: FindByIdParams): Promise<Message | null> {
-    throw new Error('Method not implemented.')
+  async findById(params: FindByIdParams): Promise<Message | null> {
+    const { id, findDeleted } = params
+
+    const raw = await this.prisma.message.findUnique({
+      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
+        {
+          id,
+        },
+        findDeleted,
+      ),
+      include: this.aggregate,
+    })
+
+    if (!raw) return null
+
+    return PrismaMessageMapper.toDomain(raw)
   }
 
-  findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]> {
-    throw new Error('Method not implemented.')
+  async findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]> {
+    const { chatId, page, take, findDeleted } = params
+
+    const raw = await this.prisma.message.findMany({
+      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
+        {
+          chatId,
+        },
+        findDeleted,
+      ),
+      take,
+      skip: Pagination.skip({ limit: take, page }),
+      include: this.aggregate,
+    })
+
+    return raw.map(PrismaMessageMapper.toDomain)
   }
 
-  countManyByChatId(params: CountManyByChatIdParams): Promise<number> {
-    throw new Error('Method not implemented.')
+  async countManyByChatId(params: CountManyByChatIdParams): Promise<number> {
+    const { chatId, findDeleted } = params
+
+    const rows = await this.prisma.message.count({
+      where: this.resolveWhere<Prisma.MessageCountArgs>(
+        {
+          chatId,
+        },
+        findDeleted,
+      ),
+    })
+
+    return rows
   }
 
-  findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]> {
-    throw new Error('Method not implemented.')
+  async findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]> {
+    const { chatId, findDeleted } = params
+
+    const raw = await this.prisma.message.findMany({
+      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
+        {
+          chatId,
+        },
+        findDeleted,
+      ),
+      include: this.aggregate,
+    })
+
+    return raw.map(PrismaMessageMapper.toDomain)
   }
 
   async findByWAMessageId(
@@ -80,10 +132,24 @@ export class PrismaMessagesRepository implements MessagesRepository {
     return PrismaMessageMapper.toDomain(raw)
   }
 
-  findManyByWAMessagesIds(
+  async findManyByWAMessagesIds(
     params: FindManyByWAMessagesIdsParams,
   ): Promise<Message[]> {
-    throw new Error('Method not implemented.')
+    const { waMessagesIds, findDeleted } = params
+
+    const raw = await this.prisma.message.findMany({
+      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
+        {
+          waMessageId: {
+            in: waMessagesIds.map((id) => id.toString()),
+          },
+        },
+        findDeleted,
+      ),
+      include: this.aggregate,
+    })
+
+    return raw.map(PrismaMessageMapper.toDomain)
   }
 
   async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
@@ -119,8 +185,12 @@ export class PrismaMessagesRepository implements MessagesRepository {
     })
   }
 
-  saveMany(messages: Message[]): Promise<void> {
-    throw new Error('Method not implemented.')
+  async saveMany(messages: Message[]): Promise<void> {
+    const data = messages.map(PrismaMessageMapper.toPrismaUpdate)
+
+    await this.prisma.message.updateMany({
+      data,
+    })
   }
 
   async create(message: Message): Promise<void> {

@@ -3,9 +3,11 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Prisma, Chat as PrismaChat } from '@prisma/client'
 import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
+import { PrismaMessageMapper, RawMessage } from './prisma-message-mapper'
 
 type RawChat = PrismaChat & {
   contact: RawContact
+  lastMessage?: RawMessage | null
 }
 
 export class PrismaChatMapper {
@@ -18,6 +20,9 @@ export class PrismaChatMapper {
         deletedAt: raw.deletedAt,
         lastInteraction: raw.lastInteraction,
         contact: PrismaContactMapper.toDomain(raw.contact),
+        lastMessage: raw.lastMessage
+          ? PrismaMessageMapper.toDomain(raw.lastMessage)
+          : null,
       },
       new UniqueEntityID(raw.id),
     )

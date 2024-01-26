@@ -10,6 +10,7 @@ import {
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { PrismaChatMapper } from '../mappers/prisma-chat-mapper'
 import { Prisma } from '@prisma/client'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 
 @Injectable()
 export class PrismaChatsRepository implements ChatsRepository {
@@ -27,12 +28,46 @@ export class PrismaChatsRepository implements ChatsRepository {
     }
   }
 
-  findManyByWhatsAppId(params: FindManyByWhatsAppIdParams): Promise<Chat[]> {
-    throw new Error('Method not implemented.')
+  private aggregate = {
+    contact: true,
+    lastMessage: true,
   }
 
-  countManyByWhatsAppId(params: CountManyByWhatsAppIdParams): Promise<number> {
-    throw new Error('Method not implemented.')
+  async findManyByWhatsAppId(
+    params: FindManyByWhatsAppIdParams,
+  ): Promise<Chat[]> {
+    const { page, take, whatsAppId, findDeleted } = params
+
+    const raw = await this.prisma.chat.findMany({
+      where: this.resolveWhere<Prisma.ChatFindManyArgs>(
+        {
+          whatsAppId,
+        },
+        findDeleted,
+      ),
+      take,
+      skip: Pagination.skip({ limit: take, page }),
+      include: this.aggregate,
+    })
+
+    return raw.map(PrismaChatMapper.toDomain)
+  }
+
+  async countManyByWhatsAppId(
+    params: CountManyByWhatsAppIdParams,
+  ): Promise<number> {
+    const { whatsAppId, findDeleted } = params
+
+    const rows = await this.prisma.chat.count({
+      where: this.resolveWhere<Prisma.ChatCountArgs>(
+        {
+          whatsAppId,
+        },
+        findDeleted,
+      ),
+    })
+
+    return rows
   }
 
   async findByWAChatIdAndWhatsAppId(
@@ -50,9 +85,7 @@ export class PrismaChatsRepository implements ChatsRepository {
         },
         findDeleted,
       ),
-      include: {
-        contact: true,
-      },
+      include: this.aggregate,
     })
 
     if (!raw) return null
@@ -60,8 +93,24 @@ export class PrismaChatsRepository implements ChatsRepository {
     return PrismaChatMapper.toDomain(raw)
   }
 
-  findManyByWAChatsIds(params: FindManyByWAChatsIdsParams): Promise<Chat[]> {
-    throw new Error('Method not implemented.')
+  async findManyByWAChatsIds(
+    params: FindManyByWAChatsIdsParams,
+  ): Promise<Chat[]> {
+    const { waChatsIds, findDeleted } = params
+
+    const raw = await this.prisma.chat.findMany({
+      where: this.resolveWhere<Prisma.ChatFindManyArgs>(
+        {
+          waChatId: {
+            in: waChatsIds.map((id) => id.toString()),
+          },
+        },
+        findDeleted,
+      ),
+      include: this.aggregate,
+    })
+
+    return raw.map(PrismaChatMapper.toDomain)
   }
 
   async save(chat: Chat): Promise<void> {
@@ -83,7 +132,11 @@ export class PrismaChatsRepository implements ChatsRepository {
     })
   }
 
-  createMany(chats: Chat[]): Promise<void> {
-    throw new Error('Method not implemented.')
+  async createMany(chats: Chat[]): Promise<void> {
+    const data = chats.map(PrismaChatMapper.toPrismaCreate)
+
+    await this.prisma.chat.createMany({
+      data,
+    })
   }
 }
