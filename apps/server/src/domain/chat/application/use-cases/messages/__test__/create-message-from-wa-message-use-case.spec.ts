@@ -11,12 +11,14 @@ import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-m
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeUploader: FakeUploader
+let fakeDateAdapter: FakeDateAdapter
 
 let sut: CreateMessageFromWAMessageUseCase
 
@@ -27,6 +29,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
     fakeUploader = new FakeUploader()
+    fakeDateAdapter = new FakeDateAdapter()
 
     sut = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
@@ -34,6 +37,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
       inMemoryChatsRepository,
       inMemoryMessageMediasRepository,
       fakeUploader,
+      fakeDateAdapter,
     )
   })
 
@@ -96,6 +100,9 @@ describe('CreateMessageFromWAMessageUseCase', () => {
 
     const { message } = response.value
     expect(message.quoted).toBeTruthy()
+    expect(message.createdAt.toString()).toBe(
+      fakeDateAdapter.fromUnix(waMessage.timestamp).toDate().toString(),
+    )
   })
 
   it('should be able to create contacts from wa-message', async () => {

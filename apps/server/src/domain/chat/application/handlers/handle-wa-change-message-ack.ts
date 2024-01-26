@@ -6,6 +6,7 @@ import { MessageEmitter } from '../emitters/message-emitter'
 import { WAMessage } from '../entities/wa-message'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { Injectable } from '@nestjs/common'
+import { DateAdapter } from '../adapters/date-adapter'
 
 interface HandleWAChangeMessageAckRequest {
   waMessage: WAMessage
@@ -24,6 +25,7 @@ export class HandleWAChangeMessageAck {
   constructor(
     private messagesRepository: MessagesRepository,
     private messageEmitter: MessageEmitter,
+    private dateAdapter: DateAdapter,
   ) {}
 
   async execute(
@@ -39,7 +41,9 @@ export class HandleWAChangeMessageAck {
       return left(new ResourceNotFoundError(waMessage.id.toString()))
     }
 
-    message.set({ ack })
+    const newCreatedAt = this.dateAdapter.fromUnix(waMessage.timestamp).toDate()
+
+    message.set({ ack, createdAt: newCreatedAt })
     await this.messagesRepository.save(message)
 
     this.messageEmitter.emitChange({

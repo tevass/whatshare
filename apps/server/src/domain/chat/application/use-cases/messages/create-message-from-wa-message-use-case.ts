@@ -12,6 +12,7 @@ import { ContactsRepository } from '../../repositories/contacts-repository'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
+import { DateAdapter } from '../../adapters/date-adapter'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -33,6 +34,7 @@ export class CreateMessageFromWAMessageUseCase {
     private chatsRepository: ChatsRepository,
     private messageMediasRepository: MessageMediasRepository,
     private uploader: Uploader,
+    private dateAdapter: DateAdapter,
   ) {}
 
   async execute(
@@ -68,6 +70,7 @@ export class CreateMessageFromWAMessageUseCase {
       isGif: waMessage.isGif,
       isStatus: waMessage.isStatus,
       isFromMe: waMessage.isFromMe,
+      createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
     })
 
     if (waMessage.hasQuoted()) {

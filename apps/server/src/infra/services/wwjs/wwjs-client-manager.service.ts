@@ -36,6 +36,10 @@ export class WWJSClientManager
       this.wwjsClientService.createFromWhatsApp(whatsApp),
     )
 
+    clients.forEach((client) =>
+      this.wwjsClientService.registerHandlersInClient(client),
+    )
+
     this.clients = new Map(
       clients.map((client) => [client.id.toString(), client]),
     )

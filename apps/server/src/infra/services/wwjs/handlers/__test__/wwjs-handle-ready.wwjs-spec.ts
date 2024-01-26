@@ -73,6 +73,7 @@ describe('Handle Ready (WWJS)', () => {
         const whatsAppOnDatabase = await prisma.whatsApp.findUniqueOrThrow({
           where: { id: whatsApp.id },
         })
+
         resolve([
           expect(wwjsClient.isConnected()).toBe(true),
           expect(whatsApp.isConnected).toBe(true),

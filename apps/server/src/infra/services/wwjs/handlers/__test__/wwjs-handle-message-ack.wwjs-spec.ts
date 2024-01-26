@@ -19,12 +19,6 @@ import { MessageServerEvents } from '@whatshare/ws-schemas/events'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
 import { Time } from '@/infra/utils/time'
 
-/**
- * For the MESSAGE_ACK event to be fired, active read confirmation is required
- *
- * Enable it in Settings > Privacy > Read confirmation
- */
-
 describe('Handle Message Ack (WWJS)', () => {
   let app: INestApplication
 
@@ -73,6 +67,7 @@ describe('Handle Message Ack (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+      wwjsService.registerHandlersInClient(wwjsClient)
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')

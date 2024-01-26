@@ -3,7 +3,7 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
-import { Global, INestApplication, Module } from '@nestjs/common'
+import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 import { WWJSClient } from '../../clients/wwjs-client'
@@ -17,35 +17,10 @@ import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeMessageFactory } from '@/test/factories/make-message'
 import { MessageServerEvents } from '@whatshare/ws-schemas/events'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
-import {
-  Uploader,
-  UploaderRemoveParams,
-  UploaderUploadParams,
-} from '@/domain/chat/application/storage/uploader'
 import { MessageType } from '@whatshare/core-schemas/enums'
 import { Time } from '@/infra/utils/time'
-
-class MockUploader implements Uploader {
-  async upload(params: UploaderUploadParams): Promise<{ url: string }> {
-    return { url: params.fileName }
-  }
-
-  // eslint-disable-next-line prettier/prettier, @typescript-eslint/no-unused-vars
-  async remove(params: UploaderRemoveParams): Promise<void> {
-  }
-}
-
-@Global()
-@Module({
-  providers: [
-    {
-      provide: Uploader,
-      useClass: MockUploader,
-    },
-  ],
-  exports: [Uploader],
-})
-class MockUploadModule {}
+import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
+import { AdaptersModule } from '@/infra/adapters/adapters.module'
 
 describe('Handle Revoked Every One (WWJS)', () => {
   let app: INestApplication
@@ -53,6 +28,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
   let contactFactory: FakeContactFactory
   let chatFactory: FakeChatFactory
   let messageFactory: FakeMessageFactory
+  let dateAdapter: DateAdapter
 
   let whatsApp: WhatsApp
   let socket: Socket<MessageServerEvents>
@@ -63,7 +39,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
   beforeEach(
     async () => {
       const moduleRef = await Test.createTestingModule({
-        imports: [AppModule, MockUploadModule],
+        imports: [AppModule, AdaptersModule],
         providers: [
           FakeWhatsAppFactory,
           FakeContactFactory,
@@ -74,6 +50,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
 
       app = moduleRef.createNestApplication()
 
+      dateAdapter = moduleRef.get(DateAdapter)
       const env = moduleRef.get(EnvService)
 
       contactFactory = app.get(FakeContactFactory)
@@ -95,6 +72,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+      wwjsService.registerHandlersInClient(wwjsClient)
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')
@@ -164,46 +142,51 @@ describe('Handle Revoked Every One (WWJS)', () => {
       unreadCount: 0,
     })
 
-    const waMessage = await wwjsClient.message.sendText({
-      chatId: helperWWJSClientWAId,
-      body: '@test',
-    })
-
-    await messageFactory.makePrismaMessage({
-      waMessageId: waMessage.id,
-      type: 'text',
-      ack: 'sent',
-      whatsAppId: whatsApp.id,
-      chatId: chat.id,
-      waChatId: chat.waChatId,
-      author: null,
-      media: null,
-      quoted: null,
-      contacts: null,
-      body: makeMessageBody({ content: waMessage.body! }),
-    })
-
-    const wwjsChat = await wwjsClient
-      .switchToRaw()
-      .getChatById(helperWWJSClientWAId.toString())
-
-    const wwjsMessage = (
-      await wwjsChat.fetchMessages({
-        fromMe: true,
-        limit: 1,
-      })
-    )[0]
-
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       socket.on('message:revoked', ({ message }) => {
         resolve([
+          expect(message.revokedAt).toBeTruthy(),
           expect(message.type).toBe('revoked' as MessageType),
-          expect(message.revokedAt).toEqual(expect.any(Date)),
         ])
       })
 
-      await wwjsMessage.delete(true)
+      socket.on('message:change', async ({ message }) => {
+        if (message.ack === 'sent') {
+          const wwjsChat = await wwjsClient
+            .switchToRaw()
+            .getChatById(helperWWJSClientWAId.toString())
+
+          const wwjsMessage = (
+            await wwjsChat.fetchMessages({
+              fromMe: true,
+              limit: 1,
+            })
+          )[0]
+
+          await wwjsMessage.delete(true)
+        }
+      })
+
+      const waMessage = await wwjsClient.message.sendText({
+        chatId: helperWWJSClientWAId,
+        body: '@test',
+      })
+
+      await messageFactory.makePrismaMessage({
+        waMessageId: waMessage.id,
+        type: 'text',
+        ack: 'pending',
+        whatsAppId: whatsApp.id,
+        chatId: chat.id,
+        waChatId: chat.waChatId,
+        author: null,
+        media: null,
+        quoted: null,
+        contacts: null,
+        body: makeMessageBody({ content: waMessage.body! }),
+        createdAt: dateAdapter.fromUnix(waMessage.timestamp).toDate(),
+      })
     })
   })
 })

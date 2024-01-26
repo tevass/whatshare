@@ -13,6 +13,7 @@ import { ImportMessagesUseCase } from '../import-messages-use-case'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -20,6 +21,7 @@ let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeWAClientManager: FakeWAClientManager
 let fakeUploader: FakeUploader
+let fakeDateAdapter: FakeDateAdapter
 
 let createMessageFromWAMessage: CreateMessageFromWAMessageUseCase
 
@@ -33,6 +35,7 @@ describe('ImportMessagesUseCase', () => {
     inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
     fakeWAClientManager = new FakeWAClientManager()
     fakeUploader = new FakeUploader()
+    fakeDateAdapter = new FakeDateAdapter()
 
     createMessageFromWAMessage = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
@@ -40,6 +43,7 @@ describe('ImportMessagesUseCase', () => {
       inMemoryChatsRepository,
       inMemoryMessageMediasRepository,
       fakeUploader,
+      fakeDateAdapter,
     )
 
     sut = new ImportMessagesUseCase(

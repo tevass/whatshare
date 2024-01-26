@@ -38,7 +38,7 @@ export class WWJSClientService {
     return rawClient
   }
 
-  private registerHandlers(client: WWJSClient) {
+  registerHandlersInClient(client: WWJSClient) {
     this.handlers.forEach((handler) => {
       client.addEvent(handler)
     })
@@ -55,8 +55,6 @@ export class WWJSClientService {
       },
       whatsApp.id,
     )
-
-    this.registerHandlers(client)
 
     return client
   }
