@@ -13,9 +13,11 @@ import { WsMessageEmitter } from './emitters/ws-message-emitter'
 
 import { WsHandleReadChat } from './handlers/ws-handle-read-chat'
 import { WsHandleClearChat } from './handlers/ws-handle-clear-chat'
+import { WsHandleSendTextMessage } from './handlers/ws-handle-send-text-message'
 
 import { HandleClearChat } from '@/domain/chat/application/handlers/handle-clear-chat'
 import { HandleReadChat } from '@/domain/chat/application/handlers/handle-read-chat'
+import { HandleSendTextMessage } from '@/domain/chat/application/handlers/handle-send-text-message'
 
 @Module({
   providers: [
@@ -38,6 +40,8 @@ import { HandleReadChat } from '@/domain/chat/application/handlers/handle-read-c
     HandleClearChat,
     WsHandleReadChat,
     HandleReadChat,
+    WsHandleSendTextMessage,
+    HandleSendTextMessage,
   ],
   exports: [WhatsAppEmitter, ChatEmitter, MessageEmitter],
 })

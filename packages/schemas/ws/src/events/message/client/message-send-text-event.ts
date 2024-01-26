@@ -1,20 +1,24 @@
 import { defaultFunction } from '@/events/default-function'
 import { z } from 'zod'
 import { messageEventNames } from '../name'
-import { messageServerPayload } from '../server-payload'
+import { messageClientPayload } from '../client-payload'
+import { waMessageId } from '@whatshare/shared-schemas'
 
-export const messageSendTextServerPayload = messageServerPayload
+export const messageSendTextClientPayload = messageClientPayload.extend({
+  body: z.string(),
+  quotedId: waMessageId.optional(),
+})
 
-export type MessageSendTextServerPayload = z.infer<
-  typeof messageSendTextServerPayload
+export type MessageSendTextClientPayload = z.infer<
+  typeof messageSendTextClientPayload
 >
 
-export const messageSendTextServerEvent = z.object({
+export const messageSendTextClientEvent = z.object({
   [messageEventNames['message:send:text']]: defaultFunction.args(
-    messageSendTextServerPayload,
+    messageSendTextClientPayload,
   ),
 })
 
-export type MessageSendTextServerEvent = z.infer<
-  typeof messageSendTextServerEvent
+export type MessageSendTextClientEvent = z.infer<
+  typeof messageSendTextClientEvent
 >

@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { messageSendTextServerEvent } from './message-send-text-event'
+import { messageSendTextClientEvent } from './message-send-text-event'
 
-export const messageClientEvents = messageSendTextServerEvent
+export const messageClientEvents = messageSendTextClientEvent
 
 export type MessageClientEvents = z.infer<typeof messageClientEvents>
 
