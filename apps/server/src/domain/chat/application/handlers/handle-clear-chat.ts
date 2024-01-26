@@ -1,13 +1,13 @@
 import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAClientManager } from '../services/wa-client-manager'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
-import { Injectable } from '@nestjs/common'
 
 interface HandleClearChatRequest {
   waChatId: string
@@ -44,7 +44,7 @@ export class HandleClearChat {
       return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
-    const waClient = this.waManager.getConnected(chat.whatsAppId)
+    const waClient = this.waManager.getConnectedClientById(chat.whatsAppId)
     if (!waClient) {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }

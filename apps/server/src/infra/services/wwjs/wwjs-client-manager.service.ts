@@ -1,10 +1,10 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
-import { WWJSClient } from './clients/wwjs-client'
-import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
-import { WWJSClientService } from './wwjs-client.service'
 import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
+import { WAClientManager } from '@/domain/chat/application/services/wa-client-manager'
+import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
+import { WWJSClient } from './clients/wwjs-client'
+import { WWJSClientService } from './wwjs-client.service'
 
 @Injectable()
 export class WWJSClientManager
@@ -17,12 +17,19 @@ export class WWJSClientManager
 
   clients: Map<string, WWJSClient> = new Map()
 
-  getConnected(waClientId: UniqueEntityID): WWJSClient | null {
+  getConnectedClientById(waClientId: UniqueEntityID): WWJSClient | null {
     const client = this.clients.get(waClientId.toString())
     return client && client.isConnected() ? client : null
   }
 
-  setFromWhatsApp(whatsApp: WhatsApp): void {
+  getSomeConnectedClient(): WWJSClient | null {
+    const clients = Array.from(this.clients.values())
+    const client = clients.find((client) => client.isConnected())
+
+    return client ?? null
+  }
+
+  setClientFromWhatsApp(whatsApp: WhatsApp): void {
     const client = this.clients.get(whatsApp.id.toString())
     if (!client) return
 
@@ -37,7 +44,7 @@ export class WWJSClientManager
     )
 
     clients.forEach((client) =>
-      this.wwjsClientService.registerHandlersInClient(client),
+      client.addHandlers(this.wwjsClientService.handlers),
     )
 
     this.clients = new Map(

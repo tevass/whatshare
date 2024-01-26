@@ -4,10 +4,10 @@ import { MessagesRepository } from '../../repositories/messages-repository'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
-import { ChatsRepository } from '../../repositories/chats-repository'
-import { CreateMessageFromWAMessageUseCase } from './create-message-from-wa-message-use-case'
 import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
+import { ChatsRepository } from '../../repositories/chats-repository'
 import { WAClientManager } from '../../services/wa-client-manager'
+import { CreateMessageFromWAMessageUseCase } from './create-message-from-wa-message-use-case'
 
 interface ImportMessagesUseCaseRequest {
   waChatId: string
@@ -44,7 +44,7 @@ export class ImportMessagesUseCase {
       return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
-    const waClient = this.waManager.getConnected(chat.whatsAppId)
+    const waClient = this.waManager.getConnectedClientById(chat.whatsAppId)
     if (!waClient) {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }

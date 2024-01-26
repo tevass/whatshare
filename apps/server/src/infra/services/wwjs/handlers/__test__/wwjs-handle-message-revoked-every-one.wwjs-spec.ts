@@ -1,26 +1,26 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
+import { AdaptersModule } from '@/infra/adapters/adapters.module'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
+import { Time } from '@/infra/utils/time'
+import { FakeChatFactory } from '@/test/factories/make-chat'
+import { FakeContactFactory } from '@/test/factories/make-contact'
+import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
+import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
+import { Server } from '@/test/utils/server'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
+import { MessageType } from '@whatshare/core-schemas/enums'
+import { MessageServerEvents } from '@whatshare/ws-schemas/events'
 import cookieParser from 'cookie-parser'
+import { Socket, io } from 'socket.io-client'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
-import { Server } from '@/test/utils/server'
-import { Socket, io } from 'socket.io-client'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeChatFactory } from '@/test/factories/make-chat'
-import { FakeMessageFactory } from '@/test/factories/make-message'
-import { MessageServerEvents } from '@whatshare/ws-schemas/events'
-import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
-import { MessageType } from '@whatshare/core-schemas/enums'
-import { Time } from '@/infra/utils/time'
-import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
-import { AdaptersModule } from '@/infra/adapters/adapters.module'
 
 describe('Handle Revoked Every One (WWJS)', () => {
   let app: INestApplication
@@ -72,7 +72,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-      wwjsService.registerHandlersInClient(wwjsClient)
+      wwjsClient.addHandlers(wwjsService.handlers)
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')

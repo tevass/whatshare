@@ -1,24 +1,24 @@
-import { Injectable } from '@nestjs/common'
-import { WWJSHandler } from './wwjs-handler'
-import { EnvService } from '@/infra/env/env.service'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { EnvService } from '@/infra/env/env.service'
+import { Injectable } from '@nestjs/common'
 import WWJS, { LocalAuth } from 'whatsapp-web.js'
+import { WWJSHandler } from './wwjs-handler'
 
+import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { args as BROWSER_ARGS } from './browser-args.json'
 import { WWJSClient } from './clients/wwjs-client'
-import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 
 @Injectable()
 export class WWJSClientService {
   constructor(private env: EnvService) {}
 
-  private handlers: WWJSHandler[] = []
+  handlers: WWJSHandler[] = []
 
   addHandler(handler: WWJSHandler) {
     this.handlers.push(handler)
   }
 
-  createRawClient(clientId: UniqueEntityID) {
+  private createRawClient(clientId: UniqueEntityID) {
     const withoutHeadless = this.env.get('NODE_ENV') === 'production'
 
     const rawClient = new WWJS.Client({
@@ -36,12 +36,6 @@ export class WWJSClientService {
     })
 
     return rawClient
-  }
-
-  registerHandlersInClient(client: WWJSClient) {
-    this.handlers.forEach((handler) => {
-      client.addEvent(handler)
-    })
   }
 
   createFromWhatsApp(whatsApp: WhatsApp) {

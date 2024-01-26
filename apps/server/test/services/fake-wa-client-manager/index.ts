@@ -6,7 +6,7 @@ import { FakeWAClient } from './clients/fake-wa-client'
 export class FakeWAClientManager implements WAClientManager {
   clients: Map<string, FakeWAClient> = new Map()
 
-  getConnected(waClientId: UniqueEntityID): FakeWAClient | null {
+  getConnectedClientById(waClientId: UniqueEntityID): FakeWAClient | null {
     const client = this.clients.get(waClientId.toString())
     return client && client.isConnected() ? client : null
   }
@@ -16,7 +16,7 @@ export class FakeWAClientManager implements WAClientManager {
     return clients[0] ?? null
   }
 
-  setFromWhatsApp(whatsApp: WhatsApp): void {
+  setClientFromWhatsApp(whatsApp: WhatsApp): void {
     const hasClient = this.clients.get(whatsApp.id.toString())
     if (!hasClient) return
 

@@ -37,7 +37,7 @@ export class HandleWAConnecting {
 
     whatsApp.set({ status: 'connecting' })
     await this.whatsAppsRepository.save(whatsApp)
-    this.waManager.setFromWhatsApp(whatsApp)
+    this.waManager.setClientFromWhatsApp(whatsApp)
 
     this.whatsAppEmitter.emitChange({
       whatsApp,

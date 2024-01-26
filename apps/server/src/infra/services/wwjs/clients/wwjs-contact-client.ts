@@ -1,8 +1,9 @@
 import WWJS from 'whatsapp-web.js'
 
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAContact } from '@/domain/chat/application/entities/wa-contact'
-import { WWJSContactMapper } from '../mappers/wwjs-contact-mapper'
 import { WAContactClient } from '@/domain/chat/application/services/wa-client-manager/clients/wa-contact-client'
+import { WWJSContactMapper } from '../mappers/wwjs-contact-mapper'
 import { WWJSClient } from './wwjs-client'
 
 export class WWJSContactClient implements WAContactClient {
@@ -10,6 +11,12 @@ export class WWJSContactClient implements WAContactClient {
 
   protected constructor(private waClient: WWJSClient) {
     this.raw = waClient.switchToRaw()
+  }
+
+  async getById(contactId: WAEntityID): Promise<WAContact> {
+    const raw = await this.raw.getContactById(contactId.toString())
+
+    return await WWJSContactMapper.toDomain({ raw })
   }
 
   async getMany(): Promise<WAContact[]> {

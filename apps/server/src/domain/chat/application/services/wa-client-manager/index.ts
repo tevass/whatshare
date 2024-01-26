@@ -1,9 +1,9 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WAClient } from './clients/wa-client'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
+import { WAClient } from './clients/wa-client'
 
 export abstract class WAClientManager {
-  abstract getConnected(waClientId: UniqueEntityID): WAClient | null
+  abstract getConnectedClientById(waClientId: UniqueEntityID): WAClient | null
   abstract getSomeConnectedClient(): WAClient | null
-  abstract setFromWhatsApp(whatsApp: WhatsApp): void
+  abstract setClientFromWhatsApp(whatsApp: WhatsApp): void
 }

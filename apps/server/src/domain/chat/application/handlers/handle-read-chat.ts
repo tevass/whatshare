@@ -40,7 +40,7 @@ export class HandleReadChat {
       return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
-    const waClient = this.waManager.getConnected(chat.whatsAppId)
+    const waClient = this.waManager.getConnectedClientById(chat.whatsAppId)
     if (!waClient) {
       return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }

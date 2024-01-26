@@ -1,16 +1,16 @@
-import WWJS from 'whatsapp-web.js'
 import type { SetOptional } from 'type-fest'
+import WWJS from 'whatsapp-web.js'
 
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WWJSChatClient } from './wwjs-chat-client'
-import { WWJSMessageClient } from './wwjs-message-client'
-import { WWJSContactClient } from './wwjs-contact-client'
 import {
   WAClient,
   WAClientProps,
 } from '@/domain/chat/application/services/wa-client-manager/clients/wa-client'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { WWJSHandler } from '../wwjs-handler'
+import { WWJSChatClient } from './wwjs-chat-client'
+import { WWJSContactClient } from './wwjs-contact-client'
+import { WWJSMessageClient } from './wwjs-message-client'
 
 interface WWJSClientProps extends WAClientProps {
   raw: WWJS.Client
@@ -49,8 +49,10 @@ export class WWJSClient extends WAClient<WWJSClientProps> {
     return this.raw.logout()
   }
 
-  addEvent(handler: WWJSHandler) {
-    this.raw.on(handler.event, handler.register(this))
+  addHandlers(handlers: WWJSHandler[]) {
+    handlers.forEach((handler) => {
+      this.raw.on(handler.event, handler.register(this))
+    })
   }
 
   setFromWhatsApp(whatsapp: WhatsApp) {

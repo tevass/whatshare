@@ -37,7 +37,7 @@ export class HandleWADisconnected {
 
     whatsApp.disconnect()
     await this.whatsAppsRepository.save(whatsApp)
-    this.waManager.setFromWhatsApp(whatsApp)
+    this.waManager.setClientFromWhatsApp(whatsApp)
 
     this.whatsAppEmitter.emitDisconnected({
       whatsApp,

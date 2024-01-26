@@ -4,17 +4,17 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import cookieParser from 'cookie-parser'
 
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { EnvService } from '@/infra/env/env.service'
+import { Time } from '@/infra/utils/time'
+import { Server } from '@/test/utils/server'
+import { ChatServerEvents } from '@whatshare/ws-schemas/events'
+import { Socket, io } from 'socket.io-client'
 import { afterAll } from 'vitest'
 import { WWJSClient } from '../../clients/wwjs-client'
-import { Socket, io } from 'socket.io-client'
-import { EnvService } from '@/infra/env/env.service'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WWJSClientService } from '../../wwjs-client.service'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
-import { Server } from '@/test/utils/server'
-import { Time } from '@/infra/utils/time'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { ChatServerEvents } from '@whatshare/ws-schemas/events'
+import { WWJSClientService } from '../../wwjs-client.service'
 
 describe('Handle Message Received (WWJS)', () => {
   let app: INestApplication
@@ -49,7 +49,7 @@ describe('Handle Message Received (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-      wwjsService.registerHandlersInClient(wwjsClient)
+      wwjsClient.addHandlers(wwjsService.handlers)
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')

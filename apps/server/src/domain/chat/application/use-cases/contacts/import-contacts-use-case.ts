@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { WhatsAppsRepository } from '../../repositories/whats-apps-repository'
-import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { WAClientManager } from '../../services/wa-client-manager'
 
 interface ImportContactsUseCaseRequest {
@@ -34,7 +34,7 @@ export class ImportContactsUseCase {
       return left(new ResourceNotFoundError(whatsAppId))
     }
 
-    const waClient = this.waManager.getConnected(whatsApp.id)
+    const waClient = this.waManager.getConnectedClientById(whatsApp.id)
     if (!waClient) {
       return left(new WAClientNotFoundError(whatsAppId))
     }
