@@ -7,6 +7,10 @@ interface ContactsRepositoryMethodsParams {
   includeUnknowns?: boolean
 }
 
+export interface FindByPhoneParams extends ContactsRepositoryMethodsParams {
+  phone: string
+}
+
 export interface FindByWAContactIdParams
   extends ContactsRepositoryMethodsParams {
   waContactId: WAEntityID
@@ -27,6 +31,8 @@ export interface CountManyParams
     SearchParams {}
 
 export abstract class ContactsRepository {
+  abstract findByPhone(params: FindByPhoneParams): Promise<Contact | null>
+
   abstract findByWAContactId(
     params: FindByWAContactIdParams,
   ): Promise<Contact | null>
@@ -42,4 +48,6 @@ export abstract class ContactsRepository {
   abstract create(contact: Contact): Promise<void>
 
   abstract createMany(contact: Contact[]): Promise<void>
+
+  abstract save(contact: Contact): Promise<void>
 }

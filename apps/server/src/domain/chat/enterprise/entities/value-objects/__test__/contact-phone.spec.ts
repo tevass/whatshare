@@ -12,12 +12,10 @@ describe('ContactPhone', () => {
   })
 
   test('format', () => {
-    const phone = ContactPhone.create({
-      number: faker.helpers.fromRegExp(/[0-9]{13}/),
-      formattedNumber: faker.phone.number(),
-    })
+    const formattedPhone = ContactPhone.format(
+      faker.helpers.fromRegExp(/[0-9]{13}/),
+    )
 
-    const formattedPhone = phone.format()
     expect(formattedPhone).toMatch(/\+\d{2} \d{2} \d{5}-\d{4}/)
   })
 
@@ -27,6 +25,6 @@ describe('ContactPhone', () => {
       formattedNumber: faker.phone.number(),
     })
 
-    expect(phone.toString()).toBe(phone.format())
+    expect(phone.toString()).toBe(ContactPhone.format(phone.number))
   })
 })

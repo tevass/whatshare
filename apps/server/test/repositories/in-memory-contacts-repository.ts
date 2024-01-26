@@ -1,6 +1,7 @@
 import {
   ContactsRepository,
   CountManyParams,
+  FindByPhoneParams,
   FindByWAContactIdParams,
   FindManyByWAContactsIdsParams,
   FindManyParams,
@@ -11,6 +12,18 @@ import { Text } from '../utils/text'
 
 export class InMemoryContactsRepository implements ContactsRepository {
   items: Contact[] = []
+
+  async findByPhone(params: FindByPhoneParams): Promise<Contact | null> {
+    const { phone, includeUnknowns } = params
+
+    const contact = this.items.find(
+      (item) =>
+        item.phone.number === phone &&
+        (includeUnknowns ? true : item.isMyContact),
+    )
+
+    return contact ?? null
+  }
 
   async findByWAContactId(
     params: FindByWAContactIdParams,
@@ -23,9 +36,7 @@ export class InMemoryContactsRepository implements ContactsRepository {
         (includeUnknowns ? true : item.isMyContact),
     )
 
-    if (!contact) return null
-
-    return contact
+    return contact ?? null
   }
 
   async findManyByWAContactsIds(
@@ -64,5 +75,13 @@ export class InMemoryContactsRepository implements ContactsRepository {
 
   async createMany(entities: Contact[]): Promise<void> {
     this.items.push(...entities)
+  }
+
+  async save(contact: Contact): Promise<void> {
+    const itemIndex = this.items.findIndex(
+      (item) => item.id.toString() === contact.id.toString(),
+    )
+
+    this.items[itemIndex] = contact
   }
 }

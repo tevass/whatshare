@@ -1,4 +1,5 @@
 import { ValueObject } from '@/core/entities/value-object'
+import { SetOptional } from 'type-fest'
 
 export interface ContactPhoneProps {
   number: string
@@ -14,18 +15,19 @@ export class ContactPhone extends ValueObject<ContactPhoneProps> {
     return this.props.formattedNumber
   }
 
-  format() {
-    return this.number.replace(
-      /^(\d{2})(\d{2})(\d{4,5})(\d{4})$/,
-      '+$1 $2 $3-$4',
-    )
+  static format(number: string) {
+    return number.replace(/^(\d{2})(\d{2})(\d{4,5})(\d{4})$/, '+$1 $2 $3-$4')
   }
 
   toString() {
-    return this.format()
+    return ContactPhone.format(this.number)
   }
 
-  static create(props: ContactPhoneProps) {
-    return new ContactPhone(props)
+  static create(props: SetOptional<ContactPhoneProps, 'formattedNumber'>) {
+    return new ContactPhone({
+      ...props,
+      formattedNumber:
+        props.formattedNumber ?? ContactPhone.format(props.number),
+    })
   }
 }

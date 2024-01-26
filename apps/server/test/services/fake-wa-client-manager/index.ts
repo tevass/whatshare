@@ -11,6 +11,11 @@ export class FakeWAClientManager implements WAClientManager {
     return client && client.isConnected() ? client : null
   }
 
+  getSomeConnectedClient(): FakeWAClient | null {
+    const clients = Array.from(this.clients.values())
+    return clients[0] ?? null
+  }
+
   setFromWhatsApp(whatsApp: WhatsApp): void {
     const hasClient = this.clients.get(whatsApp.id.toString())
     if (!hasClient) return

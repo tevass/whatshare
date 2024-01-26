@@ -4,5 +4,6 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 
 export abstract class WAClientManager {
   abstract getConnected(waClientId: UniqueEntityID): WAClient | null
+  abstract getSomeConnectedClient(): WAClient | null
   abstract setFromWhatsApp(whatsApp: WhatsApp): void
 }
