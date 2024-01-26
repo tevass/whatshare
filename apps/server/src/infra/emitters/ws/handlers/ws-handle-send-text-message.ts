@@ -1,18 +1,20 @@
-import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
-import { WsSubscribeEvent } from '../decorators/ws-subscribe-event.decorator'
-import {
-  MessageClientEvents,
-  messageSendTextClientPayload,
-  MessageSendTextClientPayload,
-} from '@whatshare/ws-schemas/events'
-import { MessageBody } from '@nestjs/websockets'
-import { UsePipes } from '@nestjs/common'
-import { ZodWsValidationPipe } from '../pipes/zod-ws-validation-pipe'
-import { WsRoom } from '../decorators/ws-room.decorator'
 import { HandleSendTextMessage } from '@/domain/chat/application/handlers/handle-send-text-message'
 import { WsUser } from '@/infra/auth/decorators/ws-user.decorator'
+import { WsJwtAuthGuard } from '@/infra/auth/guards/ws-jwt.guard'
+import { UseGuards, UsePipes } from '@nestjs/common'
+import { MessageBody } from '@nestjs/websockets'
+import {
+  MessageClientEvents,
+  MessageSendTextClientPayload,
+  messageSendTextClientPayload,
+} from '@whatshare/ws-schemas/events'
+import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
+import { WsRoom } from '../decorators/ws-room.decorator'
+import { WsSubscribeEvent } from '../decorators/ws-subscribe-event.decorator'
+import { ZodWsValidationPipe } from '../pipes/zod-ws-validation-pipe'
 
 @WsNamespaceGateway({ namespace: 'wa' })
+@UseGuards(WsJwtAuthGuard)
 export class WsHandleSendTextMessage {
   constructor(private handleSendTextMessage: HandleSendTextMessage) {}
 

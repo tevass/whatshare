@@ -7,10 +7,13 @@ import { WhatsAppPresenter } from '@/infra/presenters/whats-app-presenter'
 import { WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 
+import { WsJwtAuthGuard } from '@/infra/auth/guards/ws-jwt.guard'
+import { UseGuards } from '@nestjs/common'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { WsNamespaceGateway } from '../decorators/ws-namespace-gateway.decorator'
 
 @WsNamespaceGateway({ namespace: 'wa' })
+@UseGuards(WsJwtAuthGuard)
 export class WsWhatsAppEmitter implements WhatsAppEmitter {
   @WebSocketServer()
   private io!: Server<object, WhatsAppServerEvents>

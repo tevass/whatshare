@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common'
 
-import { WsGateway } from './ws.gateway'
 import { WSJoinRoomMiddleware } from './ws-join-room-middleware'
+import { WsGateway } from './ws.gateway'
 
+import { ChatEmitter } from '@/domain/chat/application/emitters/chat-emitter'
 import { MessageEmitter } from '@/domain/chat/application/emitters/message-emitter'
 import { WhatsAppEmitter } from '@/domain/chat/application/emitters/whats-app-emitter'
-import { ChatEmitter } from '@/domain/chat/application/emitters/chat-emitter'
 
-import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
 import { WsChatEmitter } from './emitters/ws-chat-emitter'
 import { WsMessageEmitter } from './emitters/ws-message-emitter'
+import { WsWhatsAppEmitter } from './emitters/ws-whats-app-emitter'
 
-import { WsHandleReadChat } from './handlers/ws-handle-read-chat'
 import { WsHandleClearChat } from './handlers/ws-handle-clear-chat'
+import { WsHandleReadChat } from './handlers/ws-handle-read-chat'
 import { WsHandleSendTextMessage } from './handlers/ws-handle-send-text-message'
 import { WsHandleUnreadChat } from './handlers/ws-handle-unread-chat'
 
