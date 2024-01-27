@@ -60,7 +60,7 @@ export class HandleClearChat {
     ])
 
     messages.forEach((message) => message.delete())
-    await this.messagesRepository.saveMany(messages)
+    await this.messagesRepository.deleteMany(messages)
 
     this.chatEmitter.emitClear({
       chat,

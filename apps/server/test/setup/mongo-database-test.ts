@@ -1,8 +1,11 @@
 import { envSchema } from '@/infra/env/env'
-import { randomUUID } from 'node:crypto'
 import { config } from 'dotenv'
-import { execSync } from 'node:child_process'
 import { MongoClient } from 'mongodb'
+import { exec } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
+import { promisify } from 'node:util'
+
+const execAsync = promisify(exec)
 
 config({ path: '.env', override: true })
 config({ path: '.env.test', override: true })
@@ -29,7 +32,7 @@ beforeAll(async () => {
   const databaseURL = generateUniqueDatabaseURL(databaseId)
   process.env.DATABASE_URL = databaseURL
 
-  execSync('pnpm prisma db push')
+  await execAsync('pnpm prisma db push')
 
   mongod = new MongoClient(databaseURL)
   await mongod.connect()

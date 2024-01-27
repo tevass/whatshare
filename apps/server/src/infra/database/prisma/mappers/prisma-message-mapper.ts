@@ -1,20 +1,20 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { WAMessageID } from '@/core/entities/wa-message-id'
+import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Prisma, Message as PrismaMessage } from '@prisma/client'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
 import {
   PrismaAttendantProfileMapper,
   RawAttendantProfile,
 } from './prisma-attendant-profile-mapper'
+import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
+import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
+import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
 import {
   PrismaMessageMediaMapper,
   RawMessageMedia,
 } from './prisma-message-media-mapper'
-import { Message } from '@/domain/chat/enterprise/entities/message'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { WAMessageID } from '@/core/entities/wa-message-id'
 import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
-import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
-import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
 
 export type RawMessage = PrismaMessage & {
   vCardsContacts?: RawContact[]

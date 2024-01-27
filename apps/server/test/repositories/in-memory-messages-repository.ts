@@ -116,7 +116,7 @@ export class InMemoryMessagesRepository implements MessagesRepository {
     this.items[itemIndex] = message
   }
 
-  async saveMany(entities: Message[]): Promise<void> {
+  async deleteMany(entities: Message[]): Promise<void> {
     await Promise.all(entities.map((message) => this.save(message)))
   }
 }

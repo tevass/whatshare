@@ -148,10 +148,6 @@ describe('Handle Message Ack (WWJS)', () => {
       whatsAppId: whatsApp.id,
       chatId: chat.id,
       waChatId: chat.waChatId,
-      author: null,
-      media: null,
-      quoted: null,
-      contacts: null,
       body: makeMessageBody({ content: waMessage.body! }),
     })
 

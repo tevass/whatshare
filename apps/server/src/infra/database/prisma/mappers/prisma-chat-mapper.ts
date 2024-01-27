@@ -7,7 +7,7 @@ import { PrismaMessageMapper, RawMessage } from './prisma-message-mapper'
 
 type RawChat = PrismaChat & {
   contact: RawContact
-  lastMessage?: RawMessage | null
+  lastMessage?: RawMessage[]
 }
 
 export class PrismaChatMapper {
@@ -20,8 +20,8 @@ export class PrismaChatMapper {
         deletedAt: raw.deletedAt,
         lastInteraction: raw.lastInteraction,
         contact: PrismaContactMapper.toDomain(raw.contact),
-        lastMessage: raw.lastMessage
-          ? PrismaMessageMapper.toDomain(raw.lastMessage)
+        lastMessage: raw.lastMessage?.[0]
+          ? PrismaMessageMapper.toDomain(raw.lastMessage[0])
           : null,
       },
       new UniqueEntityID(raw.id),
@@ -37,6 +37,7 @@ export class PrismaChatMapper {
       unreadCount: chat.unreadCount,
       waChatId: chat.waChatId.toString(),
       whatsAppId: chat.whatsAppId.toString(),
+      lastMessageId: chat.lastMessage?.id.toString(),
     }
   }
 
@@ -48,6 +49,7 @@ export class PrismaChatMapper {
       unreadCount: chat.unreadCount,
       waChatId: chat.waChatId.toString(),
       whatsAppId: chat.whatsAppId.toString(),
+      lastMessageId: chat.lastMessage?.id.toString(),
     }
   }
 }

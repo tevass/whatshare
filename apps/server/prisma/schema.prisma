@@ -1,3 +1,6 @@
+// Cannot use `NULL` for multiples one-to-one realtions
+// https://github.com/prisma/prisma/issues/3387
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -67,11 +70,12 @@ model Contact {
   isEnterprise Boolean @map("is_enterprise")
   isMyContact  Boolean @map("is_my_contact")
 
-  chats    Chat[]
-  messages Message[] @relation("MessageAuthor")
+  chats Chat[]
 
   vCardsMessagesIds String[]  @map("vcards_messages_ids") @db.ObjectId
   vCardsMessages    Message[] @relation("MessageVCardsContacts", fields: [vCardsMessagesIds], references: [id])
+
+  messages Message[] @relation("MessageAuthor")
 
   @@map("contacts")
 }
@@ -81,19 +85,18 @@ model Chat {
   waChatId      String  @map("wa_chat_id")
   whatsAppId    String  @map("whats_app_id") @db.ObjectId
   contactId     String  @map("contact_id") @db.ObjectId
-  lastMessageId String? @unique @map("last_message_id") @db.ObjectId
+  lastMessageId String? @map("last_message_id") @db.ObjectId
 
   unreadCount Int @map("unread_count")
 
   lastInteraction DateTime  @map("last_interaction_date")
   deletedAt       DateTime? @map("deleted_at")
 
-  contact  Contact  @relation(fields: [contactId], references: [id])
-  whatsApp WhatsApp @relation(fields: [whatsAppId], references: [id])
+  contact  Contact   @relation(fields: [contactId], references: [id])
+  whatsApp WhatsApp  @relation(fields: [whatsAppId], references: [id])
+  messages Message[] @relation("ChatMessages")
 
-  message Message[] @relation("ChatMessages")
-
-  lastMessage Message? @relation("ChatLastMessage", fields: [lastMessageId], references: [id])
+  lastMessage Message[] @relation("LastMessage")
 
   @@unique([waChatId, whatsAppId])
   @@index([waChatId])
@@ -105,7 +108,7 @@ model Media {
   key      String @unique
   mimetype String
 
-  message Message?
+  message Message[]
 
   @@map("medias")
 }
@@ -150,8 +153,8 @@ model Message {
   ack      MessageAck
   type     MessageType
   body     MessageBody?
-  mediaId  String?      @unique @map("media_id") @db.ObjectId
-  quotedId String?      @unique @map("quoted_id") @db.ObjectId
+  mediaId  String?      @map("media_id") @db.ObjectId
+  quotedId String?      @map("quoted_id") @db.ObjectId
 
   isBroadcast Boolean @map("is_broadcast")
   isForwarded Boolean @map("is_forwarded")
@@ -171,10 +174,10 @@ model Message {
   senderBy   AttendantProfile? @relation("SendMessageBy", fields: [senderId], references: [id])
   revokedBy  AttendantProfile? @relation("RevokeMessageBy", fields: [revokerId], references: [id])
   quoted     Message?          @relation("MessageQuoted", fields: [quotedId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reply      Message?          @relation("MessageQuoted")
+  replies    Message[]         @relation("MessageQuoted")
   chat       Chat              @relation("ChatMessages", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   whatsApp   WhatsApp          @relation(fields: [whatsAppId], references: [id])
-  lastOfChat Chat?             @relation("ChatLastMessage")
+  lastOfChat Chat?             @relation("LastMessage", fields: [chatId], references: [id])
 
   @@unique([waChatId, whatsAppId, createdAt])
   @@index([waChatId])

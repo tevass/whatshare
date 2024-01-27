@@ -49,9 +49,9 @@ export class CreateContactUseCase {
 
     let contact: Contact
 
+    const waContactId = new WAEntityID({ ref: number })
     const waClient = this.waManager.getSomeConnectedClient()
 
-    const waContactId = new WAEntityID({ ref: number })
     if (waClient) {
       const waContact = await waClient.contact.getById(waContactId)
 

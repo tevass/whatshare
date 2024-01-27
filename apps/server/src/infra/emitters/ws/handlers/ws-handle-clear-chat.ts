@@ -1,6 +1,6 @@
 import { HandleClearChat } from '@/domain/chat/application/handlers/handle-clear-chat'
 import { WsJwtAuthGuard } from '@/infra/auth/guards/ws-jwt.guard'
-import { UseGuards, UsePipes } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { MessageBody } from '@nestjs/websockets'
 import {
   ChatClearClientPayload,
@@ -18,9 +18,9 @@ export class WsHandleClearChat {
   constructor(private handleClearChat: HandleClearChat) {}
 
   @WsSubscribeEvent<ChatClientEvents>('chat:clear')
-  @UsePipes(new ZodWsValidationPipe(chatClearClientPayload))
   async register(
-    @MessageBody() payload: ChatClearClientPayload,
+    @MessageBody(new ZodWsValidationPipe(chatClearClientPayload))
+    payload: ChatClearClientPayload,
     @WsRoom() whatsAppId: string,
   ) {
     const { waChatId } = payload

@@ -3,6 +3,9 @@ import {
   Message,
   MessageProps,
 } from '@/domain/chat/enterprise/entities/message'
+import { PrismaMessageMapper } from '@/infra/database/prisma/mappers/prisma-message-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { Injectable } from '@nestjs/common'
 import { makeAttendantProfile } from './make-attendant-profile'
 import { makeContact } from './make-contact'
 import { makeMessageMedia } from './make-message-media'
@@ -10,9 +13,6 @@ import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
 import { makeMessageBody } from './value-objects/make-message-body'
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { PrismaMessageMapper } from '@/infra/database/prisma/mappers/prisma-message-mapper'
 
 export const makeMessage = (
   override: Partial<MessageProps> = {},
@@ -60,6 +60,8 @@ export class FakeMessageFactory {
         media: null,
         quoted: null,
         contacts: null,
+        senderBy: null,
+        revokedBy: null,
         type: 'text',
         ...data,
       },

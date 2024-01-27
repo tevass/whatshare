@@ -12,9 +12,9 @@ import {
   MessagesRepository,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import { Prisma } from '@prisma/client'
 import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
-import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 
 @Injectable()
 export class PrismaMessagesRepository implements MessagesRepository {
@@ -185,11 +185,16 @@ export class PrismaMessagesRepository implements MessagesRepository {
     })
   }
 
-  async saveMany(messages: Message[]): Promise<void> {
-    const data = messages.map(PrismaMessageMapper.toPrismaUpdate)
-
+  async deleteMany(messages: Message[]): Promise<void> {
     await this.prisma.message.updateMany({
-      data,
+      data: {
+        deletedAt: messages[0].deletedAt,
+      },
+      where: {
+        id: {
+          in: messages.map((message) => message.id.toString()),
+        },
+      },
     })
   }
 

@@ -63,7 +63,7 @@ export abstract class MessagesRepository {
 
   abstract save(message: Message): Promise<void>
 
-  abstract saveMany(messages: Message[]): Promise<void>
+  abstract deleteMany(messages: Message[]): Promise<void>
 
   abstract create(message: Message): Promise<void>
 }
