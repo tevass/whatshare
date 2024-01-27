@@ -1,6 +1,6 @@
 import { HandleReadChat } from '@/domain/chat/application/handlers/handle-read-chat'
 import { WsJwtAuthGuard } from '@/infra/auth/guards/ws-jwt.guard'
-import { UseGuards, UsePipes } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { MessageBody } from '@nestjs/websockets'
 import {
   ChatClientEvents,
@@ -18,9 +18,9 @@ export class WsHandleReadChat {
   constructor(private handleReadChat: HandleReadChat) {}
 
   @WsSubscribeEvent<ChatClientEvents>('chat:read')
-  @UsePipes(new ZodWsValidationPipe(chatReadClientPayload))
   async register(
-    @MessageBody() payload: ChatReadClientPayload,
+    @MessageBody(new ZodWsValidationPipe(chatReadClientPayload))
+    payload: ChatReadClientPayload,
     @WsRoom() whatsAppId: string,
   ) {
     const { waChatId } = payload

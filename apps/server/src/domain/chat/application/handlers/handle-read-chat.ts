@@ -1,6 +1,7 @@
 import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { Chat } from '../../enterprise/entities/chat'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { ChatsRepository } from '../repositories/chats-repository'
@@ -19,6 +20,7 @@ type HandleReadChatResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleReadChat {
   constructor(
     private chatsRepository: ChatsRepository,

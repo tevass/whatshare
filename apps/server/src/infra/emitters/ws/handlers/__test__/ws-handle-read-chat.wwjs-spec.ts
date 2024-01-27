@@ -23,13 +23,12 @@ import {
 } from '@whatshare/ws-schemas/events'
 import { Socket } from 'socket.io-client'
 
-describe('Handle Clear Chat (WS)', () => {
+describe('Handle Read Chat (WS)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
   let contactFactory: FakeContactFactory
   let chatFactory: FakeChatFactory
-  let messageFactory: FakeMessageFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<ChatServerEvents, ChatClientEvents>
@@ -62,7 +61,6 @@ describe('Handle Clear Chat (WS)', () => {
     const attendantFactory = moduleRef.get(FakeAttendantFactory)
     contactFactory = moduleRef.get(FakeContactFactory)
     chatFactory = moduleRef.get(FakeChatFactory)
-    messageFactory = moduleRef.get(FakeMessageFactory)
 
     await NEST_TESTING_APP.init()
 
@@ -101,7 +99,7 @@ describe('Handle Clear Chat (WS)', () => {
     await app.close()
   })
 
-  it('[EVENT] chat:clear', async () => {
+  it('[EVENT] chat:read', async () => {
     const waClientId = WAEntityID.createFromString(
       wwjsClient.switchToRaw().info.wid._serialized,
     )
@@ -114,48 +112,24 @@ describe('Handle Clear Chat (WS)', () => {
       whatsAppId: whatsApp.id,
       waChatId: contact.waContactId,
       contact,
+      unreadCount: 1,
     })
-
-    await Promise.all(
-      Array.from(Array(2)).map(() =>
-        messageFactory.makePrismaMessage({
-          type: 'text',
-          ack: 'sent',
-          whatsAppId: whatsApp.id,
-          chatId: chat.id,
-          waChatId: chat.waChatId,
-          author: contact,
-        }),
-      ),
-    )
 
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       socket.on('exception' as any, reject)
 
-      socket.on('chat:clear', async () => {
-        const [chatOnDataBase, messagesOnDatabase] = await Promise.all([
+      socket.on('chat:change', async () => {
+        const [chatOnDataBase] = await Promise.all([
           prisma.chat.findUniqueOrThrow({
             where: { id: chat.id.toString() },
           }),
-          prisma.message.findMany({
-            where: { chatId: chat.id.toString() },
-          }),
         ])
 
-        resolve([
-          expect(chatOnDataBase.deletedAt).toBeTruthy(),
-          expect(messagesOnDatabase).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                deletedAt: expect.any(Date),
-              }),
-            ]),
-          ),
-        ])
+        resolve([expect(chatOnDataBase.unreadCount).toBe(0)])
       })
 
-      socket.emit('chat:clear', { waChatId: waClientId.toString() })
+      socket.emit('chat:read', { waChatId: waClientId.toString() })
     })
   })
 })
