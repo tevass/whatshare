@@ -1,12 +1,13 @@
 import type { OverrideProperties, SetNonNullable, SetOptional } from 'type-fest'
 import { UniqueEntityID } from './unique-entity-id'
 import { WAEntityID } from './wa-entity-id'
+import { WAMessageOwnerID } from './wa-message-owner-id'
 
 export interface WAMessageIDProps {
   entityId: WAEntityID
   isFromMe: boolean
   ref: string
-  owner: WAEntityID | null
+  owner: WAMessageOwnerID | null
 }
 
 type GroupMessage = SetNonNullable<WAMessageIDProps, 'owner'>
@@ -77,12 +78,14 @@ export class WAMessageID {
     const [isFromMe, rawEntityId, ref, rawOwnerId] = splittedValue
     const hasOwner = !!rawOwnerId
 
+    const entityId = WAEntityID.createFromString(rawEntityId)
+
     return new WAMessageID({
       ref,
+      entityId,
       isFromMe: isFromMe === 'true',
-      entityId: WAEntityID.createFromString(rawEntityId),
       ...(hasOwner && {
-        owner: WAEntityID.createFromString(rawOwnerId),
+        owner: WAMessageOwnerID.create({ entityId, ref: rawOwnerId }),
       }),
     })
   }

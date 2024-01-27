@@ -1,16 +1,17 @@
 import {
   ContactsRepository,
   CountManyParams,
+  FindByPhoneParams,
   FindByWAContactIdParams,
   FindManyByWAContactsIdsParams,
   FindManyParams,
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
-import { PrismaService } from '../prisma.service'
+import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaContactMapper } from '../mappers/prisma-contact-mapper'
-import { Injectable } from '@nestjs/common'
-import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaContactsRepository implements ContactsRepository {
@@ -26,6 +27,10 @@ export class PrismaContactsRepository implements ContactsRepository {
         isMyContact: true,
       }),
     }
+  }
+
+  findByPhone(params: FindByPhoneParams): Promise<Contact | null> {
+    throw new Error('Method not implemented.')
   }
 
   async findByWAContactId(
@@ -106,6 +111,10 @@ export class PrismaContactsRepository implements ContactsRepository {
     })
 
     return rows
+  }
+
+  save(contact: Contact): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   async create(contact: Contact): Promise<void> {

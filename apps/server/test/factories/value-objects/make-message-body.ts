@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker'
 export function makeMessageBody(override?: Partial<MessageBodyProps>) {
   return MessageBody.create({
     content: faker.lorem.paragraph(),
-    label: faker.person.firstName(),
+    header: faker.person.firstName(),
     ...override,
   })
 }

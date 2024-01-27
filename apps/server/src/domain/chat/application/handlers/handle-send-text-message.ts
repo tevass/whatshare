@@ -3,12 +3,15 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
+import { Chat } from '../../enterprise/entities/chat'
 import { Message } from '../../enterprise/entities/message'
 import { MessageBody } from '../../enterprise/entities/value-objects/message-body'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { MessageEmitter } from '../emitters/message-emitter'
 import { AttendantsRepository } from '../repositories/attendants-repository'
 import { ChatsRepository } from '../repositories/chats-repository'
+import { ContactsRepository } from '../repositories/contacts-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAClientManager } from '../services/wa-client-manager'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
@@ -28,11 +31,13 @@ type HandleSendTextMessageResponse = Either<
   }
 >
 
+@Injectable()
 export class HandleSendTextMessage {
   constructor(
     private messagesRepository: MessagesRepository,
     private chatsRepository: ChatsRepository,
     private attendantsRepository: AttendantsRepository,
+    private contactsRepository: ContactsRepository,
     private waManager: WAClientManager,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
@@ -43,12 +48,7 @@ export class HandleSendTextMessage {
   ): Promise<HandleSendTextMessageResponse> {
     const { waChatId, attendantId, body, quotedId, whatsAppId } = request
 
-    const [chat, attendant, quotedMessage] = await Promise.all([
-      this.chatsRepository.findByWAChatIdAndWhatsAppId({
-        waChatId: WAEntityID.createFromString(waChatId),
-        whatsAppId,
-        findDeleted: true,
-      }),
+    const [attendant, quotedMessage] = await Promise.all([
       this.attendantsRepository.findById(attendantId),
       quotedId
         ? this.messagesRepository.findById({
@@ -58,8 +58,32 @@ export class HandleSendTextMessage {
         : null,
     ])
 
+    const waChatEntityId = WAEntityID.createFromString(waChatId)
+
+    let chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
+      waChatId: waChatEntityId,
+      whatsAppId,
+      findDeleted: true,
+    })
+
     if (!chat) {
-      return left(new ResourceNotFoundError(waChatId))
+      const contact = await this.contactsRepository.findByWAContactId({
+        waContactId: waChatEntityId,
+        includeUnknowns: true,
+      })
+
+      if (!contact) {
+        return left(new ResourceNotFoundError(waChatId))
+      }
+
+      chat = Chat.create({
+        contact,
+        unreadCount: 0,
+        waChatId: waChatEntityId,
+        whatsAppId: new UniqueEntityID(whatsAppId),
+      })
+
+      await this.chatsRepository.create(chat)
     }
 
     if (!attendant) {

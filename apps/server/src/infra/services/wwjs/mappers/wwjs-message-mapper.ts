@@ -2,11 +2,11 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { WAContact } from '@/domain/chat/application/entities/wa-contact'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
+import { Text } from '@/infra/utils/text'
 import { Message } from 'whatsapp-web.js'
 import { WWJSMessageAckMapper } from './wwjs-message-ack-mapper'
 import { WWJSMessageMediaMapper } from './wwjs-message-media-mapper'
 import { WWJSMessageTypeMapper } from './wwjs-message-type-mapper'
-import { Text } from '@/infra/utils/text'
 
 interface WAMessageToDomain {
   raw: Message

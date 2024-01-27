@@ -1,11 +1,11 @@
-import WWJS from 'whatsapp-web.js'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessage } from '@/domain/chat/application/entities/wa-message'
-import { WWJSMessageMapper } from '../mappers/wwjs-message-mapper'
 import {
   WAMessageClient,
   WAMessageSendTextParams,
 } from '@/domain/chat/application/services/wa-client-manager/clients/wa-message-client'
+import WWJS from 'whatsapp-web.js'
+import { WWJSMessageMapper } from '../mappers/wwjs-message-mapper'
 import { WWJSClient } from './wwjs-client'
 
 export class WWJSMessageClient implements WAMessageClient {

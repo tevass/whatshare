@@ -9,7 +9,6 @@ import { WWJSClientManager } from '@/infra/services/wwjs/wwjs-client-manager.ser
 import { WWJSClientService } from '@/infra/services/wwjs/wwjs-client.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
 import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
@@ -18,20 +17,19 @@ import { WsTestingClient } from '@/test/utils/ws-testing-client'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import {
-  ChatClientEvents,
-  ChatServerEvents,
+  MessageClientEvents,
+  MessageServerEvents,
 } from '@whatshare/ws-schemas/events'
 import { Socket } from 'socket.io-client'
 
-describe('Handle Unread Chat (WS)', () => {
+describe('Handle Send Text Message (WS)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
 
   let whatsApp: WhatsApp
-  let socket: Socket<ChatServerEvents, ChatClientEvents>
+  let socket: Socket<MessageServerEvents, MessageClientEvents>
 
   let wwjsClient: WWJSClient
 
@@ -42,7 +40,6 @@ describe('Handle Unread Chat (WS)', () => {
         FakeWhatsAppFactory,
         FakeAttendantFactory,
         FakeAttendantProfileFactory,
-        FakeChatFactory,
         FakeMessageFactory,
         FakeContactFactory,
       ],
@@ -60,7 +57,6 @@ describe('Handle Unread Chat (WS)', () => {
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
     const attendantFactory = moduleRef.get(FakeAttendantFactory)
     contactFactory = moduleRef.get(FakeContactFactory)
-    chatFactory = moduleRef.get(FakeChatFactory)
 
     await NEST_TESTING_APP.init()
 
@@ -103,7 +99,7 @@ describe('Handle Unread Chat (WS)', () => {
     await app.close()
   })
 
-  it('[EVENT] chat:unread', async () => {
+  it('[EVENT] message:create', async () => {
     const waClientId = WAEntityID.createFromString(
       wwjsClient.switchToRaw().info.wid._serialized,
     )
@@ -112,26 +108,27 @@ describe('Handle Unread Chat (WS)', () => {
       waContactId: waClientId,
     })
 
-    const chat = await chatFactory.makePrismaChat({
-      whatsAppId: whatsApp.id,
-      waChatId: contact.waContactId,
-      contact,
-      unreadCount: 0,
-    })
-
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       socket.on('exception' as any, reject)
 
-      socket.on('chat:change', async () => {
-        const chatOnDataBase = await prisma.chat.findUniqueOrThrow({
-          where: { id: chat.id.toString() },
-        })
+      socket.on('message:create', async () => {
+        const [chatOnDataBase, messageOnDataBase] = await Promise.all([
+          prisma.chat.findFirst(),
+          prisma.message.findFirst(),
+        ])
 
-        resolve([expect(chatOnDataBase.unreadCount).toBe(-1)])
+        resolve([
+          expect(chatOnDataBase).toBeTruthy(),
+          expect(messageOnDataBase).toBeTruthy(),
+          expect(chatOnDataBase?.lastMessageId).toBe(messageOnDataBase?.id),
+        ])
       })
 
-      socket.emit('chat:unread', { waChatId: waClientId.toString() })
+      socket.emit('message:send:text', {
+        body: '@test',
+        waChatId: contact.waContactId.toString(),
+      })
     })
   })
 })

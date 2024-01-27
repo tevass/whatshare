@@ -1,7 +1,7 @@
 import { HandleSendTextMessage } from '@/domain/chat/application/handlers/handle-send-text-message'
 import { WsUser } from '@/infra/auth/decorators/ws-user.decorator'
 import { WsJwtAuthGuard } from '@/infra/auth/guards/ws-jwt.guard'
-import { UseGuards, UsePipes } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
 import { MessageBody } from '@nestjs/websockets'
 import {
   MessageClientEvents,
@@ -19,9 +19,9 @@ export class WsHandleSendTextMessage {
   constructor(private handleSendTextMessage: HandleSendTextMessage) {}
 
   @WsSubscribeEvent<MessageClientEvents>('message:send:text')
-  @UsePipes(new ZodWsValidationPipe(messageSendTextClientPayload))
   async register(
-    @MessageBody() payload: MessageSendTextClientPayload,
+    @MessageBody(new ZodWsValidationPipe(messageSendTextClientPayload))
+    payload: MessageSendTextClientPayload,
     @WsRoom() whatsAppId: string,
     @WsUser('sub') attendantId: string,
   ) {

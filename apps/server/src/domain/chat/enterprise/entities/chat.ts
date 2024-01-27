@@ -10,7 +10,7 @@ export interface ChatProps {
   whatsAppId: UniqueEntityID
   contact: Contact
   unreadCount: number
-  lastInteraction: Date
+  lastInteraction: Date | null
   lastMessage: Message | null
   deletedAt: Date | null
 }
@@ -90,7 +90,7 @@ export class Chat extends Entity<ChatProps> {
     return new Chat(
       {
         ...props,
-        lastInteraction: props.lastInteraction ?? new Date(),
+        lastInteraction: props.lastInteraction ?? null,
         lastMessage: props.lastMessage ?? null,
         deletedAt: props.deletedAt ?? null,
       },

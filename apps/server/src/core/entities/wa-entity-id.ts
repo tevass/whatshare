@@ -47,6 +47,7 @@ export class WAEntityID {
 
   static createFromString(value: string) {
     const [waNumber, waParams] = value.split('@')
+
     const [type, server] = waParams.split('.') as [
       WAEntityIDType,
       WAEntityIDServer,

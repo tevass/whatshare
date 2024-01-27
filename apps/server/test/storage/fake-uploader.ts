@@ -30,7 +30,7 @@ export class FakeUploader implements Uploader {
     return { url }
   }
 
-  async remove({ url }: UploaderRemoveParams): Promise<void> {
-    this.uploads = this.uploads.filter((upload) => upload.url !== url)
+  async remove({ key }: UploaderRemoveParams): Promise<void> {
+    this.uploads = this.uploads.filter((upload) => upload.url !== key)
   }
 }

@@ -5,6 +5,7 @@ import {
 } from '@/domain/chat/enterprise/entities/message-media'
 import { faker } from '@faker-js/faker'
 import { makeUniqueEntityID } from './make-unique-entity-id'
+import { makeMimeType } from './value-objects/make-mime-type'
 
 export const makeMessageMedia = (
   override: Partial<MessageMediaProps> = {},
@@ -12,10 +13,9 @@ export const makeMessageMedia = (
 ) => {
   return MessageMedia.create(
     {
-      filename: faker.system.fileName(),
       key: faker.string.uuid(),
       messageId: makeUniqueEntityID(),
-      url: faker.internet.url(),
+      mimetype: makeMimeType(),
       ...override,
     },
     id,

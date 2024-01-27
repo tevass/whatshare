@@ -89,7 +89,7 @@ model Chat {
 
   unreadCount Int @map("unread_count")
 
-  lastInteraction DateTime  @map("last_interaction_date")
+  lastInteraction DateTime? @map("last_interaction_date")
   deletedAt       DateTime? @map("deleted_at")
 
   contact  Contact   @relation(fields: [contactId], references: [id])

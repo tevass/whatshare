@@ -10,7 +10,7 @@ export const wsChat = z.object({
   whatsAppId: mongoId,
   contact: wsContact,
   unreadCount: z.number(),
-  lastInteraction: z.date(),
+  lastInteraction: z.date().nullable(),
   lastMessage: wsMessage.nullable(),
 })
 

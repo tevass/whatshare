@@ -7,7 +7,6 @@ export function makeWAMessageID(override: Partial<WAMessageIDProps> = {}) {
     ref: faker.helpers.fromRegExp(/[0-9]{13}/),
     entityId: makeWAEntityID(),
     isFromMe: faker.datatype.boolean(),
-    owner: makeWAEntityID(),
     ...override,
   })
 }

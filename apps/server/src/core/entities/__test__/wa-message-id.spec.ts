@@ -1,4 +1,5 @@
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
+import { makeWAMessageOwnerID } from '@/test/factories/make-wa-message-owner-id'
 import { faker } from '@faker-js/faker'
 import { UniqueEntityID } from '../unique-entity-id'
 import { WAMessageID } from '../wa-message-id'
@@ -93,7 +94,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId).toBeTruthy()
@@ -104,7 +105,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.hasOwner()).toBe(true)
@@ -115,7 +116,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.isGroup()).toBe(true)
@@ -126,7 +127,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.isPrivate()).toBe(false)
@@ -137,7 +138,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.toString()).toEqual(expect.any(String))
@@ -149,7 +150,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.toUniqueEntityID()).toBeInstanceOf(UniqueEntityID)
@@ -160,7 +161,7 @@ describe('WAMessageID (Group)', () => {
       entityId: makeWAEntityID(),
       isFromMe: true,
       ref: faker.database.mongodbObjectId(),
-      owner: makeWAEntityID(),
+      owner: makeWAMessageOwnerID(),
     })
 
     expect(messageId.equals(messageId)).toBe(true)

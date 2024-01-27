@@ -124,11 +124,9 @@ describe('Handle Read Chat (WS)', () => {
       socket.on('exception' as any, reject)
 
       socket.on('chat:change', async () => {
-        const [chatOnDataBase] = await Promise.all([
-          prisma.chat.findUniqueOrThrow({
-            where: { id: chat.id.toString() },
-          }),
-        ])
+        const chatOnDataBase = await prisma.chat.findUniqueOrThrow({
+          where: { id: chat.id.toString() },
+        })
 
         resolve([expect(chatOnDataBase.unreadCount).toBe(0)])
       })
