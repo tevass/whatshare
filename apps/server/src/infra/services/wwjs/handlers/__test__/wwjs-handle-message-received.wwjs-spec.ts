@@ -15,6 +15,7 @@ import { afterAll } from 'vitest'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleMessageReceived } from '../wwjs-handle-message-received'
 
 describe('Handle Message Received (WWJS)', () => {
   let app: INestApplication
@@ -49,7 +50,7 @@ describe('Handle Message Received (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-      wwjsClient.addHandlers(wwjsService.handlers)
+      wwjsClient.addHandlers([moduleRef.get(WWJSHandleMessageReceived)])
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')

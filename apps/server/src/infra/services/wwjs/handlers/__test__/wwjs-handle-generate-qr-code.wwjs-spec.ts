@@ -9,6 +9,9 @@ import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { WsTestingClient } from '@/test/utils/ws-testing-client'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleGenerateQrCode } from '../wwjs-handle-generate-qr-code'
 
 describe('Handle Generate QR Code (WWJS)', () => {
   let app: INestApplication
@@ -27,17 +30,25 @@ describe('Handle Generate QR Code (WWJS)', () => {
     const NEST_TESTING_APP = new NestTestingApp(app)
 
     prisma = moduleRef.get(PrismaService)
+    const wwjsManager = moduleRef.get(WWJSClientManager)
+    const wwjsService = moduleRef.get(WWJSClientService)
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
+
+    await NEST_TESTING_APP.init()
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 
-    await NEST_TESTING_APP.init()
+    const wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+    wwjsClient.addHandlers([moduleRef.get(WWJSHandleGenerateQrCode)])
+    wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
     socket = WsTestingClient.create({
       address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
       cookie: NEST_TESTING_APP.getAuthCookie('@test'),
       room: whatsApp.id.toString(),
     })
+
+    wwjsClient.init()
 
     return new Promise((resolve, reject) => {
       socket.on('connect', resolve)

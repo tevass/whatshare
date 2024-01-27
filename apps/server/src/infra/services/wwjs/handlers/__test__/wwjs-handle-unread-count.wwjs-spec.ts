@@ -3,7 +3,6 @@ import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
 import { Socket } from 'socket.io-client'
 
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
@@ -20,6 +19,8 @@ import {
 } from '@whatshare/ws-schemas/events'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleUnreadCount } from '../wwjs-handle-unread-count'
 
 describe('Handle Unread Count (WWJS)', () => {
   let app: INestApplication
@@ -52,6 +53,9 @@ describe('Handle Unread Count (WWJS)', () => {
 
       const wwjsManager = moduleRef.get(WWJSClientManager)
       const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
+      const wwjsService = moduleRef.get(WWJSClientService)
+
+      await NEST_TESTING_APP.init()
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
       whatsApp = await whatsAppFactory.makePrismaWhatsApp(
@@ -59,10 +63,9 @@ describe('Handle Unread Count (WWJS)', () => {
         new UniqueEntityID(WWJS_TEST_CLIENT_ID),
       )
 
-      app.use(cookieParser)
-      await app.init()
-
-      wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
+      wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+      wwjsClient.addHandlers([moduleRef.get(WWJSHandleUnreadCount)])
+      wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       socket = WsTestingClient.create({
         address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
@@ -72,7 +75,7 @@ describe('Handle Unread Count (WWJS)', () => {
 
       return new Promise((resolve, reject) => {
         socket.on('connect', () => {
-          socket.on('whatsApp:connected', () => resolve())
+          wwjsClient.init().then(resolve)
         })
 
         socket.on('connect_error', reject)

@@ -12,6 +12,8 @@ import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleDisconnected } from '../wwjs-handle-disconnected'
 
 /**
  * Issue/Pull about the disconnected event not fired on logout
@@ -39,11 +41,16 @@ describe('Handle Disconnected (WWJS)', () => {
 
     prisma = moduleRef.get(PrismaService)
     const wwjsManager = moduleRef.get(WWJSClientManager)
+    const wwjsService = moduleRef.get(WWJSClientService)
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
+
+    await NEST_TESTING_APP.init()
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 
-    await NEST_TESTING_APP.init()
+    wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+    wwjsClient.addHandlers([moduleRef.get(WWJSHandleDisconnected)])
+    wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
     socket = WsTestingClient.create({
       address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
@@ -53,10 +60,7 @@ describe('Handle Disconnected (WWJS)', () => {
 
     return new Promise((resolve, reject) => {
       socket.on('connect', () => {
-        socket.on('whatsApp:connected', () => {
-          wwjsClient = wwjsManager.getConnectedClientById(whatsApp.id)!
-          resolve()
-        })
+        wwjsClient.init().then(resolve)
       })
 
       socket.on('connect_error', reject)

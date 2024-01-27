@@ -14,6 +14,9 @@ import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
+import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleLoadingScreen } from '../wwjs-handle-loading-screen'
+import { WWJSHandleReady } from '../wwjs-handle-ready'
 
 describe('Handle Loading Screen (WWJS)', () => {
   let app: INestApplication
@@ -37,8 +40,11 @@ describe('Handle Loading Screen (WWJS)', () => {
     prisma = moduleRef.get(PrismaService)
     env = moduleRef.get(EnvService)
     const wwjsManager = moduleRef.get(WWJSClientManager)
+    const wwjsService = moduleRef.get(WWJSClientService)
 
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
+
+    await NEST_TESTING_APP.init()
 
     const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
     whatsApp = await whatsAppFactory.makePrismaWhatsApp(
@@ -46,15 +52,20 @@ describe('Handle Loading Screen (WWJS)', () => {
       new UniqueEntityID(WWJS_TEST_CLIENT_ID),
     )
 
-    await NEST_TESTING_APP.init()
-
-    wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
+    wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
+    wwjsClient.addHandlers([
+      moduleRef.get(WWJSHandleLoadingScreen),
+      moduleRef.get(WWJSHandleReady),
+    ])
+    wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
     socket = WsTestingClient.create({
       address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
       cookie: NEST_TESTING_APP.getAuthCookie('@test'),
       room: whatsApp.id.toString(),
     })
+
+    wwjsClient.init()
 
     return new Promise((resolve, reject) => {
       socket.on('connect', resolve)

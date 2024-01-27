@@ -19,6 +19,7 @@ import { Socket } from 'socket.io-client'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
+import { WWJSHandleMessageAck } from '../wwjs-handle-message-ack'
 
 describe('Handle Message Ack (WWJS)', () => {
   let app: INestApplication
@@ -68,7 +69,7 @@ describe('Handle Message Ack (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-      wwjsClient.addHandlers(wwjsService.handlers)
+      wwjsClient.addHandlers([moduleRef.get(WWJSHandleMessageAck)])
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')
