@@ -71,8 +71,6 @@ describe('Handle Read Chat (WS)', () => {
     )
 
     wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-    wwjsClient.addHandlers(wwjsService.handlers)
-
     wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
     const attendant = await attendantFactory.makePrismaAttendant()
@@ -88,7 +86,13 @@ describe('Handle Read Chat (WS)', () => {
 
     return new Promise((resolve, reject) => {
       socket.on('connect', () => {
-        wwjsClient.init().then(resolve).catch(reject)
+        wwjsClient
+          .init()
+          .then(() => {
+            wwjsClient.set({ status: 'connected' })
+            resolve()
+          })
+          .catch(reject)
       })
 
       socket.on('connect_error', reject)
