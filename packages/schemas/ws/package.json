@@ -18,6 +18,7 @@
     }
   },
   "scripts": {
+    "clean": "rm -rf dist .turbo",
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint --ext .ts .",
@@ -27,11 +28,12 @@
     "@whatshare/eslint-config": "workspace:^",
     "@whatshare/tsconfig": "workspace:^",
     "@whatshare/tsup-config": "workspace:^",
-    "tsup": "^8.0.1"
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@whatshare/shared-schemas": "workspace:^",
     "@whatshare/core-schemas": "workspace:^",
+    "@whatshare/shared-schemas": "workspace:^",
     "zod": "^3.22.4"
   }
 }

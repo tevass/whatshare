@@ -10,6 +10,7 @@
     }
   },
   "scripts": {
+    "clean": "rm -rf dist .turbo",
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint --ext .ts .",
@@ -24,6 +25,7 @@
     "@whatshare/tsup-config": "workspace:^",
     "eslint": "^8.56.0",
     "tsup": "^8.0.1",
-    "vitest": "^1.2.1"
+    "vitest": "^1.2.1",
+    "typescript": "^5.3.3"
   }
 }
