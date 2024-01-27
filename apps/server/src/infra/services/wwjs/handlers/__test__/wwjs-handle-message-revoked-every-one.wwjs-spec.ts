@@ -2,22 +2,22 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
-import { AdaptersModule } from '@/infra/adapters/adapters.module'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
-import { Time } from '@/infra/utils/time'
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
 import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
-import { Server } from '@/test/utils/server'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
+import { WsTestingClient } from '@/test/utils/ws-testing-client'
+import { WWJSTesting } from '@/test/utils/wwjs-testing'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { MessageType } from '@whatshare/core-schemas/enums'
 import { MessageServerEvents } from '@whatshare/ws-schemas/events'
-import cookieParser from 'cookie-parser'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
@@ -28,7 +28,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
   let contactFactory: FakeContactFactory
   let chatFactory: FakeChatFactory
   let messageFactory: FakeMessageFactory
-  let dateAdapter: DateAdapter
+  let dateAdapter: FakeDateAdapter
 
   let whatsApp: WhatsApp
   let socket: Socket<MessageServerEvents>
@@ -39,16 +39,18 @@ describe('Handle Revoked Every One (WWJS)', () => {
   beforeEach(
     async () => {
       const moduleRef = await Test.createTestingModule({
-        imports: [AppModule, AdaptersModule],
+        imports: [AppModule],
         providers: [
           FakeWhatsAppFactory,
           FakeContactFactory,
           FakeChatFactory,
           FakeMessageFactory,
+          FakeDateAdapter,
         ],
       }).compile()
 
       app = moduleRef.createNestApplication()
+      const NEST_TESTING_APP = new NestTestingApp(app)
 
       dateAdapter = moduleRef.get(DateAdapter)
       const env = moduleRef.get(EnvService)
@@ -62,8 +64,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
 
       const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
-      app.use(cookieParser)
-      await app.init()
+      await NEST_TESTING_APP.init()
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
       whatsApp = await whatsAppFactory.makePrismaWhatsApp(
@@ -84,18 +85,17 @@ describe('Handle Revoked Every One (WWJS)', () => {
       helperWWJSClient = wwjsService.createFromWhatsApp(helperWhatsApp)
       wwjsManager.clients.set(helperWhatsApp.id.toString(), helperWWJSClient)
 
-      const address = Server.getAddressFromApp(app)
-      socket = io(`${address}/wa`, {
-        query: {
-          room: whatsApp.id.toString(),
-        },
+      socket = WsTestingClient.create({
+        address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
+        cookie: NEST_TESTING_APP.getAuthCookie('@test'),
+        room: whatsApp.id.toString(),
       })
 
       return new Promise((resolve, reject) => {
         socket.on('connect', () => {
-          Promise.all([wwjsClient.init(), helperWWJSClient.init()]).then(() =>
-            resolve(),
-          )
+          Promise.all([wwjsClient.init(), helperWWJSClient.init()])
+            .then(() => resolve())
+            .catch(reject)
         })
 
         socket.on('connect_error', reject)
@@ -105,20 +105,10 @@ describe('Handle Revoked Every One (WWJS)', () => {
   )
 
   afterEach(async () => {
-    const wwjsRawClient = wwjsClient.switchToRaw()
-    const helperWWJSRawClient = helperWWJSClient.switchToRaw()
-
-    const chats = await Promise.all([
-      wwjsRawClient.getChatById(helperWWJSRawClient.info.wid._serialized),
-      helperWWJSRawClient.getChatById(wwjsRawClient.info.wid._serialized),
-    ])
-
-    await Promise.all(
-      chats.map(async (chat) => {
-        await chat.delete()
-        await Time.delay()
-      }),
-    )
+    await WWJSTesting.clearChats({
+      client: wwjsClient.switchToRaw(),
+      helper: helperWWJSClient.switchToRaw(),
+    })
   })
 
   afterAll(async () => {

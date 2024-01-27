@@ -8,7 +8,7 @@ import {
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { Text } from '../utils/text'
+import { TextTesting } from '../utils/text-testing'
 
 export class InMemoryContactsRepository implements ContactsRepository {
   items: Contact[] = []
@@ -57,7 +57,7 @@ export class InMemoryContactsRepository implements ContactsRepository {
     const { page, take, query } = params
 
     return this.items
-      .filter((item) => (query ? Text.includes(item.name, query) : true))
+      .filter((item) => (query ? TextTesting.includes(item.name, query) : true))
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
@@ -65,7 +65,7 @@ export class InMemoryContactsRepository implements ContactsRepository {
     const { query } = params
 
     return this.items.filter((item) =>
-      query ? Text.includes(item.name, query) : true,
+      query ? TextTesting.includes(item.name, query) : true,
     ).length
   }
 

@@ -1,17 +1,17 @@
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
-import { Server } from '@/test/utils/server'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
+import { WsTestingClient } from '@/test/utils/ws-testing-client'
 import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
-import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClient } from '../../clients/wwjs-client'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
 
 /**
  * Issue/Pull about the disconnected event not fired on logout
@@ -35,6 +35,7 @@ describe('Handle Disconnected (WWJS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+    const NEST_TESTING_APP = new NestTestingApp(app)
 
     prisma = moduleRef.get(PrismaService)
     const wwjsManager = moduleRef.get(WWJSClientManager)
@@ -42,21 +43,20 @@ describe('Handle Disconnected (WWJS)', () => {
 
     whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 
-    app.use(cookieParser)
-    await app.init()
+    await NEST_TESTING_APP.init()
 
-    wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
-
-    const address = Server.getAddressFromApp(app)
-    socket = io(`${address}/wa`, {
-      query: {
-        room: whatsApp.id.toString(),
-      },
+    socket = WsTestingClient.create({
+      address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
+      cookie: NEST_TESTING_APP.getAuthCookie('@test'),
+      room: whatsApp.id.toString(),
     })
 
     return new Promise((resolve, reject) => {
       socket.on('connect', () => {
-        socket.on('whatsApp:connected', () => resolve())
+        socket.on('whatsApp:connected', () => {
+          wwjsClient = wwjsManager.getConnectedClientById(whatsApp.id)!
+          resolve()
+        })
       })
 
       socket.on('connect_error', reject)

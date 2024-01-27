@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { WSAuthCookieMiddleware } from './ws-auth-cookie-middleware'
 import { WSJoinRoomMiddleware } from './ws-join-room-middleware'
 import { WsGateway } from './ws.gateway'
 
@@ -23,6 +24,7 @@ import { HandleUnreadChat } from '@/domain/chat/application/handlers/handle-unre
 
 @Module({
   providers: [
+    WSAuthCookieMiddleware,
     WSJoinRoomMiddleware,
     WsGateway,
     {

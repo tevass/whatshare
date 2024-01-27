@@ -13,17 +13,15 @@ import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
 import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
-import { Server } from '@/test/utils/server'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
+import { WsTestingClient } from '@/test/utils/ws-testing-client'
 import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import { ChatClientEvents } from '@whatshare/ws-schemas/events'
-import cookieParser from 'cookie-parser'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 
 describe('Handle Clear Chat (WS)', () => {
   let app: INestApplication
-  let env: EnvService
   let prisma: PrismaService
 
   let contactFactory: FakeContactFactory
@@ -49,12 +47,13 @@ describe('Handle Clear Chat (WS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
-    env = moduleRef.get(EnvService)
+    const NEST_TESTING_APP = new NestTestingApp(app)
+
+    const env = moduleRef.get(EnvService)
     prisma = moduleRef.get(PrismaService)
 
     const wwjsManager = moduleRef.get(WWJSClientManager)
     const wwjsService = moduleRef.get(WWJSClientService)
-    const jwt = moduleRef.get(JwtService)
 
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
     const attendantFactory = moduleRef.get(FakeAttendantFactory)
@@ -62,8 +61,7 @@ describe('Handle Clear Chat (WS)', () => {
     chatFactory = moduleRef.get(FakeChatFactory)
     messageFactory = moduleRef.get(FakeMessageFactory)
 
-    app.use(cookieParser)
-    await app.init()
+    await NEST_TESTING_APP.init()
 
     const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
     whatsApp = await whatsAppFactory.makePrismaWhatsApp(
@@ -77,17 +75,14 @@ describe('Handle Clear Chat (WS)', () => {
     wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
     const attendant = await attendantFactory.makePrismaAttendant()
-    const JWT_COOKIE_NAME = env.get('JWT_COOKIE_NAME')
-    const token = jwt.sign({ sub: attendant.id.toString() })
+    const token = NEST_TESTING_APP.authenticate({
+      sub: attendant.id.toString(),
+    })
 
-    const address = Server.getAddressFromApp(app)
-    socket = io(`${address}/wa`, {
-      extraHeaders: {
-        cookie: `${JWT_COOKIE_NAME}=${token}`,
-      },
-      query: {
-        room: whatsApp.id.toString(),
-      },
+    socket = WsTestingClient.create({
+      address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
+      cookie: NEST_TESTING_APP.getAuthCookie(token),
+      room: whatsApp.id.toString(),
     })
 
     return new Promise((resolve, reject) => {

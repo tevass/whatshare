@@ -3,10 +3,10 @@ import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
 import supertest from 'supertest'
 
 describe('Authenticate', () => {
@@ -22,13 +22,13 @@ describe('Authenticate', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+    const NEST_TESTING_APP = new NestTestingApp(app)
+
     attendantFactory = moduleRef.get(FakeAttendantFactory)
     hasher = moduleRef.get(HashGenerator)
     env = moduleRef.get(EnvService)
 
-    app.use(cookieParser())
-
-    await app.init()
+    await NEST_TESTING_APP.init()
   })
 
   afterAll(async () => {

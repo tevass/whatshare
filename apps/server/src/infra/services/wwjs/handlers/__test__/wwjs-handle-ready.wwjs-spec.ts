@@ -2,18 +2,18 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
-import { Server } from '@/test/utils/server'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { EnvService } from '@/infra/env/env.service'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
+import { WsTestingClient } from '@/test/utils/ws-testing-client'
 import { WhatsAppStatus } from '@whatshare/core-schemas/enums'
 import { WhatsAppServerEvents } from '@whatshare/ws-schemas/events'
-import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClient } from '../../clients/wwjs-client'
-import { EnvService } from '@/infra/env/env.service'
+import { WWJSClientManager } from '../../wwjs-client-manager.service'
 
 describe('Handle Ready (WWJS)', () => {
   let app: INestApplication
@@ -32,6 +32,7 @@ describe('Handle Ready (WWJS)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+    const NEST_TESTING_APP = new NestTestingApp(app)
 
     prisma = moduleRef.get(PrismaService)
     env = moduleRef.get(EnvService)
@@ -45,16 +46,14 @@ describe('Handle Ready (WWJS)', () => {
       new UniqueEntityID(WWJS_TEST_CLIENT_ID),
     )
 
-    app.use(cookieParser)
-    await app.init()
+    await NEST_TESTING_APP.init()
 
     wwjsClient = wwjsManager.clients.get(whatsApp.id.toString())!
 
-    const address = Server.getAddressFromApp(app)
-    socket = io(`${address}/wa`, {
-      query: {
-        room: whatsApp.id.toString(),
-      },
+    socket = WsTestingClient.create({
+      address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
+      cookie: NEST_TESTING_APP.getAuthCookie('@test'),
+      room: whatsApp.id.toString(),
     })
 
     return new Promise((resolve, reject) => {

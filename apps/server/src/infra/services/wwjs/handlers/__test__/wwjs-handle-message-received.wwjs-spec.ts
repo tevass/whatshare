@@ -2,15 +2,15 @@ import { AppModule } from '@/infra/app.module'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
 
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { EnvService } from '@/infra/env/env.service'
-import { Time } from '@/infra/utils/time'
-import { Server } from '@/test/utils/server'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
+import { WsTestingClient } from '@/test/utils/ws-testing-client'
+import { WWJSTesting } from '@/test/utils/wwjs-testing'
 import { ChatServerEvents } from '@whatshare/ws-schemas/events'
-import { Socket, io } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 import { afterAll } from 'vitest'
 import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
@@ -32,15 +32,15 @@ describe('Handle Message Received (WWJS)', () => {
       }).compile()
 
       app = moduleRef.createNestApplication()
-      const env = moduleRef.get(EnvService)
+      const NEST_TESTING_APP = new NestTestingApp(app)
 
+      const env = moduleRef.get(EnvService)
       const wwjsService = moduleRef.get(WWJSClientService)
       const wwjsManager = moduleRef.get(WWJSClientManager)
 
       const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
 
-      app.use(cookieParser)
-      await app.init()
+      await NEST_TESTING_APP.init()
 
       const WWJS_TEST_CLIENT_ID = env.get('WWJS_TEST_CLIENT_ID')
       const whatsApp = await whatsAppFactory.makePrismaWhatsApp(
@@ -61,18 +61,17 @@ describe('Handle Message Received (WWJS)', () => {
       helperWWJSClient = wwjsService.createFromWhatsApp(helperWhatsApp)
       wwjsManager.clients.set(helperWhatsApp.id.toString(), helperWWJSClient)
 
-      const address = Server.getAddressFromApp(app)
-      socket = io(`${address}/wa`, {
-        query: {
-          room: whatsApp.id.toString(),
-        },
+      socket = WsTestingClient.create({
+        address: WsTestingClient.waAddress(NEST_TESTING_APP.getAddress(app)),
+        cookie: NEST_TESTING_APP.getAuthCookie('@test'),
+        room: whatsApp.id.toString(),
       })
 
       return new Promise((resolve, reject) => {
         socket.on('connect', () => {
-          Promise.all([wwjsClient.init(), helperWWJSClient.init()]).then(() =>
-            resolve(),
-          )
+          Promise.all([wwjsClient.init(), helperWWJSClient.init()])
+            .then(() => resolve())
+            .catch(reject)
         })
 
         socket.on('connect_error', reject)
@@ -82,20 +81,10 @@ describe('Handle Message Received (WWJS)', () => {
   ) // 1 minute
 
   afterEach(async () => {
-    const wwjsRawClient = wwjsClient.switchToRaw()
-    const helperWWJSRawClient = helperWWJSClient.switchToRaw()
-
-    const chats = await Promise.all([
-      wwjsRawClient.getChatById(helperWWJSRawClient.info.wid._serialized),
-      helperWWJSRawClient.getChatById(wwjsRawClient.info.wid._serialized),
-    ])
-
-    await Promise.all(
-      chats.map(async (chat) => {
-        await chat.delete()
-        await Time.delay()
-      }),
-    )
+    await WWJSTesting.clearChats({
+      client: wwjsClient.switchToRaw(),
+      helper: helperWWJSClient.switchToRaw(),
+    })
   })
 
   afterAll(async () => {
@@ -110,6 +99,7 @@ describe('Handle Message Received (WWJS)', () => {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       socket.on('chat:create', resolve)
+
       await helperWWJSClient.message.sendText({
         chatId: wwjsClientWAId,
         body: '@test',

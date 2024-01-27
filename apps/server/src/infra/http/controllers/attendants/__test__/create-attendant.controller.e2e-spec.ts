@@ -4,11 +4,11 @@ import { EnvService } from '@/infra/env/env.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
 import request from 'supertest'
 
 describe('Create Attendant (HTTP)', () => {
@@ -30,6 +30,7 @@ describe('Create Attendant (HTTP)', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+    const NEST_TESTING_APP = new NestTestingApp(app)
 
     prisma = moduleRef.get(PrismaService)
     whatsAppsFactory = moduleRef.get(FakeWhatsAppFactory)
@@ -37,9 +38,7 @@ describe('Create Attendant (HTTP)', () => {
     jwt = moduleRef.get(JwtService)
     env = moduleRef.get(EnvService)
 
-    app.use(cookieParser())
-
-    await app.init()
+    await NEST_TESTING_APP.init()
   })
 
   afterAll(async () => {

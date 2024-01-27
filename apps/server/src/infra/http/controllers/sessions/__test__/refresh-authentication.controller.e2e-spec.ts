@@ -2,10 +2,10 @@ import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
+import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
-import cookieParser from 'cookie-parser'
 import supertest from 'supertest'
 
 describe('Refresh Authentication', () => {
@@ -21,14 +21,13 @@ describe('Refresh Authentication', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
+    const NEST_TESTING_APP = new NestTestingApp(app)
 
     attendantFactory = moduleRef.get(FakeAttendantFactory)
     jwt = moduleRef.get(JwtService)
     env = moduleRef.get(EnvService)
 
-    app.use(cookieParser())
-
-    await app.init()
+    await NEST_TESTING_APP.init()
   })
 
   afterAll(async () => {
