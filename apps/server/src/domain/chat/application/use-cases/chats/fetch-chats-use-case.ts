@@ -26,14 +26,20 @@ export class FetchChatsUseCase {
 
     const limit = Pagination.limit(100)
 
+    const filters = {
+      deleted: false,
+    }
+
     const [rows, chats] = await Promise.all([
       this.chatsRepository.countManyByWhatsAppId({
         whatsAppId,
+        ...filters,
       }),
       this.chatsRepository.findManyByWhatsAppId({
         page,
         take: limit,
         whatsAppId,
+        ...filters,
       }),
     ])
 

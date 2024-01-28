@@ -1,12 +1,14 @@
 import {
   ChatsRepository,
-  CountManyByWhatsAppIdParams,
-  FindByWAChatIdAndWhatsAppIdParams,
-  FindManyByWAChatsIdsParams,
-  FindManyByWhatsAppIdParams,
+  ChatsRepositoryCountManyByWhatsAppIdParams,
+  ChatsRepositoryFilters,
+  ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
+  ChatsRepositoryFindManyByWAChatsIdsParams,
+  ChatsRepositoryFindManyByWhatsAppIdParams,
 } from '@/domain/chat/application/repositories/chats-repository'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { TypeGuards } from '@/infra/utils/type-guards'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaChatMapper } from '../mappers/prisma-chat-mapper'
@@ -16,15 +18,16 @@ import { PrismaService } from '../prisma.service'
 export class PrismaChatsRepository implements ChatsRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Method extends { where?: object }>(
-    where: Method['where'] = {},
-    findDeleted: boolean = false,
+  private resolveFilters<Method extends { where?: object }>(
+    where: Method['where'],
+    filters: ChatsRepositoryFilters = {},
   ) {
+    const { deleted } = filters
+
     return {
       ...where,
-      ...(!findDeleted && {
-        deletedAt: null,
-      }),
+      ...(TypeGuards.isNotUndefined(deleted) &&
+        !deleted && { deletedAt: null }),
     }
   }
 
@@ -34,16 +37,16 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async findManyByWhatsAppId(
-    params: FindManyByWhatsAppIdParams,
+    params: ChatsRepositoryFindManyByWhatsAppIdParams,
   ): Promise<Chat[]> {
-    const { page, take, whatsAppId, findDeleted } = params
+    const { page, take, whatsAppId, ...filters } = params
 
     const raw = await this.prisma.chat.findMany({
-      where: this.resolveWhere<Prisma.ChatFindManyArgs>(
+      where: this.resolveFilters<Prisma.ChatFindManyArgs>(
         {
           whatsAppId,
         },
-        findDeleted,
+        filters,
       ),
       take,
       skip: Pagination.skip({ limit: take, page }),
@@ -54,16 +57,16 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async countManyByWhatsAppId(
-    params: CountManyByWhatsAppIdParams,
+    params: ChatsRepositoryCountManyByWhatsAppIdParams,
   ): Promise<number> {
-    const { whatsAppId, findDeleted } = params
+    const { whatsAppId, ...filters } = params
 
     const rows = await this.prisma.chat.count({
-      where: this.resolveWhere<Prisma.ChatCountArgs>(
+      where: this.resolveFilters<Prisma.ChatCountArgs>(
         {
           whatsAppId,
         },
-        findDeleted,
+        filters,
       ),
     })
 
@@ -71,20 +74,17 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async findByWAChatIdAndWhatsAppId(
-    params: FindByWAChatIdAndWhatsAppIdParams,
+    params: ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null> {
-    const { waChatId, whatsAppId, findDeleted } = params
+    const { waChatId, whatsAppId } = params
 
     const raw = await this.prisma.chat.findUnique({
-      where: this.resolveWhere<Prisma.ChatFindUniqueArgs>(
-        {
-          waChatId_whatsAppId: {
-            whatsAppId,
-            waChatId: waChatId.toString(),
-          },
+      where: {
+        waChatId_whatsAppId: {
+          whatsAppId,
+          waChatId: waChatId.toString(),
         },
-        findDeleted,
-      ),
+      },
       include: this.aggregate,
     })
 
@@ -94,19 +94,16 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async findManyByWAChatsIds(
-    params: FindManyByWAChatsIdsParams,
+    params: ChatsRepositoryFindManyByWAChatsIdsParams,
   ): Promise<Chat[]> {
-    const { waChatsIds, findDeleted } = params
+    const { waChatsIds } = params
 
     const raw = await this.prisma.chat.findMany({
-      where: this.resolveWhere<Prisma.ChatFindManyArgs>(
-        {
-          waChatId: {
-            in: waChatsIds.map((id) => id.toString()),
-          },
+      where: {
+        waChatId: {
+          in: waChatsIds.map((id) => id.toString()),
         },
-        findDeleted,
-      ),
+      },
       include: this.aggregate,
     })
 
@@ -114,6 +111,18 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async save(chat: Chat): Promise<void> {
+    const data = PrismaChatMapper.toPrismaUpdate(chat)
+
+    await this.prisma.chat.update({
+      data,
+      where: {
+        id: chat.id.toString(),
+      },
+    })
+  }
+
+  async softDelete(chat: Chat): Promise<void> {
+    chat.clear()
     const data = PrismaChatMapper.toPrismaUpdate(chat)
 
     await this.prisma.chat.update({

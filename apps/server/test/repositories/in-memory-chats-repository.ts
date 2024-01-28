@@ -1,52 +1,60 @@
 import {
   ChatsRepository,
-  CountManyByWhatsAppIdParams,
-  FindByWAChatIdAndWhatsAppIdParams,
-  FindManyByWAChatsIdsParams,
-  FindManyByWhatsAppIdParams,
+  ChatsRepositoryCountManyByWhatsAppIdParams,
+  ChatsRepositoryFilters,
+  ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
+  ChatsRepositoryFindManyByWAChatsIdsParams,
+  ChatsRepositoryFindManyByWhatsAppIdParams,
 } from '@/domain/chat/application/repositories/chats-repository'
 import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { TypeGuards } from '@/infra/utils/type-guards'
+
+interface ResolveFiltersParams extends ChatsRepositoryFilters {
+  item: Chat
+}
 
 export class InMemoryChatsRepository implements ChatsRepository {
   items: Chat[] = []
 
+  private resolveFilters({ item, ...filters }: ResolveFiltersParams) {
+    const { deleted } = filters ?? {}
+
+    return TypeGuards.isNotUndefined(deleted) && deleted
+      ? item.isDeleted()
+      : true
+  }
+
   async findManyByWhatsAppId(
-    params: FindManyByWhatsAppIdParams,
+    params: ChatsRepositoryFindManyByWhatsAppIdParams,
   ): Promise<Chat[]> {
-    const { whatsAppId, page, take, findDeleted = false } = params
+    const { whatsAppId, page, take, ...filters } = params
 
     return this.items
-      .filter(
-        (item) =>
-          item.whatsAppId.toString() === whatsAppId &&
-          (findDeleted ? true : !item.isDeleted()),
-      )
+      .filter((item) => item.whatsAppId.toString() === whatsAppId)
+      .filter((item) => this.resolveFilters({ item, ...filters }))
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
   async countManyByWhatsAppId(
-    params: CountManyByWhatsAppIdParams,
+    params: ChatsRepositoryCountManyByWhatsAppIdParams,
   ): Promise<number> {
-    const { whatsAppId, findDeleted = false } = params
+    const { whatsAppId, ...filters } = params
 
-    return this.items.filter(
-      (item) =>
-        item.whatsAppId.toString() === whatsAppId &&
-        (findDeleted ? true : !item.isDeleted()),
-    ).length
+    return this.items
+      .filter((item) => item.whatsAppId.toString() === whatsAppId)
+      .filter((item) => this.resolveFilters({ item, ...filters })).length
   }
 
   async findByWAChatIdAndWhatsAppId(
-    params: FindByWAChatIdAndWhatsAppIdParams,
+    params: ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null> {
-    const { waChatId, whatsAppId, findDeleted = false } = params
+    const { waChatId, whatsAppId } = params
 
     const chat = this.items.find(
       (item) =>
         item.whatsAppId.toString() === whatsAppId &&
-        item.waChatId.equals(waChatId) &&
-        (findDeleted ? true : !item.isDeleted()),
+        item.waChatId.equals(waChatId),
     )
 
     if (!chat) return null
@@ -55,15 +63,11 @@ export class InMemoryChatsRepository implements ChatsRepository {
   }
 
   async findManyByWAChatsIds(
-    params: FindManyByWAChatsIdsParams,
+    params: ChatsRepositoryFindManyByWAChatsIdsParams,
   ): Promise<Chat[]> {
-    const { waChatsIds, findDeleted = false } = params
+    const { waChatsIds } = params
 
-    return this.items.filter(
-      (item) =>
-        waChatsIds.includes(item.waChatId) &&
-        (findDeleted ? true : !item.isDeleted()),
-    )
+    return this.items.filter((item) => waChatsIds.includes(item.waChatId))
   }
 
   async create(chat: Chat): Promise<void> {
@@ -80,5 +84,10 @@ export class InMemoryChatsRepository implements ChatsRepository {
     )
 
     this.items[itemIndex] = chat
+  }
+
+  async softDelete(chat: Chat): Promise<void> {
+    chat.clear()
+    await this.save(chat)
   }
 }

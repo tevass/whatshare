@@ -47,7 +47,6 @@ export class ImportChatsUseCase {
 
     const chatsAlreadyExists = await this.chatsRepository.findManyByWAChatsIds({
       waChatsIds,
-      findDeleted: true,
     })
 
     const waChatsToCreate = waChats.filter(

@@ -2,50 +2,50 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
 import { Chat } from '../../enterprise/entities/chat'
 
-interface ChatsRepositoryMethodsParams {
-  findDeleted?: boolean
+export interface ChatsRepositoryFilters {
+  deleted?: boolean
 }
 
-export interface FindManyByWhatsAppIdParams
-  extends ChatsRepositoryMethodsParams,
-    PaginationParams {
+export interface ChatsRepositoryFindManyByWhatsAppIdParams
+  extends PaginationParams,
+    ChatsRepositoryFilters {
   whatsAppId: string
 }
 
-export interface CountManyByWhatsAppIdParams
-  extends ChatsRepositoryMethodsParams {
+export interface ChatsRepositoryCountManyByWhatsAppIdParams
+  extends ChatsRepositoryFilters {
   whatsAppId: string
 }
 
-export interface FindByWAChatIdAndWhatsAppIdParams
-  extends ChatsRepositoryMethodsParams {
+export interface ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams {
   whatsAppId: string
   waChatId: WAEntityID
 }
 
-export interface FindManyByWAChatsIdsParams
-  extends ChatsRepositoryMethodsParams {
+export interface ChatsRepositoryFindManyByWAChatsIdsParams {
   waChatsIds: WAEntityID[]
 }
 
 export abstract class ChatsRepository {
   abstract findManyByWhatsAppId(
-    params: FindManyByWhatsAppIdParams,
+    params: ChatsRepositoryFindManyByWhatsAppIdParams,
   ): Promise<Chat[]>
 
   abstract countManyByWhatsAppId(
-    params: CountManyByWhatsAppIdParams,
+    params: ChatsRepositoryCountManyByWhatsAppIdParams,
   ): Promise<number>
 
   abstract findByWAChatIdAndWhatsAppId(
-    params: FindByWAChatIdAndWhatsAppIdParams,
+    params: ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
   ): Promise<Chat | null>
 
   abstract findManyByWAChatsIds(
-    params: FindManyByWAChatsIdsParams,
+    params: ChatsRepositoryFindManyByWAChatsIdsParams,
   ): Promise<Chat[]>
 
   abstract save(chat: Chat): Promise<void>
+
+  abstract softDelete(chat: Chat): Promise<void>
 
   abstract create(chat: Chat): Promise<void>
 

@@ -52,15 +52,12 @@ export class HandleClearChat {
     await waClient.chat.clearById(chat.waChatId)
     chat.clear()
 
-    const [messages] = await Promise.all([
-      this.messagesRepository.findAllByChatId({
+    await Promise.all([
+      this.messagesRepository.softDeleteManyByChatId({
         chatId: chat.id.toString(),
       }),
-      this.chatsRepository.save(chat),
+      this.chatsRepository.softDelete(chat),
     ])
-
-    messages.forEach((message) => message.delete())
-    await this.messagesRepository.deleteMany(messages)
 
     this.chatEmitter.emitClear({
       chat,

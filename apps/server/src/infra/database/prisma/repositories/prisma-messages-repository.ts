@@ -2,33 +2,35 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 
 import {
-  CountManyByChatIdParams,
-  FindAllByChatIdParams,
-  FindByIdParams,
-  FindByWAMessageIdParams,
-  FindManyByChatIdParams,
-  FindManyByWAMessagesIdsParams,
-  FindToRevokeParams,
   MessagesRepository,
+  MessagesRepositoryCountManyByChatIdParams,
+  MessagesRepositoryDeleteManyByChatIdParams,
+  MessagesRepositoryFilters,
+  MessagesRepositoryFindByIdParams,
+  MessagesRepositoryFindByWAMessageIdParams,
+  MessagesRepositoryFindManyByChatIdParams,
+  MessagesRepositoryFindManyByWAMessagesIdsParams,
+  MessagesRepositoryFindToRevokeParams,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { Prisma } from '@prisma/client'
+import { TypeGuards } from '@/infra/utils/type-guards'
 import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
 
 @Injectable()
 export class PrismaMessagesRepository implements MessagesRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Method extends { where?: object }>(
-    where: Method['where'] = {},
-    findDeleted: boolean = false,
+  private resolveFilters<Method extends { where?: object }>(
+    where: Method['where'],
+    filters: MessagesRepositoryFilters = {},
   ) {
+    const { deleted } = filters
+
     return {
       ...where,
-      ...(!findDeleted && {
-        deletedAt: null,
-      }),
+      ...(TypeGuards.isNotUndefined(deleted) &&
+        !deleted && { deletedAt: null }),
     }
   }
 
@@ -47,16 +49,15 @@ export class PrismaMessagesRepository implements MessagesRepository {
     senderBy: true,
   }
 
-  async findById(params: FindByIdParams): Promise<Message | null> {
-    const { id, findDeleted } = params
+  async findById(
+    params: MessagesRepositoryFindByIdParams,
+  ): Promise<Message | null> {
+    const { id } = params
 
     const raw = await this.prisma.message.findUnique({
-      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
-        {
-          id,
-        },
-        findDeleted,
-      ),
+      where: {
+        id,
+      },
       include: this.aggregate,
     })
 
@@ -65,15 +66,17 @@ export class PrismaMessagesRepository implements MessagesRepository {
     return PrismaMessageMapper.toDomain(raw)
   }
 
-  async findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]> {
-    const { chatId, page, take, findDeleted } = params
+  async findManyByChatId(
+    params: MessagesRepositoryFindManyByChatIdParams,
+  ): Promise<Message[]> {
+    const { chatId, page, take, ...filters } = params
 
     const raw = await this.prisma.message.findMany({
-      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
+      where: this.resolveFilters(
         {
           chatId,
         },
-        findDeleted,
+        filters,
       ),
       take,
       skip: Pagination.skip({ limit: take, page }),
@@ -83,47 +86,32 @@ export class PrismaMessagesRepository implements MessagesRepository {
     return raw.map(PrismaMessageMapper.toDomain)
   }
 
-  async countManyByChatId(params: CountManyByChatIdParams): Promise<number> {
-    const { chatId, findDeleted } = params
+  async countManyByChatId(
+    params: MessagesRepositoryCountManyByChatIdParams,
+  ): Promise<number> {
+    const { chatId, ...filters } = params
 
     const rows = await this.prisma.message.count({
-      where: this.resolveWhere<Prisma.MessageCountArgs>(
+      where: this.resolveFilters(
         {
           chatId,
         },
-        findDeleted,
+        filters,
       ),
     })
 
     return rows
   }
 
-  async findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]> {
-    const { chatId, findDeleted } = params
-
-    const raw = await this.prisma.message.findMany({
-      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
-        {
-          chatId,
-        },
-        findDeleted,
-      ),
-      include: this.aggregate,
-    })
-
-    return raw.map(PrismaMessageMapper.toDomain)
-  }
-
   async findByWAMessageId(
-    params: FindByWAMessageIdParams,
+    params: MessagesRepositoryFindByWAMessageIdParams,
   ): Promise<Message | null> {
-    const { waMessageId, findDeleted } = params
+    const { waMessageId } = params
 
     const raw = await this.prisma.message.findUnique({
-      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
-        { waMessageId: waMessageId.toString() },
-        findDeleted,
-      ),
+      where: {
+        waMessageId: waMessageId.toString(),
+      },
       include: this.aggregate,
     })
 
@@ -133,39 +121,35 @@ export class PrismaMessagesRepository implements MessagesRepository {
   }
 
   async findManyByWAMessagesIds(
-    params: FindManyByWAMessagesIdsParams,
+    params: MessagesRepositoryFindManyByWAMessagesIdsParams,
   ): Promise<Message[]> {
-    const { waMessagesIds, findDeleted } = params
+    const { waMessagesIds } = params
 
     const raw = await this.prisma.message.findMany({
-      where: this.resolveWhere<Prisma.MessageFindManyArgs>(
-        {
-          waMessageId: {
-            in: waMessagesIds.map((id) => id.toString()),
-          },
+      where: {
+        waMessageId: {
+          in: waMessagesIds.map((id) => id.toString()),
         },
-        findDeleted,
-      ),
+      },
       include: this.aggregate,
     })
 
     return raw.map(PrismaMessageMapper.toDomain)
   }
 
-  async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
-    const { createdAt, waChatId, whatsAppId, findDeleted } = params
+  async findToRevoke(
+    params: MessagesRepositoryFindToRevokeParams,
+  ): Promise<Message | null> {
+    const { createdAt, waChatId, whatsAppId } = params
 
     const raw = await this.prisma.message.findUnique({
-      where: this.resolveWhere<Prisma.MessageFindUniqueArgs>(
-        {
-          waChatId_whatsAppId_createdAt: {
-            waChatId: waChatId.toString(),
-            whatsAppId,
-            createdAt,
-          },
+      where: {
+        waChatId_whatsAppId_createdAt: {
+          waChatId: waChatId.toString(),
+          whatsAppId,
+          createdAt,
         },
-        findDeleted,
-      ),
+      },
       include: this.aggregate,
     })
 
@@ -185,15 +169,17 @@ export class PrismaMessagesRepository implements MessagesRepository {
     })
   }
 
-  async deleteMany(messages: Message[]): Promise<void> {
+  async softDeleteManyByChatId(
+    params: MessagesRepositoryDeleteManyByChatIdParams,
+  ): Promise<void> {
+    const { chatId } = params
+
     await this.prisma.message.updateMany({
       data: {
-        deletedAt: messages[0].deletedAt,
+        deletedAt: new Date(),
       },
       where: {
-        id: {
-          in: messages.map((message) => message.id.toString()),
-        },
+        chatId,
       },
     })
   }

@@ -46,7 +46,6 @@ export class HandleWARevokeMessage {
       waChatId,
       whatsAppId,
       createdAt: createdAtOfRevokedMessage,
-      findDeleted: true,
     })
 
     if (!message) {

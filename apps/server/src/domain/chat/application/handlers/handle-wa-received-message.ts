@@ -1,6 +1,7 @@
 import { Either, left, right } from '@/core/either'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { MessageEmitter } from '../emitters/message-emitter'
 import { WAChat } from '../entities/wa-chat'
@@ -8,7 +9,6 @@ import { WAMessage } from '../entities/wa-message'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { ContactsRepository } from '../repositories/contacts-repository'
 import { CreateMessageFromWAMessageUseCase } from '../use-cases/messages/create-message-from-wa-message-use-case'
-import { Injectable } from '@nestjs/common'
 
 interface HandleWAReceivedMessageRequest {
   waChat: WAChat
@@ -43,13 +43,11 @@ export class HandleWAReceivedMessage {
       waContact.isMyContact
         ? this.contactsRepository.findByWAContactId({
             waContactId: waContact.id,
-            includeUnknowns: true,
           })
         : null,
       this.chatsRepository.findByWAChatIdAndWhatsAppId({
         whatsAppId,
         waChatId: waChat.id,
-        findDeleted: true,
       }),
     ])
 

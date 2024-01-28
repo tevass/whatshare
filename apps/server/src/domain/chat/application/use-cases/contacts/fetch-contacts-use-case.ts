@@ -27,14 +27,20 @@ export class FetchContactsUseCase {
 
     const limit = Pagination.limit()
 
+    const filters = {
+      query,
+      isGroup: false,
+      isMyContact: true,
+    }
+
     const [rows, contacts] = await Promise.all([
       this.contactsRepository.countMany({
-        query,
+        ...filters,
       }),
       this.contactsRepository.findMany({
-        query,
         page,
         take: limit,
+        ...filters,
       }),
     ])
 

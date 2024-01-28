@@ -53,7 +53,6 @@ export class HandleSendTextMessage {
       quotedId
         ? this.messagesRepository.findById({
             id: quotedId,
-            findDeleted: true,
           })
         : null,
     ])
@@ -63,13 +62,11 @@ export class HandleSendTextMessage {
     let chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
       waChatId: waChatEntityId,
       whatsAppId,
-      findDeleted: true,
     })
 
     if (!chat) {
       const contact = await this.contactsRepository.findByWAContactId({
         waContactId: waChatEntityId,
-        includeUnknowns: true,
       })
 
       if (!contact) {

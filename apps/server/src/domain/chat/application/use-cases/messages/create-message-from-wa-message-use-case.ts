@@ -5,15 +5,15 @@ import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
 import { MessageBody } from '@/domain/chat/enterprise/entities/value-objects/message-body'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { Readable } from 'node:stream'
+import { DateAdapter } from '../../adapters/date-adapter'
 import { WAMessage } from '../../entities/wa-message'
 import { ChatsRepository } from '../../repositories/chats-repository'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
-import { DateAdapter } from '../../adapters/date-adapter'
-import { Injectable } from '@nestjs/common'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -47,7 +47,6 @@ export class CreateMessageFromWAMessageUseCase {
     const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
       waChatId: WAEntityID.createFromString(waChatId),
       whatsAppId,
-      findDeleted: true,
     })
 
     if (!chat) {
@@ -80,7 +79,6 @@ export class CreateMessageFromWAMessageUseCase {
 
       const quotedMessage = await this.messagesRepository.findByWAMessageId({
         waMessageId: waQuotedMessage.id,
-        findDeleted: true,
       })
 
       if (quotedMessage) message.set({ quoted: quotedMessage })
@@ -98,7 +96,6 @@ export class CreateMessageFromWAMessageUseCase {
 
       const myContacts = await this.contactsRepository.findManyByWAContactsIds({
         waContactsIds: waContactsThatAreMineIds,
-        includeUnknowns: true,
       })
 
       const contactsAteMineButNotExists = waContactsThatAreMine.filter(

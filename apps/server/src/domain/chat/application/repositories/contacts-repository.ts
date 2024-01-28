@@ -3,47 +3,50 @@ import { PaginationParams } from '@/domain/shared/application/repositories/pagin
 import { SearchParams } from '@/domain/shared/application/repositories/search-params'
 import { Contact } from '../../enterprise/entities/contact'
 
-interface ContactsRepositoryMethodsParams {
-  includeUnknowns?: boolean
+export interface ContactsRepositoryFilters {
+  isMyContact?: boolean
+  isGroup?: boolean
 }
 
-export interface FindByPhoneParams extends ContactsRepositoryMethodsParams {
+export interface ContactsRepositoryFindByPhoneParams {
   phone: string
 }
 
-export interface FindByWAContactIdParams
-  extends ContactsRepositoryMethodsParams {
+export interface ContactsRepositoryFindByWAContactIdParams {
   waContactId: WAEntityID
 }
 
-export interface FindManyByWAContactsIdsParams
-  extends ContactsRepositoryMethodsParams {
+export interface ContactsRepositoryFindManyByWAContactsIdsParams {
   waContactsIds: WAEntityID[]
 }
 
-export interface FindManyParams
-  extends ContactsRepositoryMethodsParams,
-    PaginationParams,
-    SearchParams {}
+export interface ContactsRepositoryFindManyParams
+  extends PaginationParams,
+    SearchParams,
+    ContactsRepositoryFilters {}
 
-export interface CountManyParams
-  extends ContactsRepositoryMethodsParams,
-    SearchParams {}
+export interface ContactsRepositoryCountManyParams
+  extends SearchParams,
+    ContactsRepositoryFilters {}
 
 export abstract class ContactsRepository {
-  abstract findByPhone(params: FindByPhoneParams): Promise<Contact | null>
+  abstract findByPhone(
+    params: ContactsRepositoryFindByPhoneParams,
+  ): Promise<Contact | null>
 
   abstract findByWAContactId(
-    params: FindByWAContactIdParams,
+    params: ContactsRepositoryFindByWAContactIdParams,
   ): Promise<Contact | null>
 
   abstract findManyByWAContactsIds(
-    params: FindManyByWAContactsIdsParams,
+    params: ContactsRepositoryFindManyByWAContactsIdsParams,
   ): Promise<Contact[]>
 
-  abstract findMany(params: FindManyParams): Promise<Contact[]>
+  abstract findMany(
+    params: ContactsRepositoryFindManyParams,
+  ): Promise<Contact[]>
 
-  abstract countMany(params: CountManyParams): Promise<number>
+  abstract countMany(params: ContactsRepositoryCountManyParams): Promise<number>
 
   abstract create(contact: Contact): Promise<void>
 

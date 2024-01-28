@@ -1,13 +1,15 @@
 import {
   ContactsRepository,
-  CountManyParams,
-  FindByPhoneParams,
-  FindByWAContactIdParams,
-  FindManyByWAContactsIdsParams,
-  FindManyParams,
+  ContactsRepositoryCountManyParams,
+  ContactsRepositoryFilters,
+  ContactsRepositoryFindByPhoneParams,
+  ContactsRepositoryFindByWAContactIdParams,
+  ContactsRepositoryFindManyByWAContactsIdsParams,
+  ContactsRepositoryFindManyParams,
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { TypeGuards } from '@/infra/utils/type-guards'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaContactMapper } from '../mappers/prisma-contact-mapper'
@@ -17,34 +19,44 @@ import { PrismaService } from '../prisma.service'
 export class PrismaContactsRepository implements ContactsRepository {
   constructor(private prisma: PrismaService) {}
 
-  private resolveWhere<Method extends { where?: object }>(
+  private resolveFilters<Method extends { where?: object }>(
     where: Method['where'],
-    findUnknown: boolean = false,
+    filters: ContactsRepositoryFilters = {},
   ) {
+    const { isGroup, isMyContact } = filters
+
     return {
       ...where,
-      ...(!findUnknown && {
-        isMyContact: true,
-      }),
+      ...(TypeGuards.isNotUndefined(isGroup) && { isGroup }),
+      ...(TypeGuards.isNotUndefined(isMyContact) && { isMyContact }),
     }
   }
 
-  findByPhone(params: FindByPhoneParams): Promise<Contact | null> {
-    throw new Error('Method not implemented.')
+  async findByPhone(
+    params: ContactsRepositoryFindByPhoneParams,
+  ): Promise<Contact | null> {
+    const { phone } = params
+
+    const raw = await this.prisma.contact.findUnique({
+      where: {
+        phone,
+      },
+    })
+
+    if (!raw) return null
+
+    return PrismaContactMapper.toDomain(raw)
   }
 
   async findByWAContactId(
-    params: FindByWAContactIdParams,
+    params: ContactsRepositoryFindByWAContactIdParams,
   ): Promise<Contact | null> {
-    const { waContactId, includeUnknowns } = params
+    const { waContactId } = params
 
     const raw = await this.prisma.contact.findUnique({
-      where: this.resolveWhere<Prisma.ContactFindUniqueArgs>(
-        {
-          waContactId: waContactId.toString(),
-        },
-        includeUnknowns,
-      ),
+      where: {
+        waContactId: waContactId.toString(),
+      },
     })
 
     if (!raw) return null
@@ -53,29 +65,26 @@ export class PrismaContactsRepository implements ContactsRepository {
   }
 
   async findManyByWAContactsIds(
-    params: FindManyByWAContactsIdsParams,
+    params: ContactsRepositoryFindManyByWAContactsIdsParams,
   ): Promise<Contact[]> {
-    const { waContactsIds, includeUnknowns } = params
+    const { waContactsIds } = params
 
     const raw = await this.prisma.contact.findMany({
-      where: this.resolveWhere<Prisma.ContactFindManyArgs>(
-        {
-          waContactId: {
-            in: waContactsIds.map((id) => id.toString()),
-          },
+      where: {
+        waContactId: {
+          in: waContactsIds.map((id) => id.toString()),
         },
-        includeUnknowns,
-      ),
+      },
     })
 
     return raw.map(PrismaContactMapper.toDomain)
   }
 
-  async findMany(params: FindManyParams): Promise<Contact[]> {
-    const { page, take, includeUnknowns, query } = params
+  async findMany(params: ContactsRepositoryFindManyParams): Promise<Contact[]> {
+    const { page, take, query, ...filters } = params
 
     const raw = await this.prisma.contact.findMany({
-      where: this.resolveWhere<Prisma.ContactFindManyArgs>(
+      where: this.resolveFilters<Prisma.ContactFindManyArgs>(
         {
           ...(query && {
             name: {
@@ -84,7 +93,7 @@ export class PrismaContactsRepository implements ContactsRepository {
             },
           }),
         },
-        includeUnknowns,
+        filters,
       ),
       take,
       skip: Pagination.skip({ limit: take, page }),
@@ -93,11 +102,11 @@ export class PrismaContactsRepository implements ContactsRepository {
     return raw.map(PrismaContactMapper.toDomain)
   }
 
-  async countMany(params: CountManyParams): Promise<number> {
-    const { includeUnknowns, query } = params
+  async countMany(params: ContactsRepositoryCountManyParams): Promise<number> {
+    const { query, ...filters } = params
 
     const rows = await this.prisma.contact.count({
-      where: this.resolveWhere<Prisma.ContactCountArgs>(
+      where: this.resolveFilters<Prisma.ContactCountArgs>(
         {
           ...(query && {
             name: {
@@ -106,15 +115,22 @@ export class PrismaContactsRepository implements ContactsRepository {
             },
           }),
         },
-        includeUnknowns,
+        filters,
       ),
     })
 
     return rows
   }
 
-  save(contact: Contact): Promise<void> {
-    throw new Error('Method not implemented.')
+  async save(contact: Contact): Promise<void> {
+    const data = PrismaContactMapper.toPrismaUpdate(contact)
+
+    await this.prisma.contact.update({
+      data,
+      where: {
+        id: contact.id.toString(),
+      },
+    })
   }
 
   async create(contact: Contact): Promise<void> {

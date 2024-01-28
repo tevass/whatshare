@@ -1,72 +1,83 @@
 import {
   ContactsRepository,
-  CountManyParams,
-  FindByPhoneParams,
-  FindByWAContactIdParams,
-  FindManyByWAContactsIdsParams,
-  FindManyParams,
+  ContactsRepositoryCountManyParams,
+  ContactsRepositoryFilters,
+  ContactsRepositoryFindByPhoneParams,
+  ContactsRepositoryFindByWAContactIdParams,
+  ContactsRepositoryFindManyByWAContactsIdsParams,
+  ContactsRepositoryFindManyParams,
 } from '@/domain/chat/application/repositories/contacts-repository'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { TypeGuards } from '@/infra/utils/type-guards'
 import { TextTesting } from '../utils/text-testing'
+
+interface ResolveFiltersParams extends ContactsRepositoryFilters {
+  item: Contact
+}
 
 export class InMemoryContactsRepository implements ContactsRepository {
   items: Contact[] = []
 
-  async findByPhone(params: FindByPhoneParams): Promise<Contact | null> {
-    const { phone, includeUnknowns } = params
+  private resolveFilters({ item, ...filters }: ResolveFiltersParams) {
+    const { isGroup, isMyContact } = filters ?? {}
 
-    const contact = this.items.find(
-      (item) =>
-        item.phone.number === phone &&
-        (includeUnknowns ? true : item.isMyContact),
-    )
+    return TypeGuards.isNotUndefined(isGroup)
+      ? item.isGroup === isGroup
+      : true && TypeGuards.isNotUndefined(isMyContact)
+        ? item.isMyContact
+        : true
+  }
+
+  async findByPhone(
+    params: ContactsRepositoryFindByPhoneParams,
+  ): Promise<Contact | null> {
+    const { phone } = params
+
+    const contact = this.items.find((item) => item.phone.number === phone)
 
     return contact ?? null
   }
 
   async findByWAContactId(
-    params: FindByWAContactIdParams,
+    params: ContactsRepositoryFindByWAContactIdParams,
   ): Promise<Contact | null> {
-    const { waContactId, includeUnknowns = false } = params
+    const { waContactId } = params
 
-    const contact = this.items.find(
-      (item) =>
-        item.waContactId.equals(waContactId) &&
-        (includeUnknowns ? true : item.isMyContact),
+    const contact = this.items.find((item) =>
+      item.waContactId.equals(waContactId),
     )
 
     return contact ?? null
   }
 
   async findManyByWAContactsIds(
-    params: FindManyByWAContactsIdsParams,
+    params: ContactsRepositoryFindManyByWAContactsIdsParams,
   ): Promise<Contact[]> {
-    const { waContactsIds, includeUnknowns = false } = params
+    const { waContactsIds } = params
 
-    const contacts = this.items.filter(
-      (item) =>
-        waContactsIds.includes(item.waContactId) &&
-        (includeUnknowns ? true : item.isMyContact),
+    const contacts = this.items.filter((item) =>
+      waContactsIds.includes(item.waContactId),
     )
 
     return contacts
   }
 
-  async findMany(params: FindManyParams): Promise<Contact[]> {
-    const { page, take, query } = params
+  async findMany(params: ContactsRepositoryFindManyParams): Promise<Contact[]> {
+    const { page, take, query, ...filters } = params
 
     return this.items
       .filter((item) => (query ? TextTesting.includes(item.name, query) : true))
+      .filter((item) => this.resolveFilters({ item, ...filters }))
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
-  async countMany(params: CountManyParams): Promise<number> {
-    const { query } = params
+  async countMany(params: ContactsRepositoryCountManyParams): Promise<number> {
+    const { query, ...filters } = params
 
-    return this.items.filter((item) =>
-      query ? TextTesting.includes(item.name, query) : true,
-    ).length
+    return this.items
+      .filter((item) => (query ? TextTesting.includes(item.name, query) : true))
+      .filter((item) => this.resolveFilters({ item, ...filters })).length
   }
 
   async create(contact: Contact): Promise<void> {

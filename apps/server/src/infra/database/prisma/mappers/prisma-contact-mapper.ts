@@ -40,4 +40,18 @@ export class PrismaContactMapper {
       imageUrl: contact.imageUrl,
     }
   }
+
+  static toPrismaUpdate(contact: Contact): Prisma.ContactUncheckedUpdateInput {
+    return {
+      isBusiness: contact.isBusiness,
+      isEnterprise: contact.isEnterprise,
+      isGroup: contact.isGroup,
+      isMyContact: contact.isMyContact,
+      name: contact.name,
+      phone: contact.phone.number,
+      formattedPhone: contact.phone.formattedNumber,
+      waContactId: contact.waContactId.toString(),
+      imageUrl: contact.imageUrl,
+    }
+  }
 }

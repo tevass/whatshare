@@ -45,7 +45,6 @@ export class ImportContactsUseCase {
     const contactsAlreadyExists =
       await this.contactsRepository.findManyByWAContactsIds({
         waContactsIds,
-        includeUnknowns: true,
       })
 
     const waContactsToCreate = waContacts.filter(

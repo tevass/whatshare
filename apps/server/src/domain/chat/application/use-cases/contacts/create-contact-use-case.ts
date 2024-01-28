@@ -31,7 +31,6 @@ export class CreateContactUseCase {
 
     const contactWithSamePhone = await this.contactsRepository.findByPhone({
       phone: number,
-      includeUnknowns: true,
     })
 
     if (contactWithSamePhone && contactWithSamePhone.isMyContact) {

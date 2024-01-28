@@ -1,75 +1,73 @@
 import {
-  CountManyByChatIdParams,
-  FindAllByChatIdParams,
-  FindByIdParams,
-  FindByWAMessageIdParams,
-  FindManyByChatIdParams,
-  FindManyByWAMessagesIdsParams,
-  FindToRevokeParams,
   MessagesRepository,
+  MessagesRepositoryCountManyByChatIdParams,
+  MessagesRepositoryDeleteManyByChatIdParams,
+  MessagesRepositoryFilters,
+  MessagesRepositoryFindByIdParams,
+  MessagesRepositoryFindByWAMessageIdParams,
+  MessagesRepositoryFindManyByChatIdParams,
+  MessagesRepositoryFindManyByWAMessagesIdsParams,
+  MessagesRepositoryFindToRevokeParams,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
+import { TypeGuards } from '@/infra/utils/type-guards'
 import dayjs from 'dayjs'
+
+interface ResolveFiltersParams extends MessagesRepositoryFilters {
+  item: Message
+}
 
 export class InMemoryMessagesRepository implements MessagesRepository {
   items: Message[] = []
 
-  async findById(params: FindByIdParams): Promise<Message | null> {
-    const { id, findDeleted = false } = params
+  private resolveFilters({ item, ...filters }: ResolveFiltersParams) {
+    const { deleted } = filters ?? {}
 
-    const item = this.items.find(
-      (item) =>
-        item.id.toString() === id && (findDeleted ? true : !item.isDeleted()),
-    )
+    return TypeGuards.isNotUndefined(deleted) && deleted
+      ? item.isDeleted()
+      : true
+  }
+
+  async findById(
+    params: MessagesRepositoryFindByIdParams,
+  ): Promise<Message | null> {
+    const { id } = params
+
+    const item = this.items.find((item) => item.id.toString() === id)
 
     if (!item) return null
 
     return item
   }
 
-  async findManyByChatId(params: FindManyByChatIdParams): Promise<Message[]> {
-    const { chatId, page, take, findDeleted = false } = params
+  async findManyByChatId(
+    params: MessagesRepositoryFindManyByChatIdParams,
+  ): Promise<Message[]> {
+    const { chatId, page, take, ...filters } = params
 
     return this.items
-      .filter(
-        (item) =>
-          item.chatId.toString() === chatId &&
-          (findDeleted ? true : !item.isDeleted()),
-      )
+      .filter((item) => item.chatId.toString() === chatId)
+      .filter((item) => this.resolveFilters({ item, ...filters }))
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
-  async countManyByChatId(params: CountManyByChatIdParams): Promise<number> {
-    const { chatId, findDeleted = false } = params
+  async countManyByChatId(
+    params: MessagesRepositoryCountManyByChatIdParams,
+  ): Promise<number> {
+    const { chatId, ...filters } = params
 
-    return this.items.filter(
-      (item) =>
-        item.chatId.toString() === chatId &&
-        (findDeleted ? true : !item.isDeleted()),
-    ).length
-  }
-
-  async findAllByChatId(params: FindAllByChatIdParams): Promise<Message[]> {
-    const { chatId, findDeleted = false } = params
-
-    return this.items.filter(
-      (item) =>
-        item.chatId.toString() === chatId &&
-        (findDeleted ? true : !item.isDeleted()),
-    )
+    return this.items
+      .filter((item) => item.chatId.toString() === chatId)
+      .filter((item) => this.resolveFilters({ item, ...filters })).length
   }
 
   async findByWAMessageId(
-    params: FindByWAMessageIdParams,
+    params: MessagesRepositoryFindByWAMessageIdParams,
   ): Promise<Message | null> {
-    const { waMessageId, findDeleted = false } = params
+    const { waMessageId } = params
 
-    const item = this.items.find(
-      (item) =>
-        item.waMessageId.equals(waMessageId) &&
-        (findDeleted ? true : !item.isDeleted()),
-    )
+    const item = this.items.find((item) => item.waMessageId.equals(waMessageId))
 
     if (!item) return null
 
@@ -77,26 +75,23 @@ export class InMemoryMessagesRepository implements MessagesRepository {
   }
 
   async findManyByWAMessagesIds(
-    params: FindManyByWAMessagesIdsParams,
+    params: MessagesRepositoryFindManyByWAMessagesIdsParams,
   ): Promise<Message[]> {
-    const { waMessagesIds, findDeleted } = params
+    const { waMessagesIds } = params
 
-    return this.items.filter(
-      (item) =>
-        waMessagesIds.includes(item.waMessageId) &&
-        (findDeleted ? true : !item.isDeleted()),
-    )
+    return this.items.filter((item) => waMessagesIds.includes(item.waMessageId))
   }
 
-  async findToRevoke(params: FindToRevokeParams): Promise<Message | null> {
-    const { createdAt, waChatId, whatsAppId, findDeleted = false } = params
+  async findToRevoke(
+    params: MessagesRepositoryFindToRevokeParams,
+  ): Promise<Message | null> {
+    const { createdAt, waChatId, whatsAppId } = params
 
     const message = this.items.find(
       (item) =>
         item.waChatId.equals(waChatId) &&
         item.whatsAppId.toString() === whatsAppId &&
-        dayjs(createdAt).isSame(item.createdAt) &&
-        (findDeleted ? true : !item.isDeleted()),
+        dayjs(createdAt).isSame(item.createdAt),
     )
 
     if (!message) return null
@@ -116,7 +111,20 @@ export class InMemoryMessagesRepository implements MessagesRepository {
     this.items[itemIndex] = message
   }
 
-  async deleteMany(entities: Message[]): Promise<void> {
-    await Promise.all(entities.map((message) => this.save(message)))
+  async softDeleteManyByChatId(
+    params: MessagesRepositoryDeleteManyByChatIdParams,
+  ): Promise<void> {
+    const { chatId } = params
+
+    const entities = this.items.filter(
+      (item) => item.chatId.toString() === chatId,
+    )
+
+    await Promise.all(
+      entities.map((message) => {
+        message.delete()
+        return this.save(message)
+      }),
+    )
   }
 }

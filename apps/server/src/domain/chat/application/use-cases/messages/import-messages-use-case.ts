@@ -37,7 +37,6 @@ export class ImportMessagesUseCase {
     const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
       waChatId: WAEntityID.createFromString(waChatId),
       whatsAppId,
-      findDeleted: true,
     })
 
     if (!chat) {
@@ -56,7 +55,6 @@ export class ImportMessagesUseCase {
     const messagesAlreadyExists =
       await this.messagesRepository.findManyByWAMessagesIds({
         waMessagesIds,
-        findDeleted: true,
       })
 
     const messagesToCreate = waMessages.filter(
