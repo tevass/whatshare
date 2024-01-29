@@ -22,7 +22,10 @@ export class GetAttendantUseCase {
   ): Promise<GetAttendantUseCaseResponse> {
     const { attendantId } = request
 
-    const attendant = await this.attendantsRepository.findById(attendantId)
+    const attendant = await this.attendantsRepository.findById({
+      id: attendantId,
+    })
+
     if (!attendant) {
       return left(new ResourceNotFoundError(attendantId))
     }

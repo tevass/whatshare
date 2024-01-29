@@ -19,7 +19,7 @@ type ImportContactsUseCaseResponse = Either<
 
 export class ImportContactsUseCase {
   constructor(
-    private whatsAppRepository: WhatsAppsRepository,
+    private whatsAppsRepository: WhatsAppsRepository,
     private contactsRepository: ContactsRepository,
     private waManager: WAClientManager,
   ) {}
@@ -29,7 +29,7 @@ export class ImportContactsUseCase {
   ): Promise<ImportContactsUseCaseResponse> {
     const { whatsAppId } = request
 
-    const whatsApp = await this.whatsAppRepository.findById(whatsAppId)
+    const whatsApp = await this.whatsAppsRepository.findById({ id: whatsAppId })
     if (!whatsApp) {
       return left(new ResourceNotFoundError(whatsAppId))
     }

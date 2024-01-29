@@ -38,15 +38,16 @@ export class CreateAttendantUseCase {
   ): Promise<CreateAttendantUseCaseResponse> {
     const { displayName, email, name, password, whatsAppsIds } = request
 
-    const attendantWithSameEmail =
-      await this.attendantsRepository.findByEmail(email)
+    const attendantWithSameEmail = await this.attendantsRepository.findByEmail({
+      email,
+    })
 
     if (attendantWithSameEmail) {
       return left(new AttendantAlreadyExistsError(email))
     }
 
     const [whatsApps, hashedPassword] = await Promise.all([
-      this.whatsAppsRepository.findManyByIds(whatsAppsIds),
+      this.whatsAppsRepository.findManyByIds({ ids: whatsAppsIds }),
       this.hashGenerator.hash(password),
     ])
 

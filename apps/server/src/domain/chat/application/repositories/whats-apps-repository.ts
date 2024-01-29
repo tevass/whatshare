@@ -1,9 +1,21 @@
 import { WhatsApp } from '../../enterprise/entities/whats-app'
 
-export abstract class WhatsAppsRepository {
-  abstract findById(id: string): Promise<WhatsApp | null>
+export interface WhatsAppsRepositoryFindByIdParams {
+  id: string
+}
 
-  abstract findManyByIds(ids: string[]): Promise<WhatsApp[]>
+export interface WhatsAppsRepositoryFindManyByIdsParams {
+  ids: string[]
+}
+
+export abstract class WhatsAppsRepository {
+  abstract findById(
+    params: WhatsAppsRepositoryFindByIdParams,
+  ): Promise<WhatsApp | null>
+
+  abstract findManyByIds(
+    params: WhatsAppsRepositoryFindManyByIdsParams,
+  ): Promise<WhatsApp[]>
 
   abstract findAll(): Promise<WhatsApp[]>
 

@@ -29,7 +29,7 @@ export class HandleWAGenerateQRCode {
   ): Promise<HandleWAGenerateQRCodeResponse> {
     const { qrCode, whatsAppId } = request
 
-    const whatsApp = await this.whatsAppsRepository.findById(whatsAppId)
+    const whatsApp = await this.whatsAppsRepository.findById({ id: whatsAppId })
     if (!whatsApp) {
       return left(new ResourceNotFoundError(whatsAppId))
     }

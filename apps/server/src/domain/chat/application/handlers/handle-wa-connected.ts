@@ -31,7 +31,7 @@ export class HandleWAConnected {
   ): Promise<HandleWAConnectedResponse> {
     const { whatsAppId } = request
 
-    const whatsApp = await this.whatsAppsRepository.findById(whatsAppId)
+    const whatsApp = await this.whatsAppsRepository.findById({ id: whatsAppId })
     if (!whatsApp) {
       return left(new ResourceNotFoundError(whatsAppId))
     }

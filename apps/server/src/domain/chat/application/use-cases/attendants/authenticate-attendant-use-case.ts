@@ -35,9 +35,11 @@ export class AuthenticateAttendantUseCase {
   ): Promise<AuthenticateAttendantUseCaseResponse> {
     const { email, password } = request
 
-    const attendant = await this.attendantsRepository.findByEmail(email)
+    const attendant = await this.attendantsRepository.findByEmail({
+      email,
+    })
 
-    if (!attendant || !attendant.password) {
+    if (!attendant || !attendant.hasPassword()) {
       return left(new WrongCredentialsError())
     }
 

@@ -1,4 +1,8 @@
-import { AttendantsRepository } from '@/domain/chat/application/repositories/attendants-repository'
+import {
+  AttendantsRepository,
+  AttendantsRepositoryFindByEmailParams,
+  AttendantsRepositoryFindByIdParams,
+} from '@/domain/chat/application/repositories/attendants-repository'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
 import { InMemoryAttendantProfilesRepository } from './in-memory-attendant-profiles-repository'
 
@@ -7,7 +11,11 @@ export class InMemoryAttendantsRepository implements AttendantsRepository {
 
   items: Attendant[] = []
 
-  async findById(id: string): Promise<Attendant | null> {
+  async findById(
+    params: AttendantsRepositoryFindByIdParams,
+  ): Promise<Attendant | null> {
+    const { id } = params
+
     const item = this.items.find((item) => item.id.toString() === id)
 
     if (!item) return null
@@ -15,7 +23,11 @@ export class InMemoryAttendantsRepository implements AttendantsRepository {
     return item
   }
 
-  async findByEmail(email: string): Promise<Attendant | null> {
+  async findByEmail(
+    parmas: AttendantsRepositoryFindByEmailParams,
+  ): Promise<Attendant | null> {
+    const { email } = parmas
+
     const item = this.items.find((item) => item.profile.email === email)
     if (!item) return null
 

@@ -1,9 +1,21 @@
 import { Attendant } from '../../enterprise/entities/attendant'
 
-export abstract class AttendantsRepository {
-  abstract findById(id: string): Promise<Attendant | null>
+export interface AttendantsRepositoryFindByIdParams {
+  id: string
+}
 
-  abstract findByEmail(email: string): Promise<Attendant | null>
+export interface AttendantsRepositoryFindByEmailParams {
+  email: string
+}
+
+export abstract class AttendantsRepository {
+  abstract findById(
+    params: AttendantsRepositoryFindByIdParams,
+  ): Promise<Attendant | null>
+
+  abstract findByEmail(
+    parmas: AttendantsRepositoryFindByEmailParams,
+  ): Promise<Attendant | null>
 
   abstract create(attendant: Attendant): Promise<void>
 }

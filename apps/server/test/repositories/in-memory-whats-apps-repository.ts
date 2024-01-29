@@ -1,18 +1,29 @@
-import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
+import {
+  WhatsAppsRepository,
+  WhatsAppsRepositoryFindByIdParams,
+  WhatsAppsRepositoryFindManyByIdsParams,
+} from '@/domain/chat/application/repositories/whats-apps-repository'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 
 export class InMemoryWhatsAppsRepository implements WhatsAppsRepository {
   items: WhatsApp[] = []
 
-  async findById(id: string): Promise<WhatsApp | null> {
-    const item = this.items.find((item) => item.id.toString() === id)
+  async findById(
+    params: WhatsAppsRepositoryFindByIdParams,
+  ): Promise<WhatsApp | null> {
+    const { id } = params
 
+    const item = this.items.find((item) => item.id.toString() === id)
     if (!item) return null
 
     return item
   }
 
-  async findManyByIds(ids: string[]): Promise<WhatsApp[]> {
+  async findManyByIds(
+    params: WhatsAppsRepositoryFindManyByIdsParams,
+  ): Promise<WhatsApp[]> {
+    const { ids } = params
+
     return this.items.filter((item) => ids.includes(item.id.toString()))
   }
 

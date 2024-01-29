@@ -49,7 +49,7 @@ export class HandleSendTextMessage {
     const { waChatId, attendantId, body, quotedId, whatsAppId } = request
 
     const [attendant, quotedMessage] = await Promise.all([
-      this.attendantsRepository.findById(attendantId),
+      this.attendantsRepository.findById({ id: attendantId }),
       quotedId
         ? this.messagesRepository.findById({
             id: quotedId,
