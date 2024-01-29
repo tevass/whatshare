@@ -1,39 +1,40 @@
 import { AppModule } from '@/infra/app.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
+import { FakeChatFactory } from '@/test/factories/make-chat'
+import { FakeContactFactory } from '@/test/factories/make-contact'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
-import { faker } from '@faker-js/faker'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { expect } from 'vitest'
 
-describe('Create Attendant (HTTP)', () => {
+describe('Fetch Chats (HTTP)', () => {
   let app: INestApplication
   let NEST_TESTING_APP: NestTestingApp
 
-  let prisma: PrismaService
-
-  let whatsAppsFactory: FakeWhatsAppFactory
+  let whatsAppFactory: FakeWhatsAppFactory
+  let chatsFactory: FakeChatFactory
   let attendantFactory: FakeAttendantFactory
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
       providers: [
         FakeWhatsAppFactory,
-        FakeAttendantFactory,
+        FakeContactFactory,
+        FakeChatFactory,
         FakeAttendantProfileFactory,
+        FakeAttendantFactory,
       ],
     }).compile()
 
     app = moduleRef.createNestApplication()
     NEST_TESTING_APP = new NestTestingApp(app)
 
-    prisma = moduleRef.get(PrismaService)
-
-    whatsAppsFactory = moduleRef.get(FakeWhatsAppFactory)
+    whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
+    chatsFactory = moduleRef.get(FakeChatFactory)
     attendantFactory = moduleRef.get(FakeAttendantFactory)
 
     await NEST_TESTING_APP.init()
@@ -43,42 +44,29 @@ describe('Create Attendant (HTTP)', () => {
     await app.close()
   })
 
-  it('[POST] /attendants', async () => {
+  it('[GET] /wa/chats', async () => {
     const attendant = await attendantFactory.makePrismaAttendant()
 
     const accessToken = NEST_TESTING_APP.authenticate({
       sub: attendant.id.toString(),
     })
 
-    const whatsApps = [
-      await whatsAppsFactory.makePrismaWhatsApp({}),
-      await whatsAppsFactory.makePrismaWhatsApp({}),
-    ]
+    const whatsApp = await whatsAppFactory.makePrismaWhatsApp()
 
-    const email = faker.internet.email()
+    await Promise.all(
+      Array.from(Array(2)).map(() =>
+        chatsFactory.makePrismaChat({ whatsAppId: whatsApp.id }),
+      ),
+    )
 
     const response = await request(app.getHttpServer())
-      .post('/attendants')
+      .get('/wa/chats')
       .set('Cookie', NEST_TESTING_APP.getAuthCookie(accessToken))
-      .send({
-        email,
-        name: faker.person.firstName(),
-        displayName: faker.internet.userName(),
-        password: faker.string.hexadecimal(),
-        whatsAppsIds: whatsApps.map((whatsApp) => whatsApp.id.toString()),
+      .query({
+        whatsAppId: whatsApp.id.toString(),
       })
 
-    expect(response.statusCode).toBe(201)
-
-    const attendantOnDatabase = await prisma.attendant.findFirst({
-      where: {
-        profile: {
-          email,
-        },
-      },
-    })
-
-    expect(attendantOnDatabase).toBeTruthy()
-    expect(attendantOnDatabase?.whatsAppsIds).toHaveLength(2)
+    expect(response.statusCode).toBe(200)
+    expect(response.body.chats).toHaveLength(2)
   })
 })

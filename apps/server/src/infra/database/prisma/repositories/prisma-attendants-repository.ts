@@ -1,4 +1,8 @@
-import { AttendantsRepository } from '@/domain/chat/application/repositories/attendants-repository'
+import {
+  AttendantsRepository,
+  AttendantsRepositoryFindByEmailParams,
+  AttendantsRepositoryFindByIdParams,
+} from '@/domain/chat/application/repositories/attendants-repository'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
 import { Injectable } from '@nestjs/common'
 import { PrismaAttendantMapper } from '../mappers/prisma-attendant-mapper'
@@ -8,7 +12,11 @@ import { PrismaService } from '../prisma.service'
 export class PrismaAttendantsRepository implements AttendantsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<Attendant | null> {
+  async findById(
+    params: AttendantsRepositoryFindByIdParams,
+  ): Promise<Attendant | null> {
+    const { id } = params
+
     const raw = await this.prisma.attendant.findUnique({
       where: {
         id,
@@ -23,19 +31,16 @@ export class PrismaAttendantsRepository implements AttendantsRepository {
     return PrismaAttendantMapper.toDomain(raw)
   }
 
-  async findByEmail(email: string): Promise<Attendant | null> {
-    const profile = await this.prisma.attendantProfile.findUnique({
-      where: {
-        email,
-      },
-      select: { id: true },
-    })
+  async findByEmail(
+    params: AttendantsRepositoryFindByEmailParams,
+  ): Promise<Attendant | null> {
+    const { email } = params
 
-    if (!profile) return null
-
-    const raw = await this.prisma.attendant.findUnique({
+    const raw = await this.prisma.attendant.findFirst({
       where: {
-        profileId: profile.id,
+        profile: {
+          email,
+        },
       },
       include: {
         profile: true,

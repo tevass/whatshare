@@ -1,4 +1,8 @@
-import { WhatsAppsRepository } from '@/domain/chat/application/repositories/whats-apps-repository'
+import {
+  WhatsAppsRepository,
+  WhatsAppsRepositoryFindByIdParams,
+  WhatsAppsRepositoryFindManyByIdsParams,
+} from '@/domain/chat/application/repositories/whats-apps-repository'
 import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { Injectable } from '@nestjs/common'
 import { PrismaWhatsAppMapper } from '../mappers/prisma-whats-app-mapper'
@@ -8,7 +12,10 @@ import { PrismaService } from '../prisma.service'
 export class PrismaWhatsAppsRepository implements WhatsAppsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findById(id: string): Promise<WhatsApp | null> {
+  async findById(
+    params: WhatsAppsRepositoryFindByIdParams,
+  ): Promise<WhatsApp | null> {
+    const { id } = params
     const raw = await this.prisma.whatsApp.findUnique({
       where: {
         id,
@@ -20,7 +27,10 @@ export class PrismaWhatsAppsRepository implements WhatsAppsRepository {
     return PrismaWhatsAppMapper.toDomain(raw)
   }
 
-  async findManyByIds(ids: string[]): Promise<WhatsApp[]> {
+  async findManyByIds(
+    params: WhatsAppsRepositoryFindManyByIdsParams,
+  ): Promise<WhatsApp[]> {
+    const { ids } = params
     const raw = await this.prisma.whatsApp.findMany({
       where: {
         id: {

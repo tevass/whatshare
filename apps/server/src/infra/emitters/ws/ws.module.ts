@@ -21,8 +21,10 @@ import { HandleClearChat } from '@/domain/chat/application/handlers/handle-clear
 import { HandleReadChat } from '@/domain/chat/application/handlers/handle-read-chat'
 import { HandleSendTextMessage } from '@/domain/chat/application/handlers/handle-send-text-message'
 import { HandleUnreadChat } from '@/domain/chat/application/handlers/handle-unread-chat'
+import { StorageModule } from '@/infra/storage/storage.module'
 
 @Module({
+  imports: [StorageModule],
   providers: [
     WSAuthCookieMiddleware,
     WSJoinRoomMiddleware,

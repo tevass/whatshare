@@ -2,6 +2,7 @@ import {
   ContactsRepository,
   ContactsRepositoryCountManyParams,
   ContactsRepositoryFilters,
+  ContactsRepositoryFindByIdParams,
   ContactsRepositoryFindByPhoneParams,
   ContactsRepositoryFindByWAContactIdParams,
   ContactsRepositoryFindManyByWAContactsIdsParams,
@@ -30,6 +31,22 @@ export class PrismaContactsRepository implements ContactsRepository {
       ...(TypeGuards.isNotUndefined(isGroup) && { isGroup }),
       ...(TypeGuards.isNotUndefined(isMyContact) && { isMyContact }),
     }
+  }
+
+  async findById(
+    params: ContactsRepositoryFindByIdParams,
+  ): Promise<Contact | null> {
+    const { id } = params
+
+    const raw = await this.prisma.contact.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!raw) return null
+
+    return PrismaContactMapper.toDomain(raw)
   }
 
   async findByPhone(

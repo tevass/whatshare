@@ -24,9 +24,9 @@ export class InMemoryAttendantsRepository implements AttendantsRepository {
   }
 
   async findByEmail(
-    parmas: AttendantsRepositoryFindByEmailParams,
+    params: AttendantsRepositoryFindByEmailParams,
   ): Promise<Attendant | null> {
-    const { email } = parmas
+    const { email } = params
 
     const item = this.items.find((item) => item.profile.email === email)
     if (!item) return null

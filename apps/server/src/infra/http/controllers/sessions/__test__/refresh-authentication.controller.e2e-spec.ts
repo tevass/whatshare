@@ -4,14 +4,14 @@ import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import supertest from 'supertest'
 
 describe('Refresh Authentication', () => {
   let app: INestApplication
+  let NEST_TESTING_APP: NestTestingApp
+
   let attendantFactory: FakeAttendantFactory
-  let jwt: JwtService
   let env: EnvService
 
   beforeEach(async () => {
@@ -21,11 +21,10 @@ describe('Refresh Authentication', () => {
     }).compile()
 
     app = moduleRef.createNestApplication()
-    const NEST_TESTING_APP = new NestTestingApp(app)
+    NEST_TESTING_APP = new NestTestingApp(app)
 
-    attendantFactory = moduleRef.get(FakeAttendantFactory)
-    jwt = moduleRef.get(JwtService)
     env = moduleRef.get(EnvService)
+    attendantFactory = moduleRef.get(FakeAttendantFactory)
 
     await NEST_TESTING_APP.init()
   })
@@ -37,7 +36,9 @@ describe('Refresh Authentication', () => {
   it('[PATCH] /sessions/refresh', async () => {
     const attendant = await attendantFactory.makePrismaAttendant()
 
-    const refreshToken = jwt.sign({ sub: attendant.id.toString() })
+    const refreshToken = NEST_TESTING_APP.authenticate({
+      sub: attendant.id.toString(),
+    })
     const JWT_REFRESH_COOKIE_NAME = env.get('JWT_REFRESH_COOKIE_NAME')
 
     const response = await supertest(app.getHttpServer())

@@ -11,6 +11,10 @@
     "./request": {
       "import": "./dist/request/index.mjs",
       "require": "./dist/request/index.js"
+    },
+    "./response": {
+      "import": "./dist/response/index.mjs",
+      "require": "./dist/response/index.js"
     }
   },
   "scripts": {
@@ -28,6 +32,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@whatshare/core-schemas": "workspace:^",
     "@whatshare/shared-schemas": "workspace:^",
     "zod": "^3.22.4"
   }

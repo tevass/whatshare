@@ -77,7 +77,7 @@ model Contact {
 
   messages Message[] @relation("MessageAuthor")
 
-  @@map("contacts")
+  @@map("wa_contacts")
 }
 
 model Chat {
@@ -100,7 +100,7 @@ model Chat {
 
   @@unique([waChatId, whatsAppId])
   @@index([waChatId])
-  @@map("chats")
+  @@map("wa_chats")
 }
 
 model Media {
@@ -180,5 +180,5 @@ model Message {
 
   @@unique([waChatId, whatsAppId, createdAt])
   @@index([waChatId])
-  @@map("messages")
+  @@map("wa_messages")
 }

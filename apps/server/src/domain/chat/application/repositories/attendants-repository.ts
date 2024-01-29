@@ -14,7 +14,7 @@ export abstract class AttendantsRepository {
   ): Promise<Attendant | null>
 
   abstract findByEmail(
-    parmas: AttendantsRepositoryFindByEmailParams,
+    params: AttendantsRepositoryFindByEmailParams,
   ): Promise<Attendant | null>
 
   abstract create(attendant: Attendant): Promise<void>

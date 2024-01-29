@@ -14,9 +14,10 @@ import {
   UsePipes,
 } from '@nestjs/common'
 import {
-  AuthenticateBodySchema,
-  authenticateBodySchema,
+  AuthenticateRequestBodySchema,
+  authenticateRequestBodySchema,
 } from '@whatshare/http-schemas/request'
+import { AuthenticatedResponseBodySchema } from '@whatshare/http-schemas/response'
 import type { Response } from 'express'
 import { Cookie } from '../../utils/cookie'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
@@ -31,9 +32,9 @@ export class AuthenticateController {
 
   @Post()
   @HttpCode(200)
-  @UsePipes(new ZodHttpValidationPipe(authenticateBodySchema))
+  @UsePipes(new ZodHttpValidationPipe(authenticateRequestBodySchema))
   async handle(
-    @Body() body: AuthenticateBodySchema,
+    @Body() body: AuthenticateRequestBodySchema,
     @Res({ passthrough: true }) response: Response,
   ) {
     const { email, password } = body
@@ -69,6 +70,6 @@ export class AuthenticateController {
 
     return {
       attendant: AttendantPresenter.toHttp(attendant),
-    }
+    } as AuthenticatedResponseBodySchema
   }
 }

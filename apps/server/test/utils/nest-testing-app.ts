@@ -7,7 +7,7 @@ export class NestTestingApp {
   constructor(private app: INestApplication) {}
 
   private useDefaults() {
-    this.app.use(cookieParser)
+    this.app.use(cookieParser())
   }
 
   async init() {

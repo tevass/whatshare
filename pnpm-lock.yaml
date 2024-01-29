@@ -294,6 +294,9 @@ importers:
 
   packages/schemas/http:
     dependencies:
+      '@whatshare/core-schemas':
+        specifier: workspace:^
+        version: link:../core
       '@whatshare/shared-schemas':
         specifier: workspace:^
         version: link:../shared

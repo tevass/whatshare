@@ -10,8 +10,8 @@ import {
   UsePipes,
 } from '@nestjs/common'
 import {
-  CreateAttendantBodySchema,
-  createAttendantBodySchema,
+  CreateAttendantRequestBodySchema,
+  createAttendantRequestBodySchema,
 } from '@whatshare/http-schemas/request'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
@@ -21,8 +21,8 @@ export class CreateAttendantController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodHttpValidationPipe(createAttendantBodySchema))
-  async handle(@Body() body: CreateAttendantBodySchema) {
+  @UsePipes(new ZodHttpValidationPipe(createAttendantRequestBodySchema))
+  async handle(@Body() body: CreateAttendantRequestBodySchema) {
     const { displayName, email, name, password, whatsAppsIds } = body
 
     const result = await this.createAttendant.execute({

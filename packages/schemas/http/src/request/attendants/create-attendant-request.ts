@@ -1,7 +1,7 @@
 import { mongoId } from '@whatshare/shared-schemas'
 import { z } from 'zod'
 
-export const createAttendantBodySchema = z.object({
+export const createAttendantRequestBodySchema = z.object({
   email: z.string().email(),
   name: z.string(),
   displayName: z.string(),
@@ -9,6 +9,6 @@ export const createAttendantBodySchema = z.object({
   whatsAppsIds: z.array(mongoId),
 })
 
-export type CreateAttendantBodySchema = z.infer<
-  typeof createAttendantBodySchema
+export type CreateAttendantRequestBodySchema = z.infer<
+  typeof createAttendantRequestBodySchema
 >

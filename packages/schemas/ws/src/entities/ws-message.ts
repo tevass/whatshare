@@ -25,7 +25,6 @@ const baseWsMessage = z.object({
   isGif: z.boolean(),
   createdAt: z.date(),
   revokedAt: z.date().nullable(),
-  deletedAt: z.date().nullable(),
   senderBy: wsAttendantProfile.nullable(),
   revokedBy: wsAttendantProfile.nullable(),
 })

@@ -15,6 +15,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import type { Response } from 'express'
+import { RefreshAuthenticationResponseBodySchema } from '@whatshare/http-schemas/response'
 import { Cookie } from '../../utils/cookie'
 
 @Public()
@@ -62,6 +63,6 @@ export class RefreshAuthenticationController {
 
     return {
       attendant: AttendantPresenter.toHttp(attendant),
-    }
+    } as RefreshAuthenticationResponseBodySchema
   }
 }
