@@ -36,7 +36,7 @@ export class AuthenticateController {
   async handle(
     @Body() body: AuthenticateRequestBodySchema,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<AuthenticatedResponseBodySchema> {
     const { email, password } = body
 
     const result = await this.authenticateAttendant.execute({
@@ -70,6 +70,6 @@ export class AuthenticateController {
 
     return {
       attendant: AttendantPresenter.toHttp(attendant),
-    } as AuthenticatedResponseBodySchema
+    }
   }
 }

@@ -32,7 +32,7 @@ export class RefreshAuthenticationController {
   async handle(
     @User('sub') attendantId: string,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<RefreshAuthenticationResponseBodySchema> {
     const result = await this.refreshAuthenticatedAttendant.execute({
       attendantId,
     })
@@ -63,6 +63,6 @@ export class RefreshAuthenticationController {
 
     return {
       attendant: AttendantPresenter.toHttp(attendant),
-    } as RefreshAuthenticationResponseBodySchema
+    }
   }
 }

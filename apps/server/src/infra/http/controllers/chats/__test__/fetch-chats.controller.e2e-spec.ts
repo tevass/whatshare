@@ -7,7 +7,7 @@ import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import request from 'supertest'
+import supertest from 'supertest'
 import { expect } from 'vitest'
 
 describe('Fetch Chats (HTTP)', () => {
@@ -59,12 +59,13 @@ describe('Fetch Chats (HTTP)', () => {
       ),
     )
 
-    const response = await request(app.getHttpServer())
+    const response = await supertest(app.getHttpServer())
       .get('/wa/chats')
       .set('Cookie', NEST_TESTING_APP.getAuthCookie(accessToken))
       .query({
         whatsAppId: whatsApp.id.toString(),
       })
+      .send()
 
     expect(response.statusCode).toBe(200)
     expect(response.body.chats).toHaveLength(2)

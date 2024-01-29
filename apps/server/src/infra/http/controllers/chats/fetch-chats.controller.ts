@@ -22,7 +22,9 @@ export class FetchChatsController {
 
   @Get()
   @UsePipes(new ZodHttpValidationPipe(fetchChatsRequestQuerySchema))
-  async handle(@Query() query: FetchChatsRequestQuerySchema) {
+  async handle(
+    @Query() query: FetchChatsRequestQuerySchema,
+  ): Promise<FetchChatsResponseBodySchema> {
     const { page, whatsAppId } = query
 
     const response = await this.fetchChats.execute({
@@ -39,6 +41,6 @@ export class FetchChatsController {
     return {
       chats: chats.map(ChatPresenter.toHttp),
       pagination: PaginationPresenter.toHttp(pagination),
-    } as FetchChatsResponseBodySchema
+    }
   }
 }
