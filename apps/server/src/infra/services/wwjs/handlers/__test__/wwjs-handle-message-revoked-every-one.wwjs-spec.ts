@@ -22,6 +22,7 @@ import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
 import { WWJSHandleMessageRevokedEveryone } from '../wwjs-handle-message-revoke-everyone'
+import { WWJSHandleMessageAck } from '../wwjs-handle-message-ack'
 
 describe('Handle Revoked Every One (WWJS)', () => {
   let app: INestApplication
@@ -74,7 +75,10 @@ describe('Handle Revoked Every One (WWJS)', () => {
       )
 
       wwjsClient = wwjsService.createFromWhatsApp(whatsApp)
-      wwjsClient.addHandlers([moduleRef.get(WWJSHandleMessageRevokedEveryone)])
+      wwjsClient.addHandlers([
+        moduleRef.get(WWJSHandleMessageAck),
+        moduleRef.get(WWJSHandleMessageRevokedEveryone),
+      ])
       wwjsManager.clients.set(whatsApp.id.toString(), wwjsClient)
 
       const WWJS_TEST_HELPER_CLIENT_ID = env.get('WWJS_TEST_HELPER_CLIENT_ID')
@@ -106,10 +110,17 @@ describe('Handle Revoked Every One (WWJS)', () => {
   )
 
   afterEach(async () => {
-    await WWJSTesting.clearChats({
-      client: wwjsClient.switchToRaw(),
-      helper: helperWWJSClient.switchToRaw(),
-    })
+    const wwjsClientRaw = wwjsClient.switchToRaw()
+    const wwjsHelperClientRaw = wwjsClient.switchToRaw()
+
+    await WWJSTesting.clearChat(
+      wwjsClientRaw,
+      wwjsHelperClientRaw.info.wid._serialized,
+    )
+    await WWJSTesting.clearChat(
+      wwjsHelperClientRaw,
+      wwjsClientRaw.info.wid._serialized,
+    )
   })
 
   afterAll(async () => {

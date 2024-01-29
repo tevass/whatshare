@@ -101,10 +101,17 @@ describe('Handle Message Ack (WWJS)', () => {
   )
 
   afterEach(async () => {
-    await WWJSTesting.clearChats({
-      client: wwjsClient.switchToRaw(),
-      helper: helperWWJSClient.switchToRaw(),
-    })
+    const wwjsClientRaw = wwjsClient.switchToRaw()
+    const wwjsHelperClientRaw = wwjsClient.switchToRaw()
+
+    await WWJSTesting.clearChat(
+      wwjsClientRaw,
+      wwjsHelperClientRaw.info.wid._serialized,
+    )
+    await WWJSTesting.clearChat(
+      wwjsHelperClientRaw,
+      wwjsClientRaw.info.wid._serialized,
+    )
   })
 
   afterAll(async () => {

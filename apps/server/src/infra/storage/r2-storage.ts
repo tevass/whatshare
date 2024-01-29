@@ -68,6 +68,8 @@ export class R2Storage implements Uploader {
   async removeMany(params: UploaderRemoveManyParams): Promise<void> {
     const { keys } = params
 
+    if (!keys.length) return
+
     await this.client.send(
       new DeleteObjectsCommand({
         Bucket: this.BUCKET_NAME,
