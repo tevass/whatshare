@@ -2,6 +2,7 @@ import {
   ContactsRepository,
   ContactsRepositoryCountManyParams,
   ContactsRepositoryFilters,
+  ContactsRepositoryFindByIdParams,
   ContactsRepositoryFindByPhoneParams,
   ContactsRepositoryFindByWAContactIdParams,
   ContactsRepositoryFindManyByWAContactsIdsParams,
@@ -29,11 +30,19 @@ export class InMemoryContactsRepository implements ContactsRepository {
         : true
   }
 
+  async findById(
+    params: ContactsRepositoryFindByIdParams,
+  ): Promise<Contact | null> {
+    const { id } = params
+    const contact = this.items.find((item) => item.id.toString() === id)
+
+    return contact ?? null
+  }
+
   async findByPhone(
     params: ContactsRepositoryFindByPhoneParams,
   ): Promise<Contact | null> {
     const { phone } = params
-
     const contact = this.items.find((item) => item.phone.number === phone)
 
     return contact ?? null

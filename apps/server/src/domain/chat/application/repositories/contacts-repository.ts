@@ -8,6 +8,10 @@ export interface ContactsRepositoryFilters {
   isGroup?: boolean
 }
 
+export interface ContactsRepositoryFindByIdParams {
+  id: string
+}
+
 export interface ContactsRepositoryFindByPhoneParams {
   phone: string
 }
@@ -30,6 +34,10 @@ export interface ContactsRepositoryCountManyParams
     ContactsRepositoryFilters {}
 
 export abstract class ContactsRepository {
+  abstract findById(
+    params: ContactsRepositoryFindByIdParams,
+  ): Promise<Contact | null>
+
   abstract findByPhone(
     params: ContactsRepositoryFindByPhoneParams,
   ): Promise<Contact | null>
