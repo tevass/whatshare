@@ -5,6 +5,7 @@ import { makeChat } from '@/test/factories/make-chat'
 import { makeContact } from '@/test/factories/make-contact'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
+import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
@@ -150,5 +151,35 @@ describe('HandleSendTextMessage', () => {
     expect(message.ack).toBe('sent')
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
     expect(inMemoryChatsRepository.items).toHaveLength(1)
+  })
+
+  it('should be able to create message from send text with wa mentions', async () => {
+    const whatsAppId = makeUniqueEntityID()
+    const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
+
+    const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
+    fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
+
+    const attendant = makeAttendant()
+    inMemoryAttendantsRepository.items.push(attendant)
+
+    const chat = makeChat({ whatsAppId })
+    inMemoryChatsRepository.items.push(chat)
+
+    const waMentionsIds = Array.from(Array(3)).map(() => makeWAEntityID())
+
+    const response = await sut.execute({
+      attendantId: attendant.id.toString(),
+      body: faker.lorem.paragraph(),
+      waChatId: chat.waChatId.toString(),
+      whatsAppId: whatsAppId.toString(),
+      waMentionsIds: waMentionsIds.map((id) => id.toString()),
+    })
+
+    expect(response.isRight()).toBe(true)
+    if (response.isLeft()) return
+
+    const { message } = response.value
+    expect(message.hasMentions()).toBe(true)
   })
 })

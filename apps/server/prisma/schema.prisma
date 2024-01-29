@@ -165,6 +165,8 @@ model Message {
   createdAt DateTime  @map("created_at")
   revokedAt DateTime? @map("revoked_at")
 
+  waMentionIds String[] @map("mentions_wa_ids")
+
   vCardsContactsIds String[]  @map("vcards_contacts_ids") @db.ObjectId
   vCardsContacts    Contact[] @relation("MessageVCardsContacts", fields: [vCardsContactsIds], references: [id])
 

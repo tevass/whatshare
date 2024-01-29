@@ -8,6 +8,12 @@ import { WWJSMessageAckMapper } from './wwjs-message-ack-mapper'
 import { WWJSMessageMediaMapper } from './wwjs-message-media-mapper'
 import { WWJSMessageTypeMapper } from './wwjs-message-type-mapper'
 
+type MentionId = {
+  server: 'c.us'
+  user: string
+  _serialized: string
+}
+
 interface WAMessageToDomain {
   raw: Message
   chatId?: WAEntityID
@@ -31,6 +37,11 @@ export class WWJSMessageMapper {
 
     const hasContacts = !!raw.vCards.length
 
+    const hasMentions = !!raw.mentionedIds.length
+    const mentionedIds = (raw.mentionedIds as MentionId[])
+      .map((id) => id._serialized)
+      .map(WAEntityID.createFromString)
+
     return WAMessage.create(
       {
         author: raw.author ? WAEntityID.createFromString(raw.author) : null,
@@ -48,6 +59,7 @@ export class WWJSMessageMapper {
         contacts: hasContacts
           ? raw.vCards.map(WAContact.createFromVCard)
           : null,
+        mentionedIds: hasMentions ? mentionedIds : null,
         quoted: quoted
           ? await WWJSMessageMapper.toDomain({
               raw: quoted,

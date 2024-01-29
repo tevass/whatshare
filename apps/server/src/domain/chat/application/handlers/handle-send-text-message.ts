@@ -22,6 +22,7 @@ interface HandleSendTextMessageRequest {
   body: string
   quotedId?: string
   attendantId: string
+  waMentionsIds?: string[]
 }
 
 type HandleSendTextMessageResponse = Either<
@@ -46,7 +47,8 @@ export class HandleSendTextMessage {
   async execute(
     request: HandleSendTextMessageRequest,
   ): Promise<HandleSendTextMessageResponse> {
-    const { waChatId, attendantId, body, quotedId, whatsAppId } = request
+    const { waChatId, attendantId, body, quotedId, whatsAppId, waMentionsIds } =
+      request
 
     const [attendant, quotedMessage] = await Promise.all([
       this.attendantsRepository.findById({ id: attendantId }),
@@ -113,6 +115,7 @@ export class HandleSendTextMessage {
       waMessageId: tmpWAMessageId,
       whatsAppId: chat.whatsAppId,
       senderBy: attendant.profile,
+      waMentionsIds: waMentionsIds?.map(WAEntityID.createFromString),
     })
 
     await this.messagesRepository.create(message)

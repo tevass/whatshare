@@ -72,6 +72,7 @@ export class CreateMessageFromWAMessageUseCase {
       isStatus: waMessage.isStatus,
       isFromMe: waMessage.isFromMe,
       createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
+      waMentionsIds: waMessage.mentionedIds,
     })
 
     if (waMessage.hasQuoted()) {
