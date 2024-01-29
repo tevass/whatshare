@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "scripts": {
     "packages:clean": "turbo run clean --filter=./packages/**",
-    "packages:dev": "turbo run dev --filter=./packages/**",
     "packages:build": "turbo run build --filter=./packages/**",
     "lint": "turbo run lint --parallel",
     "lint:fix": "turbo run lint:fix --parallel",
