@@ -11,7 +11,12 @@ export interface UploaderRemoveParams {
   key: string
 }
 
+export interface UploaderRemoveManyParams {
+  keys: string[]
+}
+
 export abstract class Uploader {
   abstract upload(params: UploaderUploadParams): Promise<{ url: string }>
   abstract remove(params: UploaderRemoveParams): Promise<void>
+  abstract removeMany(params: UploaderRemoveManyParams): Promise<void>
 }

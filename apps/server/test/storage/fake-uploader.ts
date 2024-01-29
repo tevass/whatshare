@@ -1,5 +1,6 @@
 import {
   Uploader,
+  UploaderRemoveManyParams,
   UploaderRemoveParams,
   UploaderUploadParams,
 } from '@/domain/chat/application/storage/uploader'
@@ -32,5 +33,11 @@ export class FakeUploader implements Uploader {
 
   async remove({ key }: UploaderRemoveParams): Promise<void> {
     this.uploads = this.uploads.filter((upload) => upload.url !== key)
+  }
+
+  async removeMany(params: UploaderRemoveManyParams): Promise<void> {
+    const { keys } = params
+
+    await Promise.all(keys.map((key) => this.remove({ key })))
   }
 }

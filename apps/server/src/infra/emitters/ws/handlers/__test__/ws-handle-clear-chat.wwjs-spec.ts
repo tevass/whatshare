@@ -138,24 +138,29 @@ describe('Handle Clear Chat (WS)', () => {
       socket.on('exception' as any, reject)
 
       socket.on('chat:clear', async () => {
-        const [chatOnDataBase, messagesOnDatabase] = await Promise.all([
-          prisma.chat.findUniqueOrThrow({
-            where: { id: chat.id.toString() },
-          }),
-          prisma.message.findMany({
-            where: { chatId: chat.id.toString() },
-          }),
-        ])
+        const [chatOnDataBase, messagesOnDatabase, mediasOnDatabase] =
+          await Promise.all([
+            prisma.chat.findUniqueOrThrow({
+              where: { id: chat.id.toString() },
+            }),
+            prisma.message.count({
+              where: { chatId: chat.id.toString() },
+            }),
+            prisma.media.count({
+              where: {
+                message: {
+                  some: {
+                    chatId: chat.id.toString(),
+                  },
+                },
+              },
+            }),
+          ])
 
         resolve([
           expect(chatOnDataBase.deletedAt).toBeTruthy(),
-          expect(messagesOnDatabase).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                deletedAt: expect.any(Date),
-              }),
-            ]),
-          ),
+          expect(messagesOnDatabase).toBe(0),
+          expect(mediasOnDatabase).toBe(0),
         ])
       })
 

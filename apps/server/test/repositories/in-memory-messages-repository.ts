@@ -1,33 +1,21 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   MessagesRepository,
   MessagesRepositoryCountManyByChatIdParams,
   MessagesRepositoryDeleteManyByChatIdParams,
-  MessagesRepositoryFilters,
   MessagesRepositoryFindByIdParams,
   MessagesRepositoryFindByWAMessageIdParams,
   MessagesRepositoryFindManyByChatIdParams,
   MessagesRepositoryFindManyByWAMessagesIdsParams,
   MessagesRepositoryFindToRevokeParams,
+  MessagesRepositoryGetMessagesIdsByChatIdParams,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { TypeGuards } from '@/infra/utils/type-guards'
 import dayjs from 'dayjs'
-
-interface ResolveFiltersParams extends MessagesRepositoryFilters {
-  item: Message
-}
 
 export class InMemoryMessagesRepository implements MessagesRepository {
   items: Message[] = []
-
-  private resolveFilters({ item, ...filters }: ResolveFiltersParams) {
-    const { deleted } = filters ?? {}
-
-    return TypeGuards.isNotUndefined(deleted) && deleted
-      ? item.isDeleted()
-      : true
-  }
 
   async findById(
     params: MessagesRepositoryFindByIdParams,
@@ -44,22 +32,19 @@ export class InMemoryMessagesRepository implements MessagesRepository {
   async findManyByChatId(
     params: MessagesRepositoryFindManyByChatIdParams,
   ): Promise<Message[]> {
-    const { chatId, page, take, ...filters } = params
+    const { chatId, page, take } = params
 
     return this.items
       .filter((item) => item.chatId.toString() === chatId)
-      .filter((item) => this.resolveFilters({ item, ...filters }))
       .slice(Pagination.skip({ limit: take, page }), page * take)
   }
 
   async countManyByChatId(
     params: MessagesRepositoryCountManyByChatIdParams,
   ): Promise<number> {
-    const { chatId, ...filters } = params
+    const { chatId } = params
 
-    return this.items
-      .filter((item) => item.chatId.toString() === chatId)
-      .filter((item) => this.resolveFilters({ item, ...filters })).length
+    return this.items.filter((item) => item.chatId.toString() === chatId).length
   }
 
   async findByWAMessageId(
@@ -111,7 +96,11 @@ export class InMemoryMessagesRepository implements MessagesRepository {
     this.items[itemIndex] = message
   }
 
-  async softDeleteManyByChatId(
+  private delete(message: Message) {
+    this.items = this.items.filter((item) => !item.id.equals(message.id))
+  }
+
+  async deleteManyByChatId(
     params: MessagesRepositoryDeleteManyByChatIdParams,
   ): Promise<void> {
     const { chatId } = params
@@ -120,11 +109,18 @@ export class InMemoryMessagesRepository implements MessagesRepository {
       (item) => item.chatId.toString() === chatId,
     )
 
-    await Promise.all(
-      entities.map((message) => {
-        message.delete()
-        return this.save(message)
-      }),
+    await Promise.all(entities.map((message) => this.delete(message)))
+  }
+
+  async getMessagesIdsByChatId(
+    params: MessagesRepositoryGetMessagesIdsByChatIdParams,
+  ): Promise<UniqueEntityID[]> {
+    const { chatId } = params
+
+    const messages = this.items.filter(
+      (message) => message.chatId.toString() === chatId,
     )
+
+    return messages.map((message) => message.id)
   }
 }

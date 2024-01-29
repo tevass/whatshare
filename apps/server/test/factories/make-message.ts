@@ -18,6 +18,8 @@ export const makeMessage = (
   override: Partial<MessageProps> = {},
   id?: UniqueEntityID,
 ) => {
+  const messageId = id ?? new UniqueEntityID()
+
   return Message.create(
     {
       ack: 'pending',
@@ -26,13 +28,12 @@ export const makeMessage = (
       chatId: makeUniqueEntityID(),
       contacts: [makeContact()],
       createdAt: new Date(),
-      deletedAt: null,
       isBroadcast: false,
       isForwarded: false,
       isFromMe: false,
       isGif: false,
       isStatus: false,
-      media: makeMessageMedia(),
+      media: makeMessageMedia({ messageId }),
       revokedAt: null,
       revokedBy: makeAttendantProfile(),
       senderBy: makeAttendantProfile(),
@@ -42,7 +43,7 @@ export const makeMessage = (
       whatsAppId: makeUniqueEntityID(),
       ...override,
     },
-    id,
+    messageId,
   )
 }
 

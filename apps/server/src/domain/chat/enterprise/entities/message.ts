@@ -33,7 +33,6 @@ export interface MessageProps {
 
   createdAt: Date
   revokedAt: Date | null
-  deletedAt: Date | null
 
   senderBy: AttendantProfile | null
   revokedBy: AttendantProfile | null
@@ -145,14 +144,6 @@ export class Message extends Entity<MessageProps> {
     return this.props.revokedAt
   }
 
-  get deletedAt() {
-    return this.props.deletedAt
-  }
-
-  isDeleted(): this is SetNonNullable<MessageProps, 'deletedAt'> {
-    return !!this.deletedAt
-  }
-
   get senderBy() {
     return this.props.senderBy
   }
@@ -181,12 +172,6 @@ export class Message extends Entity<MessageProps> {
     })
   }
 
-  delete() {
-    this.set({
-      deletedAt: new Date(),
-    })
-  }
-
   static create(
     props: SetOptional<
       MessageProps,
@@ -195,7 +180,6 @@ export class Message extends Entity<MessageProps> {
       | 'contacts'
       | 'media'
       | 'revokedAt'
-      | 'deletedAt'
       | 'senderBy'
       | 'revokedBy'
       | 'ack'
@@ -217,7 +201,6 @@ export class Message extends Entity<MessageProps> {
         contacts: props.contacts ?? null,
         media: props.media ?? null,
         revokedAt: props.revokedAt ?? null,
-        deletedAt: props.deletedAt ?? null,
         senderBy: props.senderBy ?? null,
         revokedBy: props.revokedBy ?? null,
         ack: props.ack ?? 'pending',

@@ -41,7 +41,6 @@ export class PrismaMessageMapper {
         isGif: raw.isGif,
         isStatus: raw.isStatus,
         createdAt: raw.createdAt,
-        deletedAt: raw.deletedAt,
         revokedAt: raw.revokedAt,
         author: raw.author ? PrismaContactMapper.toDomain(raw.author) : null,
         body: raw.body ? PrismaMessageBodyMapper.toDomain(raw.body) : null,
@@ -84,7 +83,6 @@ export class PrismaMessageMapper {
       mediaId: message.media?.id.toString(),
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
-      deletedAt: message.deletedAt,
       revokedAt: message.revokedAt,
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
@@ -114,7 +112,6 @@ export class PrismaMessageMapper {
       mediaId: message.media?.id.toString(),
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
-      deletedAt: message.deletedAt,
       revokedAt: message.revokedAt,
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),

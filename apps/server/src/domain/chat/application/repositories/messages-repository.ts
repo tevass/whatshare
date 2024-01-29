@@ -2,23 +2,18 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
 import { Message } from '../../enterprise/entities/message'
-
-export interface MessagesRepositoryFilters {
-  deleted?: boolean
-}
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 export interface MessagesRepositoryFindByIdParams {
   id: string
 }
 
 export interface MessagesRepositoryFindManyByChatIdParams
-  extends PaginationParams,
-    MessagesRepositoryFilters {
+  extends PaginationParams {
   chatId: string
 }
 
-export interface MessagesRepositoryCountManyByChatIdParams
-  extends MessagesRepositoryFilters {
+export interface MessagesRepositoryCountManyByChatIdParams {
   chatId: string
 }
 
@@ -37,6 +32,10 @@ export interface MessagesRepositoryFindToRevokeParams {
 }
 
 export interface MessagesRepositoryDeleteManyByChatIdParams {
+  chatId: string
+}
+
+export interface MessagesRepositoryGetMessagesIdsByChatIdParams {
   chatId: string
 }
 
@@ -67,9 +66,13 @@ export abstract class MessagesRepository {
 
   abstract save(message: Message): Promise<void>
 
-  abstract softDeleteManyByChatId(
+  abstract deleteManyByChatId(
     params: MessagesRepositoryDeleteManyByChatIdParams,
   ): Promise<void>
 
   abstract create(message: Message): Promise<void>
+
+  abstract getMessagesIdsByChatId(
+    params: MessagesRepositoryGetMessagesIdsByChatIdParams,
+  ): Promise<UniqueEntityID[]>
 }

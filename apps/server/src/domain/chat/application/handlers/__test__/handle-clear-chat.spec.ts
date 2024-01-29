@@ -9,9 +9,13 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { HandleClearChat } from '../handle-clear-chat'
 import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
+import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
+import { FakeUploader } from '@/test/storage/fake-uploader'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryMessagesRepository: InMemoryMessagesRepository
+let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
+let fakeUploader: FakeUploader
 let fakeWAClientManager: FakeWAClientManager
 let fakeChatEmitter: FakeChatEmitter
 
@@ -21,12 +25,18 @@ describe('HandleClearChat', () => {
   beforeEach(() => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository(
+      inMemoryMessagesRepository,
+    )
+    fakeUploader = new FakeUploader()
     fakeWAClientManager = new FakeWAClientManager()
     fakeChatEmitter = new FakeChatEmitter()
 
     sut = new HandleClearChat(
       inMemoryChatsRepository,
       inMemoryMessagesRepository,
+      inMemoryMessageMediasRepository,
+      fakeUploader,
       fakeWAClientManager,
       fakeChatEmitter,
     )
@@ -65,7 +75,7 @@ describe('HandleClearChat', () => {
     expect(fakeWAClient.chat.values).toHaveLength(1)
   })
 
-  it('should be able to update messages from chat', async () => {
+  it('should be able to delete messages from chat', async () => {
     const whatsAppId = makeUniqueEntityID()
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
@@ -81,19 +91,25 @@ describe('HandleClearChat', () => {
     )
     inMemoryMessagesRepository.items.push(...messages)
 
+    const medias = messages.map((message) => message.media!)
+    inMemoryMessageMediasRepository.items.push(...medias)
+
+    fakeUploader.uploads.push(
+      ...medias.map((media) => ({
+        fileName: media.key,
+        mimetype: media.mimetype,
+        url: media.key,
+      })),
+    )
+
     const response = await sut.execute({
       waChatId: waChatId.toString(),
       whatsAppId: whatsAppId.toString(),
     })
 
     expect(response.isRight()).toBe(true)
-
-    expect(inMemoryMessagesRepository.items).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          deletedAt: expect.any(Date),
-        }),
-      ]),
-    )
+    expect(inMemoryMessagesRepository.items).toHaveLength(0)
+    expect(inMemoryMessageMediasRepository.items).toHaveLength(0)
+    expect(fakeUploader.uploads).toHaveLength(0)
   })
 })

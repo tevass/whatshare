@@ -5,34 +5,21 @@ import {
   MessagesRepository,
   MessagesRepositoryCountManyByChatIdParams,
   MessagesRepositoryDeleteManyByChatIdParams,
-  MessagesRepositoryFilters,
   MessagesRepositoryFindByIdParams,
   MessagesRepositoryFindByWAMessageIdParams,
   MessagesRepositoryFindManyByChatIdParams,
   MessagesRepositoryFindManyByWAMessagesIdsParams,
   MessagesRepositoryFindToRevokeParams,
+  MessagesRepositoryGetMessagesIdsByChatIdParams,
 } from '@/domain/chat/application/repositories/messages-repository'
 import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { TypeGuards } from '@/infra/utils/type-guards'
 import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 @Injectable()
 export class PrismaMessagesRepository implements MessagesRepository {
   constructor(private prisma: PrismaService) {}
-
-  private resolveFilters<Method extends { where?: object }>(
-    where: Method['where'],
-    filters: MessagesRepositoryFilters = {},
-  ) {
-    const { deleted } = filters
-
-    return {
-      ...where,
-      ...(TypeGuards.isNotUndefined(deleted) &&
-        !deleted && { deletedAt: null }),
-    }
-  }
 
   private aggregate = {
     author: true,
@@ -69,15 +56,12 @@ export class PrismaMessagesRepository implements MessagesRepository {
   async findManyByChatId(
     params: MessagesRepositoryFindManyByChatIdParams,
   ): Promise<Message[]> {
-    const { chatId, page, take, ...filters } = params
+    const { chatId, page, take } = params
 
     const raw = await this.prisma.message.findMany({
-      where: this.resolveFilters(
-        {
-          chatId,
-        },
-        filters,
-      ),
+      where: {
+        chatId,
+      },
       take,
       skip: Pagination.skip({ limit: take, page }),
       include: this.aggregate,
@@ -89,15 +73,12 @@ export class PrismaMessagesRepository implements MessagesRepository {
   async countManyByChatId(
     params: MessagesRepositoryCountManyByChatIdParams,
   ): Promise<number> {
-    const { chatId, ...filters } = params
+    const { chatId } = params
 
     const rows = await this.prisma.message.count({
-      where: this.resolveFilters(
-        {
-          chatId,
-        },
-        filters,
-      ),
+      where: {
+        chatId,
+      },
     })
 
     return rows
@@ -169,15 +150,12 @@ export class PrismaMessagesRepository implements MessagesRepository {
     })
   }
 
-  async softDeleteManyByChatId(
+  async deleteManyByChatId(
     params: MessagesRepositoryDeleteManyByChatIdParams,
   ): Promise<void> {
     const { chatId } = params
 
-    await this.prisma.message.updateMany({
-      data: {
-        deletedAt: new Date(),
-      },
+    await this.prisma.message.deleteMany({
       where: {
         chatId,
       },
@@ -190,5 +168,22 @@ export class PrismaMessagesRepository implements MessagesRepository {
     await this.prisma.message.create({
       data,
     })
+  }
+
+  async getMessagesIdsByChatId(
+    params: MessagesRepositoryGetMessagesIdsByChatIdParams,
+  ): Promise<UniqueEntityID[]> {
+    const { chatId } = params
+
+    const raw = await this.prisma.message.findMany({
+      where: {
+        chatId,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    return raw.map((raw) => new UniqueEntityID(raw.id))
   }
 }

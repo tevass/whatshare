@@ -8,6 +8,8 @@ import { ChatsRepository } from '../repositories/chats-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAClientManager } from '../services/wa-client-manager'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
+import { MessageMediasRepository } from '../repositories/message-medias-repository'
+import { Uploader } from '../storage/uploader'
 
 interface HandleClearChatRequest {
   waChatId: string
@@ -26,6 +28,8 @@ export class HandleClearChat {
   constructor(
     private chatsRepository: ChatsRepository,
     private messagesRepository: MessagesRepository,
+    private messageMediasRepository: MessageMediasRepository,
+    private uploader: Uploader,
     private waManager: WAClientManager,
     private chatEmitter: ChatEmitter,
   ) {}
@@ -52,8 +56,22 @@ export class HandleClearChat {
     await waClient.chat.clearById(chat.waChatId)
     chat.clear()
 
+    const messagesIds = await this.messagesRepository.getMessagesIdsByChatId({
+      chatId: chat.id.toString(),
+    })
+
+    const medias = await this.messageMediasRepository.findManyByMessagesIds({
+      messagesIds: messagesIds.map((id) => id.toString()),
+    })
+
+    const mediasKeys = medias.map((media) => media.key)
     await Promise.all([
-      this.messagesRepository.softDeleteManyByChatId({
+      this.messageMediasRepository.deleteMany(medias),
+      this.uploader.removeMany({ keys: mediasKeys }),
+    ])
+
+    await Promise.all([
+      this.messagesRepository.deleteManyByChatId({
         chatId: chat.id.toString(),
       }),
       this.chatsRepository.softDelete(chat),
