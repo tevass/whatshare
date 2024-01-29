@@ -24,7 +24,6 @@ export interface MessageProps {
   body: MessageBody | null
   media: MessageMedia | null
   contacts: Contact[] | null
-  waMentionsIds: WAEntityID[] | null
 
   isBroadcast: boolean
   isForwarded: boolean
@@ -113,14 +112,6 @@ export class Message extends Entity<MessageProps> {
     return !!this.contacts?.length
   }
 
-  get waMentionsIds() {
-    return this.props.waMentionsIds
-  }
-
-  hasMentions(): this is SetNonNullable<MessageProps, 'waMentionsIds'> {
-    return !!this.waMentionsIds?.length
-  }
-
   hasMedia(): this is SetNonNullable<MessageProps, 'media'> {
     return !!this.media && MEDIA_TYPES.has(this.type)
   }
@@ -187,7 +178,6 @@ export class Message extends Entity<MessageProps> {
       | 'author'
       | 'body'
       | 'contacts'
-      | 'waMentionsIds'
       | 'media'
       | 'revokedAt'
       | 'senderBy'
@@ -209,7 +199,6 @@ export class Message extends Entity<MessageProps> {
         author: props.author ?? null,
         body: props.body ?? null,
         contacts: props.contacts ?? null,
-        waMentionsIds: props.waMentionsIds ?? null,
         media: props.media ?? null,
         revokedAt: props.revokedAt ?? null,
         senderBy: props.senderBy ?? null,

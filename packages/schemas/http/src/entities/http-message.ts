@@ -4,6 +4,7 @@ import { messageAck, messageType } from '@whatshare/core-schemas/enums'
 import { mongoId, waEntityId, waMessageId } from '@whatshare/shared-schemas'
 import { httpAttendantProfile } from './http-attendant-profile'
 import { httpContact } from './http-contact'
+import { httpMessageBody } from './http-message-body'
 import { httpMessageMedia } from './http-message-media'
 
 const baseHttpMessage = z.object({
@@ -15,7 +16,7 @@ const baseHttpMessage = z.object({
   author: httpContact.nullable(),
   ack: messageAck,
   type: messageType,
-  body: z.string().nullable(),
+  body: httpMessageBody.nullable(),
   contacts: httpContact.array().nullable(),
   media: httpMessageMedia.nullable(),
   isBroadcast: z.boolean(),

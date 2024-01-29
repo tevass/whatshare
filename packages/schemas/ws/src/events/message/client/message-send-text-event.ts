@@ -1,12 +1,13 @@
 import { defaultFunction } from '@/events/default-function'
+import { waEntityId, waMessageId } from '@whatshare/shared-schemas'
 import { z } from 'zod'
-import { messageEventNames } from '../name'
 import { messageClientPayload } from '../client-payload'
-import { waMessageId } from '@whatshare/shared-schemas'
+import { messageEventNames } from '../name'
 
 export const messageSendTextClientPayload = messageClientPayload.extend({
   body: z.string(),
   quotedId: waMessageId.optional(),
+  waMentionsIds: waEntityId.array().optional(),
 })
 
 export type MessageSendTextClientPayload = z.infer<

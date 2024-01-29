@@ -1,19 +1,19 @@
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { makeWAMessage } from '@/test/factories/make-wa-message'
+import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-message-medias-repository'
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
+import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
+import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
-import { makeWhatsApp } from '@/test/factories/make-whats-app'
-import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
-import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
-import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -32,7 +32,9 @@ describe('ImportMessagesUseCase', () => {
     inMemoryChatsRepository = new InMemoryChatsRepository()
     inMemoryContactsRepository = new InMemoryContactsRepository()
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
-    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository(
+      inMemoryMessagesRepository,
+    )
     fakeWAClientManager = new FakeWAClientManager()
     fakeUploader = new FakeUploader()
     fakeDateAdapter = new FakeDateAdapter()

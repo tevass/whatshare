@@ -54,7 +54,10 @@ export class CreateMessageFromWAMessageUseCase {
     }
 
     const messageBody = waMessage.body
-      ? MessageBody.create({ content: waMessage.body })
+      ? MessageBody.create({
+          content: waMessage.body,
+          waMentionsIds: waMessage.mentionedIds,
+        })
       : null
 
     const message = Message.create({
@@ -72,7 +75,6 @@ export class CreateMessageFromWAMessageUseCase {
       isStatus: waMessage.isStatus,
       isFromMe: waMessage.isFromMe,
       createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
-      waMentionsIds: waMessage.mentionedIds,
     })
 
     if (waMessage.hasQuoted()) {

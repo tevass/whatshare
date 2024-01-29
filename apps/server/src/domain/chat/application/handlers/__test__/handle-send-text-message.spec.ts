@@ -180,6 +180,6 @@ describe('HandleSendTextMessage', () => {
     if (response.isLeft()) return
 
     const { message } = response.value
-    expect(message.hasMentions()).toBe(true)
+    expect(message.body?.hasMentions()).toBe(true)
   })
 })

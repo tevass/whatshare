@@ -1,15 +1,14 @@
 import { AppModule } from '@/infra/app.module'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeMessageFactory } from '@/test/factories/make-message'
+import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
+import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import supertest from 'supertest'
-import { expect } from 'vitest'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 
 describe('Fetch Messages (HTTP)', () => {
   let app: INestApplication

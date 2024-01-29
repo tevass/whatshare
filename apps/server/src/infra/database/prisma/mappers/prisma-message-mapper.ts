@@ -44,12 +44,7 @@ export class PrismaMessageMapper {
         revokedAt: raw.revokedAt,
         author: raw.author ? PrismaContactMapper.toDomain(raw.author) : null,
         body: raw.body ? PrismaMessageBodyMapper.toDomain(raw.body) : null,
-        contacts: raw.vCardsContacts?.length
-          ? raw.vCardsContacts.map(PrismaContactMapper.toDomain)
-          : null,
-        waMentionsIds: raw.waMentionIds.length
-          ? raw.waMentionIds.map(WAEntityID.createFromString)
-          : null,
+        contacts: raw.vCardsContacts?.map(PrismaContactMapper.toDomain) ?? null,
         media: raw.media ? PrismaMessageMediaMapper.toDomain(raw.media) : null,
         quoted: raw.quoted ? PrismaMessageMapper.toDomain(raw.quoted) : null,
         revokedBy: raw.revokedBy
@@ -90,7 +85,6 @@ export class PrismaMessageMapper {
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
       ),
-      waMentionIds: message.waMentionsIds?.map((id) => id.toString()),
     }
   }
 

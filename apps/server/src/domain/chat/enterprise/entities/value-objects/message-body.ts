@@ -1,9 +1,11 @@
 import { ValueObject } from '@/core/entities/value-object'
+import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 
 export interface MessageBodyProps {
   header: string | null
   content: string
+  waMentionsIds: WAEntityID[] | null
 }
 
 export class MessageBody extends ValueObject<MessageBodyProps> {
@@ -19,6 +21,14 @@ export class MessageBody extends ValueObject<MessageBodyProps> {
     return this.props.content
   }
 
+  get waMentionsIds() {
+    return this.props.waMentionsIds
+  }
+
+  hasMentions(): this is SetNonNullable<MessageBodyProps, 'waMentionsIds'> {
+    return !!this.waMentionsIds?.length
+  }
+
   format() {
     const partsOfContent = [this.content]
 
@@ -28,10 +38,13 @@ export class MessageBody extends ValueObject<MessageBodyProps> {
     return body
   }
 
-  static create(props: SetOptional<MessageBodyProps, 'header'>) {
+  static create(
+    props: SetOptional<MessageBodyProps, 'header' | 'waMentionsIds'>,
+  ) {
     return new MessageBody({
       ...props,
       header: props.header ?? null,
+      waMentionsIds: props.waMentionsIds ?? null,
     })
   }
 }

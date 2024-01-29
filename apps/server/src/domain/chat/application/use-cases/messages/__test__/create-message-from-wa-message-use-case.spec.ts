@@ -1,3 +1,4 @@
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { makeChat } from '@/test/factories/make-chat'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
@@ -11,7 +12,6 @@ import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-m
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
-import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -27,7 +27,9 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryContactsRepository = new InMemoryContactsRepository()
     inMemoryChatsRepository = new InMemoryChatsRepository()
-    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository(
+      inMemoryMessagesRepository,
+    )
     fakeUploader = new FakeUploader()
     fakeDateAdapter = new FakeDateAdapter()
 

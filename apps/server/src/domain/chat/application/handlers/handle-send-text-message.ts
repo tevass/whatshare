@@ -103,6 +103,7 @@ export class HandleSendTextMessage {
     const messageBody = MessageBody.create({
       content: body,
       header: attendant.profile.displayName,
+      waMentionsIds: waMentionsIds?.map(WAEntityID.createFromString),
     })
 
     const message = Message.create({
@@ -115,7 +116,6 @@ export class HandleSendTextMessage {
       waMessageId: tmpWAMessageId,
       whatsAppId: chat.whatsAppId,
       senderBy: attendant.profile,
-      waMentionsIds: waMentionsIds?.map(WAEntityID.createFromString),
     })
 
     await this.messagesRepository.create(message)

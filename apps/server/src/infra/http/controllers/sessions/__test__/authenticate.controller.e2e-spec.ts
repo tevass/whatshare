@@ -9,7 +9,7 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import supertest from 'supertest'
 
-describe('Authenticate', () => {
+describe('Authenticate (HTTP)', () => {
   let app: INestApplication
   let attendantFactory: FakeAttendantFactory
   let hasher: HashGenerator

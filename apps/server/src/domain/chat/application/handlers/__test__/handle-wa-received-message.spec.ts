@@ -1,3 +1,4 @@
+import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeChat } from '@/test/factories/make-chat'
@@ -12,7 +13,6 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../../use-cases/messages/create-message-from-wa-message-use-case'
 import { HandleWAReceivedMessage } from '../handle-wa-received-message'
-import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -32,7 +32,9 @@ describe('HandleWAReceivedMessage', () => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
     inMemoryContactsRepository = new InMemoryContactsRepository()
     inMemoryChatsRepository = new InMemoryChatsRepository()
-    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository(
+      inMemoryMessagesRepository,
+    )
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()
     fakeUploader = new FakeUploader()

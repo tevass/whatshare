@@ -1,9 +1,10 @@
 import { Message } from '@/domain/chat/enterprise/entities/message'
-import { WsMessage } from '@whatshare/ws-schemas/entities'
-import { ContactPresenter } from './contact-presenter'
-import { MessageMediaPresenter } from './message-media-presenter'
-import { AttendantProfilePresenter } from './attendant-profile-presenter'
 import { HttpMessage } from '@whatshare/http-schemas/entities'
+import { WsMessage } from '@whatshare/ws-schemas/entities'
+import { AttendantProfilePresenter } from './attendant-profile-presenter'
+import { ContactPresenter } from './contact-presenter'
+import { MessageBodyPresenter } from './message-body-presenter'
+import { MessageMediaPresenter } from './message-media-presenter'
 
 export class MessagePresenter {
   static toHttp(message: Message): HttpMessage {
@@ -18,10 +19,10 @@ export class MessagePresenter {
       author: message.hasAuthor()
         ? ContactPresenter.toHttp(message.author)
         : null,
-      body: message.hasBody() ? message.body.format() : null,
-      contacts: message.hasContacts()
-        ? message.contacts.map(ContactPresenter.toHttp)
+      body: message.hasBody()
+        ? MessageBodyPresenter.toHttp(message.body)
         : null,
+      contacts: message.contacts?.map(ContactPresenter.toHttp) ?? null,
       isBroadcast: message.isBroadcast,
       isForwarded: message.isForwarded,
       isFromMe: message.isFromMe,
@@ -56,10 +57,8 @@ export class MessagePresenter {
       author: message.hasAuthor()
         ? ContactPresenter.toWs(message.author)
         : null,
-      body: message.hasBody() ? message.body.format() : null,
-      contacts: message.hasContacts()
-        ? message.contacts.map(ContactPresenter.toWs)
-        : null,
+      body: message.hasBody() ? MessageBodyPresenter.toWs(message.body) : null,
+      contacts: message.contacts?.map(ContactPresenter.toWs) ?? null,
       isBroadcast: message.isBroadcast,
       isForwarded: message.isForwarded,
       isFromMe: message.isFromMe,

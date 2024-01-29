@@ -21,7 +21,9 @@ let sut: HandleWARevokeMessage
 describe('HandleWARevokeMessage', () => {
   beforeEach(() => {
     inMemoryMessagesRepository = new InMemoryMessagesRepository()
-    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository()
+    inMemoryMessageMediasRepository = new InMemoryMessageMediasRepository(
+      inMemoryMessagesRepository,
+    )
     fakeDateAdapter = new FakeDateAdapter()
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeUploader = new FakeUploader()
