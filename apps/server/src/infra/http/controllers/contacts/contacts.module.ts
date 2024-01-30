@@ -9,6 +9,8 @@ import { GetContactController } from './get-contact.controller'
 import { GetContactUseCase } from '@/domain/chat/application/use-cases/contacts/get-contact-use-case'
 import { UpdateContactController } from './update-contact.controller'
 import { UpdateContactUseCase } from '@/domain/chat/application/use-cases/contacts/update-contact-use-case'
+import { DeleteContactController } from './delete-contact.controller'
+import { DeleteContactUseCase } from '@/domain/chat/application/use-cases/contacts/delete-contact-use-case'
 
 @Module({
   controllers: [
@@ -16,12 +18,14 @@ import { UpdateContactUseCase } from '@/domain/chat/application/use-cases/contac
     CreateContactController,
     GetContactController,
     UpdateContactController,
+    DeleteContactController,
   ],
   providers: [
     FetchContactsUseCase,
     CreateContactUseCase,
     GetContactUseCase,
     UpdateContactUseCase,
+    DeleteContactUseCase,
   ],
 })
 export class ContactsModule {}
