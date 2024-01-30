@@ -1,7 +1,7 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import type { SetNonNullable } from 'type-fest'
+import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
 import { Message } from './message'
 
@@ -15,7 +15,7 @@ export interface ChatProps {
   deletedAt: Date | null
 }
 
-export class Chat<Props extends ChatProps> extends Entity<Props> {
+export class Chat extends Entity<ChatProps> {
   get waChatId() {
     return this.props.waChatId
   }
@@ -57,11 +57,11 @@ export class Chat<Props extends ChatProps> extends Entity<Props> {
   }
 
   read() {
-    this.set({ unreadCount: 0 } as Partial<Props>)
+    this.set({ unreadCount: 0 })
   }
 
   unread() {
-    this.set({ unreadCount: -1 } as Partial<Props>)
+    this.set({ unreadCount: -1 })
   }
 
   clear() {
@@ -69,7 +69,7 @@ export class Chat<Props extends ChatProps> extends Entity<Props> {
       unreadCount: 0,
       lastMessage: null,
       deletedAt: new Date(),
-    } as Partial<Props>)
+    })
   }
 
   interact(message: Message) {
@@ -77,6 +77,24 @@ export class Chat<Props extends ChatProps> extends Entity<Props> {
       lastInteraction: message.createdAt,
       lastMessage: message,
       deletedAt: null,
-    } as Partial<Props>)
+    })
+  }
+
+  static create(
+    props: SetOptional<
+      ChatProps,
+      'lastInteraction' | 'lastMessage' | 'deletedAt'
+    >,
+    id?: UniqueEntityID,
+  ) {
+    return new Chat(
+      {
+        ...props,
+        lastInteraction: props.lastInteraction ?? null,
+        lastMessage: props.lastMessage ?? null,
+        deletedAt: props.deletedAt ?? null,
+      },
+      id,
+    )
   }
 }

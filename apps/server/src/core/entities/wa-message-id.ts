@@ -1,4 +1,4 @@
-import type { OverrideProperties, SetNonNullable, SetOptional } from 'type-fest'
+import type { SetNonNullable, SetOptional } from 'type-fest'
 import { UniqueEntityID } from './unique-entity-id'
 import { WAEntityID } from './wa-entity-id'
 import { WAMessageOwnerID } from './wa-message-owner-id'
@@ -9,9 +9,6 @@ export interface WAMessageIDProps {
   ref: string
   owner: WAMessageOwnerID | null
 }
-
-type GroupMessage = SetNonNullable<WAMessageIDProps, 'owner'>
-type PrivateMessage = OverrideProperties<WAMessageIDProps, { owner: null }>
 
 export class WAMessageID {
   protected props: WAMessageIDProps
@@ -39,16 +36,8 @@ export class WAMessageID {
     return this.props.owner
   }
 
-  hasOwner(): this is GroupMessage {
+  hasOwner(): this is SetNonNullable<WAMessageIDProps, 'owner'> {
     return !!this.owner
-  }
-
-  isGroup(): this is GroupMessage {
-    return this.hasOwner()
-  }
-
-  isPrivate(): this is PrivateMessage {
-    return !this.owner
   }
 
   toString() {
@@ -61,8 +50,7 @@ export class WAMessageID {
       idParts.push(this.owner.toString())
     }
 
-    const stringId = idParts.join('_')
-    return stringId
+    return idParts.join('_')
   }
 
   toUniqueEntityID() {
