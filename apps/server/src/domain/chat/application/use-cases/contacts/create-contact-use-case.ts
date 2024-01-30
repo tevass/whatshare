@@ -5,6 +5,7 @@ import { ContactPhone } from '@/domain/chat/enterprise/entities/value-objects/co
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { WAClientManager } from '../../services/wa-client-manager'
 import { ContactAlreadyExistsError } from '../errors/contact-already-exists-error'
+import { Injectable } from '@nestjs/common'
 
 interface CreateContactUseCaseRequest {
   name: string
@@ -18,6 +19,7 @@ type CreateContactUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateContactUseCase {
   constructor(
     private contactsRepository: ContactsRepository,

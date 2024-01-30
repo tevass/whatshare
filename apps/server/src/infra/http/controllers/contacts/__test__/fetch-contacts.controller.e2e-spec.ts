@@ -7,7 +7,6 @@ import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import supertest from 'supertest'
-import { expect } from 'vitest'
 
 describe('Fetch Contacts (HTTP)', () => {
   let app: INestApplication
@@ -21,7 +20,6 @@ describe('Fetch Contacts (HTTP)', () => {
       imports: [AppModule],
       providers: [
         FakeWhatsAppFactory,
-        FakeContactFactory,
         FakeContactFactory,
         FakeAttendantProfileFactory,
         FakeAttendantFactory,

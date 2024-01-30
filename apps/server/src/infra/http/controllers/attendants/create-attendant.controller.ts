@@ -25,7 +25,7 @@ export class CreateAttendantController {
   async handle(@Body() body: CreateAttendantRequestBodySchema) {
     const { displayName, email, name, password, whatsAppsIds } = body
 
-    const result = await this.createAttendant.execute({
+    const response = await this.createAttendant.execute({
       displayName,
       email,
       name,
@@ -33,8 +33,8 @@ export class CreateAttendantController {
       whatsAppsIds,
     })
 
-    if (result.isLeft()) {
-      const error = result.value
+    if (response.isLeft()) {
+      const error = response.value
 
       switch (error.constructor) {
         case AttendantAlreadyExistsError:
