@@ -3,26 +3,26 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { MessageAck, MessageType } from '@whatshare/core-schemas/enums'
-import { MessageBody } from './value-objects/message-body'
-import { MessageMedia } from './message-media'
-import { Contact } from './contact'
+import type { SetNonNullable, SetOptional } from 'type-fest'
+import { MESSAGE_MEDIA_TYPES } from '../constants/media-types'
 import { AttendantProfile } from './attendant-profile'
-import { SetNonNullable } from 'type-fest'
+import { Contact } from './contact'
+import { MessageMedia } from './message-media'
+import { MessageBody } from './value-objects/message-body'
 
-export interface MessageProps {
+export interface MessageProps<Quoted> {
   waMessageId: WAMessageID
   waChatId: WAEntityID
   whatsAppId: UniqueEntityID
   chatId: UniqueEntityID
   ack: MessageAck
   type: MessageType
+  quoted: Quoted | null
   body: MessageBody | null
   media: MessageMedia | null
   contacts: Contact[] | null
-  isBroadcast: boolean
   isForwarded: boolean
   isFromMe: boolean
-  isStatus: boolean
   isGif: boolean
   createdAt: Date
   revokedAt: Date | null
@@ -30,7 +30,49 @@ export interface MessageProps {
   revokedBy: AttendantProfile | null
 }
 
-export class Message<Props extends MessageProps> extends Entity<Props> {
+export class Message<
+  Props extends MessageProps<Props['quoted']>,
+> extends Entity<Props> {
+  protected constructor(
+    props: SetOptional<
+      Props,
+      | 'body'
+      | 'contacts'
+      | 'media'
+      | 'revokedAt'
+      | 'senderBy'
+      | 'revokedBy'
+      | 'ack'
+      | 'createdAt'
+      | 'isForwarded'
+      | 'isFromMe'
+      | 'isGif'
+      | 'quoted'
+    >,
+    id?: UniqueEntityID,
+  ) {
+    super(
+      {
+        ...props,
+        ack: props.ack ?? 'pending',
+        body: props.body ?? null,
+        contacts: props.contacts ?? null,
+        media: props.media ?? null,
+        senderBy: props.senderBy ?? null,
+        revokedBy: props.revokedBy ?? null,
+        quoted: props.quoted ?? null,
+        isForwarded: props.isForwarded ?? false,
+        isFromMe: props.isFromMe ?? true,
+        isGif: props.isGif ?? false,
+        createdAt: props.createdAt ?? new Date(),
+        revokedAt: props.revokedAt ?? null,
+      } as Props,
+      id,
+    )
+
+    this.media?.set({ messageId: id })
+  }
+
   get waMessageId() {
     return this.props.waMessageId
   }
@@ -51,23 +93,23 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
     return this.props.ack
   }
 
+  get type() {
+    return this.props.type
+  }
+
   get quoted() {
     return this.props.quoted
   }
 
-  hasQuoted(): this is SetNonNullable<MessageProps, 'quoted'> {
+  hasQuoted(): this is SetNonNullable<MessageProps<Props['quoted']>, 'quoted'> {
     return !!this.quoted
-  }
-
-  get type() {
-    return this.props.type
   }
 
   get body() {
     return this.props.body
   }
 
-  hasBody(): this is SetNonNullable<MessageProps, 'body'> {
+  hasBody(): this is SetNonNullable<MessageProps<Props['quoted']>, 'body'> {
     return !!this.body
   }
 
@@ -75,7 +117,10 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
     return this.props.contacts
   }
 
-  hasContacts(): this is SetNonNullable<MessageProps, 'contacts'> {
+  hasContacts(): this is SetNonNullable<
+    MessageProps<Props['quoted']>,
+    'contacts'
+  > {
     return !!this.contacts?.length
   }
 
@@ -83,12 +128,8 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
     return this.props.media
   }
 
-  hasMedia(): this is SetNonNullable<MessageProps, 'media'> {
-    return !!this.media && MEDIA_TYPES.has(this.type)
-  }
-
-  get isBroadcast() {
-    return this.props.isBroadcast
+  hasMedia(): this is SetNonNullable<MessageProps<Props['quoted']>, 'media'> {
+    return !!this.media && MESSAGE_MEDIA_TYPES.has(this.type)
   }
 
   get isForwarded() {
@@ -97,10 +138,6 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
 
   get isFromMe() {
     return this.props.isFromMe
-  }
-
-  get isStatus() {
-    return this.props.isStatus
   }
 
   get isGif() {
@@ -119,7 +156,10 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
     return this.props.senderBy
   }
 
-  hasSender(): this is SetNonNullable<MessageProps, 'senderBy'> {
+  hasSender(): this is SetNonNullable<
+    MessageProps<Props['quoted']>,
+    'senderBy'
+  > {
     return !!this.senderBy
   }
 
@@ -127,7 +167,22 @@ export class Message<Props extends MessageProps> extends Entity<Props> {
     return this.props.revokedBy
   }
 
-  hasRevoker(): this is SetNonNullable<MessageProps, 'revokedBy'> {
+  revoke(by?: AttendantProfile | null) {
+    this.set({
+      revokedBy: by,
+      revokedAt: new Date(),
+      type: 'revoked',
+      body: null,
+      media: null,
+      quoted: null,
+      contacts: null,
+    } as Props)
+  }
+
+  hasRevoker(): this is SetNonNullable<
+    MessageProps<Props['quoted']>,
+    'revokedBy'
+  > {
     return !!this.revokedBy
   }
 }

@@ -1,5 +1,5 @@
 import { ValueObject } from '@/core/entities/value-object'
-import { SetOptional } from 'type-fest'
+import type { SetOptional } from 'type-fest'
 
 export interface ContactPhoneProps {
   number: string

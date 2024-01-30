@@ -4,37 +4,39 @@ import { makeMessageMedia } from '@/test/factories/make-message-media'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
-import { Message } from '../message'
+import { GroupMessage } from '../group-message'
 
-describe('Message', () => {
+describe('GroupMessage', () => {
   test('create', () => {
-    const message = Message.create({
+    const message = GroupMessage.create({
       chatId: makeUniqueEntityID(),
       type: 'image',
       waChatId: makeWAEntityID(),
       waMessageId: makeWAMessageID(),
       whatsAppId: makeUniqueEntityID(),
       contacts: [makeContact()],
-      author: makeContact(),
       senderBy: makeAttendantProfile(),
       revokedBy: makeAttendantProfile(),
       media: makeMessageMedia(),
+      author: makeContact(),
     })
 
     expect(message).toBeTruthy()
   })
 
   test('revoke', () => {
-    const message = Message.create({
+    const message = GroupMessage.create({
       chatId: makeUniqueEntityID(),
       type: 'text',
       waChatId: makeWAEntityID(),
       waMessageId: makeWAMessageID(),
       whatsAppId: makeUniqueEntityID(),
+      author: makeContact(),
+      mentions: Array.from(Array(3)).map(() => makeContact()),
     })
 
     const attendantProfile = makeAttendantProfile()
-    message.revoke({ revokedBy: attendantProfile })
+    message.revoke(attendantProfile)
 
     expect(message).toEqual(
       expect.objectContaining({
@@ -45,6 +47,7 @@ describe('Message', () => {
         media: null,
         quoted: null,
         contacts: null,
+        mentions: null,
       }),
     )
   })

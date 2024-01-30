@@ -1,8 +1,8 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
-  Message,
-  MessageProps,
-} from '@/domain/chat/enterprise/entities/message'
+  PrivateMessage,
+  PrivateMessageProps,
+} from '@/domain/chat/enterprise/entities/private-message'
 import { PrismaMessageMapper } from '@/infra/database/prisma/mappers/prisma-message-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
@@ -14,16 +14,15 @@ import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
 import { makeMessageBody } from './value-objects/make-message-body'
 
-export const makeMessage = (
-  override: Partial<MessageProps> = {},
+export const makePrivateMessage = (
+  override: Partial<PrivateMessageProps> = {},
   id?: UniqueEntityID,
 ) => {
   const messageId = id ?? new UniqueEntityID()
 
-  return Message.create(
+  return PrivateMessage.create(
     {
       ack: 'pending',
-      author: makeContact(),
       body: makeMessageBody(),
       chatId: makeUniqueEntityID(),
       contacts: [makeContact()],
@@ -47,17 +46,17 @@ export const makeMessage = (
   )
 }
 
+// TODO: REFACTOR
 @Injectable()
 export class FakeMessageFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaMessage(
-    data: Partial<MessageProps> = {},
+    data: Partial<PrivateMessageProps> = {},
     id?: UniqueEntityID,
-  ): Promise<Message> {
-    const message = makeMessage(
+  ): Promise<PrivateMessage> {
+    const message = makePrivateMessage(
       {
-        author: null,
         media: null,
         quoted: null,
         contacts: null,

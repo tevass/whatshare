@@ -2,31 +2,43 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
-import { MessageAck, MessageType } from '@whatshare/core-schemas/enums'
-import { MessageBody } from './value-objects/message-body'
-import { MessageMedia } from './message-media'
-import { Contact } from './contact'
-import { AttendantProfile } from './attendant-profile'
-import { SetNonNullable } from 'type-fest'
+import { MessageType } from '@whatshare/core-schemas/enums'
+import type { SetNonNullable, SetOptional } from 'type-fest'
 import { MESSAGE_MEDIA_TYPES } from '../constants/media-types'
+import { AttendantProfile } from './attendant-profile'
+import { MessageMedia } from './message-media'
+import { MessageBody } from './value-objects/message-body'
 
 export interface QuotedMessageProps {
   waMessageId: WAMessageID
   waChatId: WAEntityID
   whatsAppId: UniqueEntityID
   chatId: UniqueEntityID
-  ack: MessageAck
   type: MessageType
   body: MessageBody | null
   media: MessageMedia | null
-  contacts: Contact[] | null
-  isStatus: boolean
+  isFromMe: boolean
   senderBy: AttendantProfile | null
 }
 
 export class QuotedMessage<
-  Props extends QuotedMessageProps,
+  Props extends QuotedMessageProps = QuotedMessageProps,
 > extends Entity<Props> {
+  protected constructor(
+    props: SetOptional<Props, 'body' | 'media' | 'senderBy' | 'isFromMe'>,
+    id?: UniqueEntityID,
+  ) {
+    super(
+      {
+        ...props,
+        isFromMe: props.isFromMe || true,
+      } as Props,
+      id,
+    )
+
+    this.media?.set({ messageId: id })
+  }
+
   get waMessageId() {
     return this.props.waMessageId
   }
@@ -41,10 +53,6 @@ export class QuotedMessage<
 
   get chatId() {
     return this.props.chatId
-  }
-
-  get ack() {
-    return this.props.ack
   }
 
   get type() {
@@ -67,8 +75,8 @@ export class QuotedMessage<
     return !!this.media && MESSAGE_MEDIA_TYPES.has(this.type)
   }
 
-  get isStatus() {
-    return this.props.isStatus
+  get isFromMe() {
+    return this.props.isFromMe
   }
 
   get senderBy() {

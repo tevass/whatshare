@@ -1,28 +1,30 @@
 import { makeContact } from '@/test/factories/make-contact'
-import { makeMessage } from '@/test/factories/make-message'
+import { makeGroupMessage } from '@/test/factories/make-group-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
-import { Chat } from '../chat'
+import { GroupChat } from '../group-chat'
 
-describe('Chat', () => {
+describe('GroupChat', () => {
   test('create', () => {
-    const chat = Chat.create({
+    const chat = GroupChat.create({
       contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
+      participants: Array.from(Array(3)).map(() => makeContact()),
     })
 
     expect(chat).toBeTruthy()
   })
 
   test('read', () => {
-    const chat = Chat.create({
+    const chat = GroupChat.create({
       contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
+      participants: Array.from(Array(3)).map(() => makeContact()),
     })
 
     chat.read()
@@ -30,11 +32,12 @@ describe('Chat', () => {
   })
 
   test('unread', () => {
-    const chat = Chat.create({
+    const chat = GroupChat.create({
       contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
+      participants: Array.from(Array(3)).map(() => makeContact()),
     })
 
     chat.unread()
@@ -42,11 +45,12 @@ describe('Chat', () => {
   })
 
   test('clear', () => {
-    const chat = Chat.create({
+    const chat = GroupChat.create({
       contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
+      participants: Array.from(Array(3)).map(() => makeContact()),
     })
 
     chat.clear()
@@ -60,14 +64,15 @@ describe('Chat', () => {
   })
 
   test('interact', () => {
-    const chat = Chat.create({
+    const chat = GroupChat.create({
       contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
+      participants: Array.from(Array(3)).map(() => makeContact()),
     })
 
-    const message = makeMessage()
+    const message = makeGroupMessage()
     chat.interact(message)
 
     expect(chat).toEqual(
