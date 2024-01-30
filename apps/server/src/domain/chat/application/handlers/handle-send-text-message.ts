@@ -50,11 +50,16 @@ export class HandleSendTextMessage {
     const { waChatId, attendantId, body, quotedId, whatsAppId, waMentionsIds } =
       request
 
-    const [attendant, quotedMessage] = await Promise.all([
+    const [attendant, quotedMessage, mentions] = await Promise.all([
       this.attendantsRepository.findById({ id: attendantId }),
       quotedId
         ? this.messagesRepository.findById({
             id: quotedId,
+          })
+        : null,
+      waMentionsIds?.length
+        ? await this.contactsRepository.findManyByWAContactsIds({
+            waContactsIds: waMentionsIds.map(WAEntityID.createFromString),
           })
         : null,
     ])
@@ -103,10 +108,10 @@ export class HandleSendTextMessage {
     const messageBody = MessageBody.create({
       content: body,
       header: attendant.profile.displayName,
-      waMentionsIds: waMentionsIds?.map(WAEntityID.createFromString),
     })
 
     const message = Message.create({
+      mentions,
       type: 'text',
       isFromMe: true,
       body: messageBody,

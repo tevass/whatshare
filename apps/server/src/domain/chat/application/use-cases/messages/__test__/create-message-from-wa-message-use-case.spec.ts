@@ -12,6 +12,7 @@ import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-m
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
+import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -20,6 +21,7 @@ let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
 let fakeUploader: FakeUploader
 let fakeDateAdapter: FakeDateAdapter
 
+let createContactsFromWaContacts: CreateContactsFromWaContactsUseCase
 let sut: CreateMessageFromWAMessageUseCase
 
 describe('CreateMessageFromWAMessageUseCase', () => {
@@ -33,11 +35,15 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     fakeUploader = new FakeUploader()
     fakeDateAdapter = new FakeDateAdapter()
 
+    createContactsFromWaContacts = new CreateContactsFromWaContactsUseCase(
+      inMemoryContactsRepository,
+    )
+
     sut = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
-      inMemoryContactsRepository,
       inMemoryChatsRepository,
       inMemoryMessageMediasRepository,
+      createContactsFromWaContacts,
       fakeUploader,
       fakeDateAdapter,
     )
@@ -153,6 +159,39 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     expect(message.contacts).toHaveLength(3)
 
     expect(inMemoryContactsRepository.items).toHaveLength(4)
+  })
+
+  it('should be able to create contacts from mentions of wa-message', async () => {
+    const whatsAppId = makeUniqueEntityID()
+
+    const waContact = makeWAContact({ isMyContact: true })
+    const waChat = makeWAChat({}, waContact.id)
+
+    const waMessage = makeWAMessage({
+      mentions: Array.from(Array(3)).map(() => makeWAContact()),
+    })
+
+    const contact = waContact.toContact()
+    inMemoryContactsRepository.items.push(contact)
+
+    const chat = makeChat({ waChatId: waChat.id, contact, whatsAppId })
+    inMemoryChatsRepository.items.push(chat)
+
+    const response = await sut.execute({
+      waChatId: waChat.id.toString(),
+      waMessage,
+      whatsAppId: whatsAppId.toString(),
+    })
+
+    expect(response.isRight()).toBe(true)
+    if (response.isLeft()) return
+
+    const { message } = response.value
+
+    expect(message.hasMentions()).toBe(true)
+    expect(message.mentions).toHaveLength(3)
+    expect(inMemoryContactsRepository.items).toHaveLength(4)
+    expect(inMemoryMessagesRepository.items).toHaveLength(1)
   })
 
   it('should be able to create media from wa-message', async () => {

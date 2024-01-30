@@ -1,14 +1,11 @@
 import { Message } from '@/domain/chat/enterprise/entities/message'
-import { HttpMessage } from '@whatshare/http-schemas/entities'
-import { WsMessage } from '@whatshare/ws-schemas/entities'
-import { AttendantProfilePresenter } from './attendant-profile-presenter'
+import { HttpQuotedMessage } from '@whatshare/http-schemas/entities'
+import { WsQuotedMessage } from '@whatshare/ws-schemas/entities'
 import { ContactPresenter } from './contact-presenter'
 import { MessageBodyPresenter } from './message-body-presenter'
-import { MessageMediaPresenter } from './message-media-presenter'
-import { QuotedMessagePresenter } from './quoted-message-presenter'
 
-export class MessagePresenter {
-  static toHttp(message: Message): HttpMessage {
+export class QuotedMessagePresenter {
+  static toHttp(message: Message): HttpQuotedMessage {
     return {
       id: message.id.toString(),
       chatId: message.chatId.toString(),
@@ -23,31 +20,17 @@ export class MessagePresenter {
       body: message.hasBody()
         ? MessageBodyPresenter.toHttp(message.body)
         : null,
-      contacts: message.contacts?.map(ContactPresenter.toHttp) ?? null,
-      mentions: message.mentions?.map(ContactPresenter.toHttp) ?? null,
       isBroadcast: message.isBroadcast,
       isForwarded: message.isForwarded,
       isFromMe: message.isFromMe,
       isGif: message.isGif,
       isStatus: message.isStatus,
-      media: message.hasMedia()
-        ? MessageMediaPresenter.toHttp(message.media)
-        : null,
-      quoted: message.hasQuoted()
-        ? QuotedMessagePresenter.toHttp(message.quoted)
-        : null,
-      revokedBy: message.hasRevoker()
-        ? AttendantProfilePresenter.toHttp(message.revokedBy)
-        : null,
-      senderBy: message.hasSender()
-        ? AttendantProfilePresenter.toHttp(message.senderBy)
-        : null,
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
     }
   }
 
-  static toWs(message: Message): WsMessage {
+  static toWs(message: Message): WsQuotedMessage {
     return {
       id: message.id.toString(),
       chatId: message.chatId.toString(),
@@ -60,25 +43,11 @@ export class MessagePresenter {
         ? ContactPresenter.toWs(message.author)
         : null,
       body: message.hasBody() ? MessageBodyPresenter.toWs(message.body) : null,
-      contacts: message.contacts?.map(ContactPresenter.toWs) ?? null,
-      mentions: message.mentions?.map(ContactPresenter.toWs) ?? null,
       isBroadcast: message.isBroadcast,
       isForwarded: message.isForwarded,
       isFromMe: message.isFromMe,
       isGif: message.isGif,
       isStatus: message.isStatus,
-      media: message.hasMedia()
-        ? MessageMediaPresenter.toWs(message.media)
-        : null,
-      quoted: message.hasQuoted()
-        ? QuotedMessagePresenter.toWs(message.quoted)
-        : null,
-      revokedBy: message.hasRevoker()
-        ? AttendantProfilePresenter.toWs(message.revokedBy)
-        : null,
-      senderBy: message.hasSender()
-        ? AttendantProfilePresenter.toWs(message.senderBy)
-        : null,
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
     }

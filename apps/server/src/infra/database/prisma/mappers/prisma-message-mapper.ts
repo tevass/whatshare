@@ -15,14 +15,19 @@ import {
   RawMessageMedia,
 } from './prisma-message-media-mapper'
 import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
+import {
+  PrismaQuotedMessageMapper,
+  RawQuotedMessage,
+} from './prisma-quoted-message-mapper'
 
 export type RawMessage = PrismaMessage & {
   vCardsContacts?: RawContact[]
+  mentions?: RawContact[]
   author?: RawContact | null
   media?: RawMessageMedia | null
   senderBy?: RawAttendantProfile | null
   revokedBy?: RawAttendantProfile | null
-  quoted?: PrismaMessage | null
+  quoted?: RawQuotedMessage | null
 }
 
 export class PrismaMessageMapper {
@@ -45,8 +50,11 @@ export class PrismaMessageMapper {
         author: raw.author ? PrismaContactMapper.toDomain(raw.author) : null,
         body: raw.body ? PrismaMessageBodyMapper.toDomain(raw.body) : null,
         contacts: raw.vCardsContacts?.map(PrismaContactMapper.toDomain) ?? null,
+        mentions: raw.mentions?.map(PrismaContactMapper.toDomain) ?? null,
         media: raw.media ? PrismaMessageMediaMapper.toDomain(raw.media) : null,
-        quoted: raw.quoted ? PrismaMessageMapper.toDomain(raw.quoted) : null,
+        quoted: raw.quoted
+          ? PrismaQuotedMessageMapper.toDomain(raw.quoted)
+          : null,
         revokedBy: raw.revokedBy
           ? PrismaAttendantProfileMapper.toDomain(raw.revokedBy)
           : null,
@@ -85,6 +93,9 @@ export class PrismaMessageMapper {
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
       ),
+      waMentionsIds: message.mentions?.map((contact) =>
+        contact.waContactId.toString(),
+      ),
     }
   }
 
@@ -113,6 +124,9 @@ export class PrismaMessageMapper {
       revokedAt: message.revokedAt,
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
+      ),
+      waMentionsIds: message.mentions?.map((contact) =>
+        contact.waContactId.toString(),
       ),
     }
   }

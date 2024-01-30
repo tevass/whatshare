@@ -24,6 +24,7 @@ export interface MessageProps {
   body: MessageBody | null
   media: MessageMedia | null
   contacts: Contact[] | null
+  mentions: Contact[] | null
 
   isBroadcast: boolean
   isForwarded: boolean
@@ -100,16 +101,24 @@ export class Message extends Entity<MessageProps> {
     return !!this.body
   }
 
-  get media() {
-    return this.props.media
-  }
-
   get contacts() {
     return this.props.contacts
   }
 
   hasContacts(): this is SetNonNullable<MessageProps, 'contacts'> {
     return !!this.contacts?.length
+  }
+
+  get mentions() {
+    return this.props.mentions
+  }
+
+  hasMentions(): this is SetNonNullable<MessageProps, 'mentions'> {
+    return !!this.mentions?.length
+  }
+
+  get media() {
+    return this.props.media
   }
 
   hasMedia(): this is SetNonNullable<MessageProps, 'media'> {
@@ -178,6 +187,7 @@ export class Message extends Entity<MessageProps> {
       | 'author'
       | 'body'
       | 'contacts'
+      | 'mentions'
       | 'media'
       | 'revokedAt'
       | 'senderBy'
@@ -199,6 +209,7 @@ export class Message extends Entity<MessageProps> {
         author: props.author ?? null,
         body: props.body ?? null,
         contacts: props.contacts ?? null,
+        mentions: props.mentions ?? null,
         media: props.media ?? null,
         revokedAt: props.revokedAt ?? null,
         senderBy: props.senderBy ?? null,

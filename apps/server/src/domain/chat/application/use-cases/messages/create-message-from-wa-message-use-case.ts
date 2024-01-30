@@ -10,10 +10,10 @@ import { Readable } from 'node:stream'
 import { DateAdapter } from '../../adapters/date-adapter'
 import { WAMessage } from '../../entities/wa-message'
 import { ChatsRepository } from '../../repositories/chats-repository'
-import { ContactsRepository } from '../../repositories/contacts-repository'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
+import { CreateContactsFromWaContactsUseCase } from '../contacts/create-contacts-from-wa-contacts-use-case'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -32,9 +32,9 @@ type CreateMessageFromWAMessageUseCaseResponse = Either<
 export class CreateMessageFromWAMessageUseCase {
   constructor(
     private messagesRepository: MessagesRepository,
-    private contactsRepository: ContactsRepository,
     private chatsRepository: ChatsRepository,
     private messageMediasRepository: MessageMediasRepository,
+    private createContactsFromWaContacts: CreateContactsFromWaContactsUseCase,
     private uploader: Uploader,
     private dateAdapter: DateAdapter,
   ) {}
@@ -56,7 +56,6 @@ export class CreateMessageFromWAMessageUseCase {
     const messageBody = waMessage.body
       ? MessageBody.create({
           content: waMessage.body,
-          waMentionsIds: waMessage.mentionedIds,
         })
       : null
 
@@ -88,36 +87,21 @@ export class CreateMessageFromWAMessageUseCase {
     }
 
     if (waMessage.hasContacts()) {
-      const [waContactsThatAreMine, waMyContactsThatAreNotMineYet] = [
-        waMessage.contacts.filter((waContact) => waContact.isMyContact),
-        waMessage.contacts.filter((waContact) => !waContact.isMyContact),
-      ]
-
-      const waContactsThatAreMineIds = waContactsThatAreMine.map(
-        (waContact) => waContact.id,
-      )
-
-      const myContacts = await this.contactsRepository.findManyByWAContactsIds({
-        waContactsIds: waContactsThatAreMineIds,
+      const response = await this.createContactsFromWaContacts.execute({
+        waContacts: waMessage.contacts,
       })
 
-      const contactsAteMineButNotExists = waContactsThatAreMine.filter(
-        (waContact) => {
-          return !myContacts.find((contact) =>
-            contact.waContactId.equals(waContact.id),
-          )
-        },
-      )
-
-      const contactsToCreate = waMyContactsThatAreNotMineYet
-        .concat(contactsAteMineButNotExists)
-        .map((waContact) => waContact.toContact())
-
-      await this.contactsRepository.createMany(contactsToCreate)
-
-      const contacts = myContacts.concat(contactsToCreate)
-
+      const contacts = response.value?.contacts ?? null
       message.set({ contacts })
+    }
+
+    if (waMessage.hasMentions()) {
+      const response = await this.createContactsFromWaContacts.execute({
+        waContacts: waMessage.mentions,
+      })
+
+      const mentions = response.value?.contacts ?? null
+      message.set({ mentions })
     }
 
     if (waMessage.hasMedia()) {

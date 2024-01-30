@@ -30,8 +30,13 @@ export class PrismaMessagesRepository implements MessagesRepository {
         },
       },
     },
-    quoted: true,
+    quoted: {
+      include: {
+        author: true,
+      },
+    },
     vCardsContacts: true,
+    mentions: true,
     revokedBy: true,
     senderBy: true,
   }

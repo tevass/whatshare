@@ -13,6 +13,7 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../../use-cases/messages/create-message-from-wa-message-use-case'
 import { HandleWAReceivedMessage } from '../handle-wa-received-message'
+import { CreateContactsFromWaContactsUseCase } from '../../use-cases/contacts/create-contacts-from-wa-contacts-use-case'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -23,6 +24,7 @@ let fakeChatEmitter: FakeChatEmitter
 let fakeUploader: FakeUploader
 let fakeDateAdapter: FakeDateAdapter
 
+let createContactsFromWaContacts: CreateContactsFromWaContactsUseCase
 let createMessageFromWAMessageUseCase: CreateMessageFromWAMessageUseCase
 
 let sut: HandleWAReceivedMessage
@@ -40,11 +42,15 @@ describe('HandleWAReceivedMessage', () => {
     fakeUploader = new FakeUploader()
     fakeDateAdapter = new FakeDateAdapter()
 
+    createContactsFromWaContacts = new CreateContactsFromWaContactsUseCase(
+      inMemoryContactsRepository,
+    )
+
     createMessageFromWAMessageUseCase = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
-      inMemoryContactsRepository,
       inMemoryChatsRepository,
       inMemoryMessageMediasRepository,
+      createContactsFromWaContacts,
       fakeUploader,
       fakeDateAdapter,
     )

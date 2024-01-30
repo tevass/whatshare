@@ -5,6 +5,7 @@ import { WAMessage } from '../../../entities/wa-message'
 export interface WAMessageSendTextParams {
   chatId: WAEntityID
   quotedId?: WAMessageID
+  mentionsIds?: WAEntityID[]
   body: string
 }
 

@@ -20,11 +20,16 @@ export class WWJSMessageClient implements WAMessageClient {
   }
 
   async sendText(params: WAMessageSendTextParams): Promise<WAMessage> {
-    const { body, chatId, quotedId } = params
+    const { body, chatId, quotedId, mentionsIds } = params
 
     const waChat = await this.getChatById(chatId)
     const waMessage = await waChat.sendMessage(body, {
       quotedMessageId: quotedId?.toString(),
+      ...(mentionsIds?.length && {
+        mentions: await Promise.all(
+          mentionsIds.map((id) => this.raw.getContactById(id.toString())),
+        ),
+      }),
     })
 
     return await WWJSMessageMapper.toDomain({ raw: waMessage, chatId })

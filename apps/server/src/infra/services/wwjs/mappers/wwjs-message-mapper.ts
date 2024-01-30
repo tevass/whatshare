@@ -7,12 +7,7 @@ import { Message } from 'whatsapp-web.js'
 import { WWJSMessageAckMapper } from './wwjs-message-ack-mapper'
 import { WWJSMessageMediaMapper } from './wwjs-message-media-mapper'
 import { WWJSMessageTypeMapper } from './wwjs-message-type-mapper'
-
-type MentionId = {
-  server: 'c.us'
-  user: string
-  _serialized: string
-}
+import { WWJSContactMapper } from './wwjs-contact-mapper'
 
 interface WAMessageToDomain {
   raw: Message
@@ -30,17 +25,31 @@ export class WWJSMessageMapper {
       chatId ??
       WAEntityID.createFromString((await raw.getChat()).id._serialized)
 
-    const [media, quoted] = await Promise.all([
+    const vCardContacts = raw.vCards.length
+      ? raw.vCards.map(WAContact.createFromVCard)
+      : null
+
+    const [media, quoted, mentions] = await Promise.all([
       raw.hasMedia ? raw.downloadMedia() : null,
       raw.hasQuotedMsg ? raw.getQuotedMessage() : null,
+      raw.mentionedIds.length ? raw.getMentions() : null,
     ])
 
-    const hasContacts = !!raw.vCards.length
+    const messageMedia = media ? WWJSMessageMediaMapper.toDomain(media) : null
 
-    const hasMentions = !!raw.mentionedIds.length
-    const mentionedIds = (raw.mentionedIds as MentionId[])
-      .map((id) => id._serialized)
-      .map(WAEntityID.createFromString)
+    const [quotedMessage, contactMentions] = await Promise.all([
+      quoted
+        ? WWJSMessageMapper.toDomain({
+            raw: quoted,
+            chatId: waChatId,
+          })
+        : null,
+      mentions?.length
+        ? Promise.all(
+            mentions.map((raw) => WWJSContactMapper.toDomain({ raw })),
+          )
+        : null,
+    ])
 
     return WAMessage.create(
       {
@@ -55,17 +64,10 @@ export class WWJSMessageMapper {
         timestamp: raw.timestamp,
         type: WWJSMessageTypeMapper.toDomain(raw.type),
         body: Text.nonEmptyOrNull(raw.body),
-        media: media ? WWJSMessageMediaMapper.toDomain(media) : null,
-        contacts: hasContacts
-          ? raw.vCards.map(WAContact.createFromVCard)
-          : null,
-        mentionedIds: hasMentions ? mentionedIds : null,
-        quoted: quoted
-          ? await WWJSMessageMapper.toDomain({
-              raw: quoted,
-              chatId: waChatId,
-            })
-          : null,
+        media: messageMedia,
+        contacts: vCardContacts,
+        mentions: contactMentions,
+        quoted: quotedMessage,
       },
       id,
     )

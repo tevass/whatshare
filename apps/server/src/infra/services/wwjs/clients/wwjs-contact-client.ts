@@ -23,7 +23,8 @@ export class WWJSContactClient implements WAContactClient {
     const allWaContacts = await this.raw.getContacts()
 
     const waContacts = allWaContacts.filter(
-      (waContact) => waContact.isMyContact || !waContact.isMe,
+      (waContact) =>
+        waContact.isMyContact || !waContact.isMe || waContact.isWAContact,
     )
 
     return await Promise.all(

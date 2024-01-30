@@ -66,7 +66,9 @@ export class InMemoryContactsRepository implements ContactsRepository {
     const { waContactsIds } = params
 
     const contacts = this.items.filter((item) =>
-      waContactsIds.includes(item.waContactId),
+      waContactsIds
+        .map((item) => item.toString())
+        .includes(item.waContactId.toString()),
     )
 
     return contacts

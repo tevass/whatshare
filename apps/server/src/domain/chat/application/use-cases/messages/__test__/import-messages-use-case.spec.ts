@@ -14,6 +14,7 @@ import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fak
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
+import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -23,6 +24,7 @@ let fakeWAClientManager: FakeWAClientManager
 let fakeUploader: FakeUploader
 let fakeDateAdapter: FakeDateAdapter
 
+let createContactsFromWaContacts: CreateContactsFromWaContactsUseCase
 let createMessageFromWAMessage: CreateMessageFromWAMessageUseCase
 
 let sut: ImportMessagesUseCase
@@ -39,11 +41,15 @@ describe('ImportMessagesUseCase', () => {
     fakeUploader = new FakeUploader()
     fakeDateAdapter = new FakeDateAdapter()
 
+    createContactsFromWaContacts = new CreateContactsFromWaContactsUseCase(
+      inMemoryContactsRepository,
+    )
+
     createMessageFromWAMessage = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
-      inMemoryContactsRepository,
       inMemoryChatsRepository,
       inMemoryMessageMediasRepository,
+      createContactsFromWaContacts,
       fakeUploader,
       fakeDateAdapter,
     )

@@ -77,6 +77,9 @@ model Contact {
 
   messages Message[] @relation("MessageAuthor")
 
+  mentionsMessagesIds String[]  @map("mentions_messages_ids") @db.ObjectId
+  mentions            Message[] @relation("MessageMentions", fields: [mentionsMessagesIds], references: [id])
+
   @@map("wa_contacts")
 }
 
@@ -136,9 +139,8 @@ enum MessageType {
 }
 
 type MessageBody {
-  header       String?
-  content      String
-  waMentionIds String[] @map("mentions_wa_ids")
+  header  String?
+  content String
 }
 
 model Message {
@@ -165,6 +167,9 @@ model Message {
 
   createdAt DateTime  @map("created_at")
   revokedAt DateTime? @map("revoked_at")
+
+  waMentionsIds String[]  @map("wa_mentions_ids") @db.ObjectId
+  mentions      Contact[] @relation("MessageMentions", fields: [waMentionsIds], references: [id])
 
   vCardsContactsIds String[]  @map("vcards_contacts_ids") @db.ObjectId
   vCardsContacts    Contact[] @relation("MessageVCardsContacts", fields: [vCardsContactsIds], references: [id])

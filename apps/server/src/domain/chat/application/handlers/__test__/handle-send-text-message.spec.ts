@@ -5,7 +5,6 @@ import { makeChat } from '@/test/factories/make-chat'
 import { makeContact } from '@/test/factories/make-contact'
 import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
-import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
@@ -166,20 +165,21 @@ describe('HandleSendTextMessage', () => {
     const chat = makeChat({ whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
-    const waMentionsIds = Array.from(Array(3)).map(() => makeWAEntityID())
+    const contacts = Array.from(Array(3)).map(() => makeContact())
+    inMemoryContactsRepository.items.push(...contacts)
 
     const response = await sut.execute({
       attendantId: attendant.id.toString(),
       body: faker.lorem.paragraph(),
       waChatId: chat.waChatId.toString(),
       whatsAppId: whatsAppId.toString(),
-      waMentionsIds: waMentionsIds.map((id) => id.toString()),
+      waMentionsIds: contacts.map((contact) => contact.waContactId.toString()),
     })
 
     expect(response.isRight()).toBe(true)
     if (response.isLeft()) return
 
     const { message } = response.value
-    expect(message.body?.hasMentions()).toBe(true)
+    expect(message.hasMentions()).toBe(true)
   })
 })

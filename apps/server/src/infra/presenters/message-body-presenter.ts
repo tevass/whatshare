@@ -6,14 +6,12 @@ export class MessageBodyPresenter {
   static toHttp(body: MessageBody): HttpMessageBody {
     return {
       raw: body.format(),
-      waMentionsIds: body.waMentionsIds?.map((id) => id.toString()) ?? null,
     }
   }
 
   static toWs(body: MessageBody): WsMessageBody {
     return {
       raw: body.format(),
-      waMentionsIds: body.waMentionsIds?.map((id) => id.toString()) ?? null,
     }
   }
 }
