@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Query,
-  UsePipes,
-} from '@nestjs/common'
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 import { FetchMessagesUseCase } from '@/domain/chat/application/use-cases/messages/fetch-messages-use-case'
 import {
@@ -15,27 +9,30 @@ import { FetchMessagesResponseBodySchema } from '@whatshare/http-schemas/respons
 import { MessagePresenter } from '@/infra/presenters/message-presenter'
 import { PaginationPresenter } from '@/infra/presenters/pagination-presenter'
 
+const queryValidationPipe = new ZodHttpValidationPipe(
+  fetchMessagesRequestQuerySchema,
+)
+
 @Controller('/wa/messages')
 export class FetchMessagesController {
   constructor(private fetchMessages: FetchMessagesUseCase) {}
 
   @Get()
-  @UsePipes(new ZodHttpValidationPipe(fetchMessagesRequestQuerySchema))
   async handle(
-    @Query() query: FetchMessagesRequestQuerySchema,
+    @Query(queryValidationPipe) query: FetchMessagesRequestQuerySchema,
   ): Promise<FetchMessagesResponseBodySchema> {
     const { chatId, page } = query
 
-    const response = await this.fetchMessages.execute({
+    const result = await this.fetchMessages.execute({
       chatId,
       page,
     })
 
-    if (response.isLeft()) {
+    if (result.isLeft()) {
       throw new BadRequestException()
     }
 
-    const { messages, pagination } = response.value
+    const { messages, pagination } = result.value
 
     return {
       messages: messages.map(MessagePresenter.toHttp),

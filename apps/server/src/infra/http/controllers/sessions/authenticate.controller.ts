@@ -11,7 +11,6 @@ import {
   Post,
   Res,
   UnauthorizedException,
-  UsePipes,
 } from '@nestjs/common'
 import {
   AuthenticateRequestBodySchema,
@@ -22,8 +21,12 @@ import type { Response } from 'express'
 import { Cookie } from '../../utils/cookie'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
-@Controller('/sessions')
+const bodyValidationPipe = new ZodHttpValidationPipe(
+  authenticateRequestBodySchema,
+)
+
 @Public()
+@Controller('/sessions')
 export class AuthenticateController {
   constructor(
     private env: EnvService,
@@ -32,9 +35,8 @@ export class AuthenticateController {
 
   @Post()
   @HttpCode(200)
-  @UsePipes(new ZodHttpValidationPipe(authenticateRequestBodySchema))
   async handle(
-    @Body() body: AuthenticateRequestBodySchema,
+    @Body(bodyValidationPipe) body: AuthenticateRequestBodySchema,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AuthenticatedResponseBodySchema> {
     const { email, password } = body

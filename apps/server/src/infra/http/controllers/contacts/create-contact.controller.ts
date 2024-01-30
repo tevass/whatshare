@@ -7,7 +7,6 @@ import {
   Controller,
   HttpCode,
   Post,
-  UsePipes,
 } from '@nestjs/common'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 import {
@@ -15,23 +14,26 @@ import {
   createContactRequestBodySchema,
 } from '@whatshare/http-schemas/request'
 
+const bodyValidationPipe = new ZodHttpValidationPipe(
+  createContactRequestBodySchema,
+)
+
 @Controller('/contacts')
 export class CreateContactController {
   constructor(private createContact: CreateContactUseCase) {}
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodHttpValidationPipe(createContactRequestBodySchema))
-  async handle(@Body() body: CreateContactRequestBodySchema) {
+  async handle(@Body(bodyValidationPipe) body: CreateContactRequestBodySchema) {
     const { name, number } = body
 
-    const response = await this.createContact.execute({
+    const result = await this.createContact.execute({
       name,
       number,
     })
 
-    if (response.isLeft()) {
-      const error = response.value
+    if (result.isLeft()) {
+      const error = result.value
 
       switch (error.constructor) {
         case ContactAlreadyExistsError:

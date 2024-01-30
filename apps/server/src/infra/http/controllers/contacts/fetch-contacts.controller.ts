@@ -1,11 +1,5 @@
 import { FetchContactsUseCase } from '@/domain/chat/application/use-cases/contacts/fetch-contacts-use-case'
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Query,
-  UsePipes,
-} from '@nestjs/common'
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
 import {
@@ -16,27 +10,30 @@ import { FetchContactsResponseBodySchema } from '@whatshare/http-schemas/respons
 import { ContactPresenter } from '@/infra/presenters/contact-presenter'
 import { PaginationPresenter } from '@/infra/presenters/pagination-presenter'
 
+const queryValidationPipe = new ZodHttpValidationPipe(
+  fetchContactsRequestQuerySchema,
+)
+
 @Controller('/contacts')
 export class FetchContactsController {
   constructor(private fetchContacts: FetchContactsUseCase) {}
 
   @Get()
-  @UsePipes(new ZodHttpValidationPipe(fetchContactsRequestQuerySchema))
   async handle(
-    @Query() query: FetchContactsRequestQuerySchema,
+    @Query(queryValidationPipe) query: FetchContactsRequestQuerySchema,
   ): Promise<FetchContactsResponseBodySchema> {
     const { page, query: searchableQuery } = query
 
-    const response = await this.fetchContacts.execute({
+    const result = await this.fetchContacts.execute({
       page,
       query: searchableQuery,
     })
 
-    if (response.isLeft()) {
+    if (result.isLeft()) {
       throw new BadRequestException()
     }
 
-    const { contacts, pagination } = response.value
+    const { contacts, pagination } = result.value
 
     return {
       contacts: contacts.map(ContactPresenter.toHttp),

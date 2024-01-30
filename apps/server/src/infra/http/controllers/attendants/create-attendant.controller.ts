@@ -7,7 +7,6 @@ import {
   Controller,
   HttpCode,
   Post,
-  UsePipes,
 } from '@nestjs/common'
 import {
   CreateAttendantRequestBodySchema,
@@ -15,17 +14,22 @@ import {
 } from '@whatshare/http-schemas/request'
 import { ZodHttpValidationPipe } from '../../pipes/zod-http-validation-pipe'
 
+const bodyValidationPipe = new ZodHttpValidationPipe(
+  createAttendantRequestBodySchema,
+)
+
 @Controller('/attendants')
 export class CreateAttendantController {
   constructor(private createAttendant: CreateAttendantUseCase) {}
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ZodHttpValidationPipe(createAttendantRequestBodySchema))
-  async handle(@Body() body: CreateAttendantRequestBodySchema) {
+  async handle(
+    @Body(bodyValidationPipe) body: CreateAttendantRequestBodySchema,
+  ) {
     const { displayName, email, name, password, whatsAppsIds } = body
 
-    const response = await this.createAttendant.execute({
+    const result = await this.createAttendant.execute({
       displayName,
       email,
       name,
@@ -33,8 +37,8 @@ export class CreateAttendantController {
       whatsAppsIds,
     })
 
-    if (response.isLeft()) {
-      const error = response.value
+    if (result.isLeft()) {
+      const error = result.value
 
       switch (error.constructor) {
         case AttendantAlreadyExistsError:
