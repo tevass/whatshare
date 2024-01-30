@@ -6,6 +6,7 @@ import { ContactAlreadyExistsError } from '../errors/contact-already-exists-erro
 import { ContactPhone } from '@/domain/chat/enterprise/entities/value-objects/contact-phone'
 import { WAClientManager } from '../../services/wa-client-manager'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { Injectable } from '@nestjs/common'
 
 interface UpdateContactUseCaseRequest {
   contactId: string
@@ -20,6 +21,7 @@ type UpdateContactUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class UpdateContactUseCase {
   constructor(
     private contactsRepository: ContactsRepository,
