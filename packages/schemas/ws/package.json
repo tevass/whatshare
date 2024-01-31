@@ -15,6 +15,10 @@
     "./namespace": {
       "import": "./dist/namespace.mjs",
       "default": "./dist/namespace.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.mjs",
+      "default": "./dist/types/index.js"
     }
   },
   "scripts": {

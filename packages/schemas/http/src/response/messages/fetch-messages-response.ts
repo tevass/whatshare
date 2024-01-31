@@ -1,8 +1,9 @@
-import { httpMessage, httpPagination } from '@/entities'
+import { httpPagination } from '@/entities'
+import { httpMessage } from '@/types'
 import { z } from 'zod'
 
 export const fetchMessagesResponseBodySchema = z.object({
-  messages: httpMessage.array(),
+  messages: z.array(httpMessage),
   pagination: httpPagination,
 })
 

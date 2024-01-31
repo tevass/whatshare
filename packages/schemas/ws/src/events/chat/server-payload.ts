@@ -1,8 +1,8 @@
-import { wsChat } from '@/entities'
+import { wsGroupChat, wsPrivateChat } from '@/entities'
 import { z } from 'zod'
 
 export const chatServerPayload = z.object({
-  chat: wsChat,
+  chat: z.union([wsPrivateChat, wsGroupChat]),
 })
 
 export type ChatServerPayload = z.infer<typeof chatServerPayload>

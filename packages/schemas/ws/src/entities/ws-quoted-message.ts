@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
-import { messageAck, messageType } from '@whatshare/core-schemas/enums'
+import { messageType } from '@whatshare/core-schemas/enums'
 import { mongoId, waEntityId, waMessageId } from '@whatshare/shared-schemas'
-import { wsContact } from './ws-contact'
+import { wsMessageMedia } from 'entities'
+import { wsAttendantProfile } from './ws-attendant-profile'
 import { wsMessageBody } from './ws-message-body'
 
 export const wsQuotedMessage = z.object({
@@ -11,17 +12,11 @@ export const wsQuotedMessage = z.object({
   waChatId: waEntityId,
   whatsAppId: mongoId,
   chatId: mongoId,
-  author: wsContact.nullable(),
-  ack: messageAck,
   type: messageType,
   body: wsMessageBody.nullable(),
-  isBroadcast: z.boolean(),
-  isForwarded: z.boolean(),
+  media: wsMessageMedia.nullable(),
   isFromMe: z.boolean(),
-  isStatus: z.boolean(),
-  isGif: z.boolean(),
-  createdAt: z.date(),
-  revokedAt: z.date().nullable(),
+  senderBy: wsAttendantProfile.nullable(),
 })
 
 export type WsQuotedMessage = z.infer<typeof wsQuotedMessage>

@@ -2,7 +2,7 @@ import { httpContact, httpPagination } from '@/entities'
 import { z } from 'zod'
 
 export const fetchContactsResponseBodySchema = z.object({
-  contacts: httpContact.array(),
+  contacts: z.array(httpContact),
   pagination: httpPagination,
 })
 

@@ -1,8 +1,9 @@
-import { httpChat, httpPagination } from '@/entities'
+import { httpPagination } from '@/entities'
+import { httpChat } from '@/types'
 import { z } from 'zod'
 
 export const fetchChatsResponseBodySchema = z.object({
-  chats: httpChat.array(),
+  chats: z.array(httpChat),
   pagination: httpPagination,
 })
 

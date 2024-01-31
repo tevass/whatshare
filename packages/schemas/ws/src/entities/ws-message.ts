@@ -6,7 +6,6 @@ import { wsAttendantProfile } from './ws-attendant-profile'
 import { wsContact } from './ws-contact'
 import { wsMessageBody } from './ws-message-body'
 import { wsMessageMedia } from './ws-message-media'
-import { wsQuotedMessage } from './ws-quoted-message'
 
 export const wsMessage = z.object({
   id: mongoId,
@@ -14,18 +13,13 @@ export const wsMessage = z.object({
   waChatId: waEntityId,
   whatsAppId: mongoId,
   chatId: mongoId,
-  author: wsContact.nullable(),
   ack: messageAck,
   type: messageType,
   body: wsMessageBody.nullable(),
-  contacts: wsContact.array().nullable(),
-  mentions: wsContact.array().nullable(),
   media: wsMessageMedia.nullable(),
-  quoted: wsQuotedMessage.nullable(),
-  isBroadcast: z.boolean(),
+  contacts: z.array(wsContact).nullable(),
   isForwarded: z.boolean(),
   isFromMe: z.boolean(),
-  isStatus: z.boolean(),
   isGif: z.boolean(),
   createdAt: z.date(),
   revokedAt: z.date().nullable(),

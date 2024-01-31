@@ -8,6 +8,7 @@ export const wsContact = z.object({
   name: z.string(),
   phone: z.string(),
   imageUrl: z.string().nullable(),
+  isWAClient: z.boolean(),
   isGroup: z.boolean(),
   isBusiness: z.boolean(),
   isEnterprise: z.boolean(),

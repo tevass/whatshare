@@ -6,7 +6,6 @@ import { httpAttendantProfile } from './http-attendant-profile'
 import { httpContact } from './http-contact'
 import { httpMessageBody } from './http-message-body'
 import { httpMessageMedia } from './http-message-media'
-import { httpQuotedMessage } from './http-quoted-message'
 
 export const httpMessage = z.object({
   id: mongoId,
@@ -14,18 +13,13 @@ export const httpMessage = z.object({
   waChatId: waEntityId,
   whatsAppId: mongoId,
   chatId: mongoId,
-  author: httpContact.nullable(),
   ack: messageAck,
   type: messageType,
   body: httpMessageBody.nullable(),
-  contacts: httpContact.array().nullable(),
-  mentions: httpContact.array().nullable(),
   media: httpMessageMedia.nullable(),
-  quoted: httpQuotedMessage.nullable(),
-  isBroadcast: z.boolean(),
+  contacts: z.array(httpContact).nullable(),
   isForwarded: z.boolean(),
   isFromMe: z.boolean(),
-  isStatus: z.boolean(),
   isGif: z.boolean(),
   createdAt: z.date(),
   revokedAt: z.date().nullable(),

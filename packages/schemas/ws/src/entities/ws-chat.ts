@@ -2,7 +2,6 @@ import { z } from 'zod'
 
 import { mongoId, waEntityId } from '@whatshare/shared-schemas'
 import { wsContact } from './ws-contact'
-import { wsMessage } from './ws-message'
 
 export const wsChat = z.object({
   id: mongoId,
@@ -11,7 +10,7 @@ export const wsChat = z.object({
   contact: wsContact,
   unreadCount: z.number(),
   lastInteraction: z.date().nullable(),
-  lastMessage: wsMessage.nullable(),
+  deletedAt: z.date().nullable(),
 })
 
 export type WsChat = z.infer<typeof wsChat>

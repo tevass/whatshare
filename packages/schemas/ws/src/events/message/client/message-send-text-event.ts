@@ -7,7 +7,7 @@ import { messageEventNames } from '../name'
 export const messageSendTextClientPayload = messageClientPayload.extend({
   body: z.string(),
   quotedId: waMessageId.optional(),
-  waMentionsIds: waEntityId.array().optional(),
+  waMentionsIds: z.array(waEntityId).optional(),
 })
 
 export type MessageSendTextClientPayload = z.infer<
