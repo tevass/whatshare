@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetOptional } from 'type-fest'
 import {
-  CreateQuotedMessageProps,
+  CreateQuotedMessageOptionalProps,
   QuotedMessage,
   QuotedMessageProps,
 } from './quoted-message'
@@ -18,7 +18,7 @@ export class PrivateQuotedMessage extends QuotedMessage<PrivateQuotedMessageProp
   static create(
     props: SetOptional<
       PrivateQuotedMessageProps,
-      keyof CreateQuotedMessageProps | 'isStatus'
+      keyof CreateQuotedMessageOptionalProps | 'isStatus'
     >,
     id?: UniqueEntityID,
   ) {

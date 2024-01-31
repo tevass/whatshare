@@ -21,6 +21,7 @@ export class PrismaContactMapper {
         isEnterprise: raw.isEnterprise,
         isGroup: raw.isGroup,
         isMyContact: raw.isMyContact,
+        isWAClient: raw.isWAClient,
       },
       new UniqueEntityID(raw.id),
     )
@@ -38,6 +39,7 @@ export class PrismaContactMapper {
       formattedPhone: contact.phone.formattedNumber,
       waContactId: contact.waContactId.toString(),
       imageUrl: contact.imageUrl,
+      isWAClient: contact.isWAClient,
     }
   }
 
@@ -52,6 +54,7 @@ export class PrismaContactMapper {
       formattedPhone: contact.phone.formattedNumber,
       waContactId: contact.waContactId.toString(),
       imageUrl: contact.imageUrl,
+      isWAClient: contact.isWAClient,
     }
   }
 }

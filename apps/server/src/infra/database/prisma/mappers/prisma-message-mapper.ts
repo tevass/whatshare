@@ -1,133 +1,42 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import {
+  PrismaPrivateMessageMapper,
+  RawPrivateMessage,
+} from './prisma-private-message-mapper'
+import {
+  PrismaGroupMessageMapper,
+  RawGroupMessage,
+} from './prisma-group-message-mapper'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { WAMessageID } from '@/core/entities/wa-message-id'
-import { Message } from '@/domain/chat/enterprise/entities/message'
-import { Prisma, Message as PrismaMessage } from '@prisma/client'
 import {
-  PrismaAttendantProfileMapper,
-  RawAttendantProfile,
-} from './prisma-attendant-profile-mapper'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
-import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
-import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
-import {
-  PrismaMessageMediaMapper,
-  RawMessageMedia,
-} from './prisma-message-media-mapper'
-import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
-import {
-  PrismaQuotedMessageMapper,
-  RawQuotedMessage,
-} from './prisma-quoted-message-mapper'
+  Message,
+  isPrivateMessage,
+} from '@/domain/chat/enterprise/types/message'
+import { Prisma } from '@prisma/client'
 
-export type RawMessage = PrismaMessage & {
-  vCardsContacts?: RawContact[]
-  mentions?: RawContact[]
-  author?: RawContact | null
-  media?: RawMessageMedia | null
-  senderBy?: RawAttendantProfile | null
-  revokedBy?: RawAttendantProfile | null
-  quoted?: RawQuotedMessage | null
+export type RawMessage = RawPrivateMessage | RawGroupMessage
+
+function isRawPrivateMessage(
+  message: RawMessage,
+): message is RawPrivateMessage {
+  return WAEntityID.createFromString(message.waChatId).type === 'c'
 }
 
 export class PrismaMessageMapper {
   static toDomain(raw: RawMessage): Message {
-    return Message.create(
-      {
-        chatId: new UniqueEntityID(raw.chatId),
-        waChatId: WAEntityID.createFromString(raw.waChatId),
-        waMessageId: WAMessageID.createFromString(raw.waMessageId),
-        whatsAppId: new UniqueEntityID(raw.whatsAppId),
-        type: PrismaMessageTypeMapper.toDomain(raw.type),
-        ack: PrismaMessageAckMapper.toDomain(raw.ack),
-        isBroadcast: raw.isBroadcast,
-        isForwarded: raw.isForwarded,
-        isFromMe: raw.isFromMe,
-        isGif: raw.isGif,
-        isStatus: raw.isStatus,
-        createdAt: raw.createdAt,
-        revokedAt: raw.revokedAt,
-        author: raw.author ? PrismaContactMapper.toDomain(raw.author) : null,
-        body: raw.body ? PrismaMessageBodyMapper.toDomain(raw.body) : null,
-        contacts: raw.vCardsContacts?.map(PrismaContactMapper.toDomain) ?? null,
-        mentions: raw.mentions?.map(PrismaContactMapper.toDomain) ?? null,
-        media: raw.media ? PrismaMessageMediaMapper.toDomain(raw.media) : null,
-        quoted: raw.quoted
-          ? PrismaQuotedMessageMapper.toDomain(raw.quoted)
-          : null,
-        revokedBy: raw.revokedBy
-          ? PrismaAttendantProfileMapper.toDomain(raw.revokedBy)
-          : null,
-        senderBy: raw.senderBy
-          ? PrismaAttendantProfileMapper.toDomain(raw.senderBy)
-          : null,
-      },
-      new UniqueEntityID(raw.id),
-    )
+    return isRawPrivateMessage(raw)
+      ? PrismaPrivateMessageMapper.toDomain(raw)
+      : PrismaGroupMessageMapper.toDomain(raw)
   }
 
   static toPrismaCreate(message: Message): Prisma.MessageUncheckedCreateInput {
-    return {
-      id: message.id.toString(),
-      authorId: message.author?.id.toString(),
-      chatId: message.chatId.toString(),
-      revokerId: message.revokedBy?.id.toString(),
-      senderId: message.senderBy?.id.toString(),
-      waChatId: message.waChatId.toString(),
-      waMessageId: message.waMessageId.toString(),
-      whatsAppId: message.whatsAppId.toString(),
-      ack: PrismaMessageAckMapper.toPrisma(message.ack),
-      type: PrismaMessageTypeMapper.toPrisma(message.type),
-      body: message.hasBody()
-        ? PrismaMessageBodyMapper.toPrisma(message.body)
-        : null,
-      isBroadcast: message.isBroadcast,
-      isForwarded: message.isForwarded,
-      isFromMe: message.isFromMe,
-      isGif: message.isGif,
-      isStatus: message.isStatus,
-      mediaId: message.media?.id.toString(),
-      quotedId: message.quoted?.id.toString(),
-      createdAt: message.createdAt,
-      revokedAt: message.revokedAt,
-      vCardsContactsIds: message.contacts?.map((contact) =>
-        contact.id.toString(),
-      ),
-      waMentionsIds: message.mentions?.map((contact) =>
-        contact.waContactId.toString(),
-      ),
-    }
+    return isPrivateMessage(message)
+      ? PrismaPrivateMessageMapper.toPrismaCreate(message)
+      : PrismaGroupMessageMapper.toPrismaCreate(message)
   }
 
   static toPrismaUpdate(message: Message): Prisma.MessageUncheckedUpdateInput {
-    return {
-      authorId: message.author?.id.toString(),
-      chatId: message.chatId.toString(),
-      revokerId: message.revokedBy?.id.toString(),
-      senderId: message.senderBy?.id.toString(),
-      waChatId: message.waChatId.toString(),
-      waMessageId: message.waMessageId.toString(),
-      whatsAppId: message.whatsAppId.toString(),
-      ack: PrismaMessageAckMapper.toPrisma(message.ack),
-      type: PrismaMessageTypeMapper.toPrisma(message.type),
-      body: message.hasBody()
-        ? PrismaMessageBodyMapper.toPrisma(message.body)
-        : null,
-      isBroadcast: message.isBroadcast,
-      isForwarded: message.isForwarded,
-      isFromMe: message.isFromMe,
-      isGif: message.isGif,
-      isStatus: message.isStatus,
-      mediaId: message.media?.id.toString(),
-      quotedId: message.quoted?.id.toString(),
-      createdAt: message.createdAt,
-      revokedAt: message.revokedAt,
-      vCardsContactsIds: message.contacts?.map((contact) =>
-        contact.id.toString(),
-      ),
-      waMentionsIds: message.mentions?.map((contact) =>
-        contact.waContactId.toString(),
-      ),
-    }
+    return isPrivateMessage(message)
+      ? PrismaPrivateMessageMapper.toPrismaUpdate(message)
+      : PrismaGroupMessageMapper.toPrismaUpdate(message)
   }
 }

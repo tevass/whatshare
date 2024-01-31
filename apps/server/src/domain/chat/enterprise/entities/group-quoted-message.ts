@@ -2,7 +2,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
 import {
-  CreateQuotedMessageProps,
+  CreateQuotedMessageOptionalProps,
   QuotedMessage,
   QuotedMessageProps,
 } from './quoted-message'
@@ -28,7 +28,7 @@ export class GroupQuotedMessage extends QuotedMessage<GroupQuotedMessageProps> {
   static create(
     props: SetOptional<
       GroupQuotedMessageProps,
-      keyof CreateQuotedMessageProps | 'mentions'
+      keyof CreateQuotedMessageOptionalProps | 'mentions'
     >,
     id?: UniqueEntityID,
   ) {

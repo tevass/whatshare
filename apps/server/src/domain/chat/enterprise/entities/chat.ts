@@ -14,16 +14,21 @@ export interface ChatProps<LastMessage = null> {
   deletedAt: Date | null
 }
 
-export type CreateChatProps = SetOptional<
+export type CreateChatOptionalProps = Pick<
   ChatProps,
   'lastInteraction' | 'lastMessage' | 'deletedAt'
+>
+
+export type CreateChatProps = SetOptional<
+  ChatProps,
+  keyof CreateChatOptionalProps
 >
 
 export abstract class Chat<
   Props extends ChatProps<Props['lastMessage']>,
 > extends Entity<Props> {
   protected constructor(
-    props: SetOptional<Props, keyof CreateChatProps>,
+    props: SetOptional<Props, keyof CreateChatOptionalProps>,
     id?: UniqueEntityID,
   ) {
     super(

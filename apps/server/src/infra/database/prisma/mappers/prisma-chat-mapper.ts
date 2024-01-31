@@ -1,55 +1,33 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { Chat } from '@/domain/chat/enterprise/entities/chat'
-import { Prisma, Chat as PrismaChat } from '@prisma/client'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
-import { PrismaMessageMapper, RawMessage } from './prisma-message-mapper'
+import { Prisma } from '@prisma/client'
+import { Chat, isPrivateChat } from '@/domain/chat/enterprise/types/chat'
+import {
+  PrismaPrivateChatMapper,
+  RawPrivateChat,
+} from './prisma-private-chat-mapper'
+import { PrismaGroupChatMapper, RawGroupChat } from './prisma-group-chat-mapper'
 
-type RawChat = PrismaChat & {
-  contact: RawContact
-  lastMessage?: RawMessage[]
+export type RawChat = RawPrivateChat | RawGroupChat
+
+function isRawPrivateChat(chat: RawChat): chat is RawPrivateChat {
+  return chat.isGroup
 }
 
 export class PrismaChatMapper {
   static toDomain(raw: RawChat): Chat {
-    return Chat.create(
-      {
-        unreadCount: raw.unreadCount,
-        waChatId: WAEntityID.createFromString(raw.waChatId),
-        whatsAppId: new UniqueEntityID(raw.whatsAppId),
-        deletedAt: raw.deletedAt,
-        lastInteraction: raw.lastInteraction,
-        contact: PrismaContactMapper.toDomain(raw.contact),
-        lastMessage: raw.lastMessage?.[0]
-          ? PrismaMessageMapper.toDomain(raw.lastMessage[0])
-          : null,
-      },
-      new UniqueEntityID(raw.id),
-    )
+    return isRawPrivateChat(raw)
+      ? PrismaPrivateChatMapper.toDomain(raw)
+      : PrismaGroupChatMapper.toDomain(raw)
   }
 
   static toPrismaCreate(chat: Chat): Prisma.ChatUncheckedCreateInput {
-    return {
-      id: chat.id.toString(),
-      contactId: chat.contact.id.toString(),
-      deletedAt: chat.deletedAt,
-      lastInteraction: chat.lastInteraction,
-      unreadCount: chat.unreadCount,
-      waChatId: chat.waChatId.toString(),
-      whatsAppId: chat.whatsAppId.toString(),
-      lastMessageId: chat.lastMessage?.id.toString(),
-    }
+    return isPrivateChat(chat)
+      ? PrismaPrivateChatMapper.toPrismaCreate(chat)
+      : PrismaGroupChatMapper.toPrismaCreate(chat)
   }
 
   static toPrismaUpdate(chat: Chat): Prisma.ChatUncheckedUpdateInput {
-    return {
-      contactId: chat.contact.id.toString(),
-      deletedAt: chat.deletedAt,
-      lastInteraction: chat.lastInteraction,
-      unreadCount: chat.unreadCount,
-      waChatId: chat.waChatId.toString(),
-      whatsAppId: chat.whatsAppId.toString(),
-      lastMessageId: chat.lastMessage?.id.toString(),
-    }
+    return isPrivateChat(chat)
+      ? PrismaPrivateChatMapper.toPrismaUpdate(chat)
+      : PrismaGroupChatMapper.toPrismaUpdate(chat)
   }
 }

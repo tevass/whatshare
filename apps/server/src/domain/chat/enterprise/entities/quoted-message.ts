@@ -21,7 +21,7 @@ export interface QuotedMessageProps {
   senderBy: AttendantProfile | null
 }
 
-export type CreateQuotedMessageProps = SetOptional<
+export type CreateQuotedMessageOptionalProps = Pick<
   QuotedMessageProps,
   'body' | 'media' | 'senderBy' | 'isFromMe'
 >
@@ -30,7 +30,7 @@ export abstract class QuotedMessage<
   Props extends QuotedMessageProps = QuotedMessageProps,
 > extends Entity<Props> {
   protected constructor(
-    props: SetOptional<Props, keyof CreateQuotedMessageProps>,
+    props: SetOptional<Props, keyof CreateQuotedMessageOptionalProps>,
     id?: UniqueEntityID,
   ) {
     super(

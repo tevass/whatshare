@@ -30,7 +30,7 @@ export interface MessageProps<Quoted = null> {
   revokedBy: AttendantProfile | null
 }
 
-export type CreateMessageProps = SetOptional<
+export type CreateMessageOptionalProps = Pick<
   MessageProps,
   | 'body'
   | 'contacts'
@@ -46,11 +46,16 @@ export type CreateMessageProps = SetOptional<
   | 'quoted'
 >
 
+export type CreateMessageProps = SetOptional<
+  MessageProps,
+  keyof CreateMessageOptionalProps
+>
+
 export abstract class Message<
   Props extends MessageProps<Props['quoted']>,
 > extends Entity<Props> {
   protected constructor(
-    props: SetOptional<Props, keyof CreateMessageProps>,
+    props: SetOptional<Props, keyof CreateMessageOptionalProps>,
     id?: UniqueEntityID,
   ) {
     super(

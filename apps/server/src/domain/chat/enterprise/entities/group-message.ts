@@ -3,7 +3,7 @@ import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { Contact } from './contact'
 import { GroupQuotedMessage } from './group-quoted-message'
-import { CreateMessageProps, Message, MessageProps } from './message'
+import { CreateMessageOptionalProps, Message, MessageProps } from './message'
 
 export interface GroupMessageProps extends MessageProps<GroupQuotedMessage> {
   author: Contact
@@ -47,7 +47,7 @@ export class GroupMessage extends Message<GroupMessageProps> {
   static create(
     props: SetOptional<
       GroupMessageProps,
-      keyof CreateMessageProps | 'mentions'
+      keyof CreateMessageOptionalProps | 'mentions'
     >,
     id?: UniqueEntityID,
   ) {
