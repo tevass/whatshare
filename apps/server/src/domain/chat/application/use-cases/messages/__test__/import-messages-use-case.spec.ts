@@ -1,5 +1,3 @@
-import { EitherChat } from '@/domain/chat/enterprise/entities/either-chat'
-import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { makePrivateChat } from '@/test/factories/make-private-chat'
 import { makePrivateMessage } from '@/test/factories/make-private-message'
@@ -70,7 +68,7 @@ describe('ImportMessagesUseCase', () => {
 
     const waChat = makeWAChat({ waClientId: whatsAppId })
     const chat = makePrivateChat({ whatsAppId, waChatId: waChat.id })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
     fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
@@ -82,14 +80,12 @@ describe('ImportMessagesUseCase', () => {
 
     inMemoryMessagesRepository.items.push(
       ...waMessages.slice(2).map((waMessage) =>
-        EitherMessage.create(
-          makePrivateMessage({
-            whatsAppId,
-            chatId: chat.id,
-            waChatId: waChat.id,
-            waMessageId: waMessage.id,
-          }),
-        ),
+        makePrivateMessage({
+          whatsAppId,
+          chatId: chat.id,
+          waChatId: waChat.id,
+          waMessageId: waMessage.id,
+        }),
       ),
     )
 

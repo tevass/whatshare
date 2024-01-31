@@ -2,7 +2,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
-import { EitherMessage } from '../../enterprise/entities/either-message'
+import { Message } from '../../enterprise/types/message'
 
 export interface MessagesRepositoryFindByIdParams {
   id: string
@@ -42,11 +42,11 @@ export interface MessagesRepositoryGetMessagesIdsByChatIdParams {
 export abstract class MessagesRepository {
   abstract findById(
     params: MessagesRepositoryFindByIdParams,
-  ): Promise<EitherMessage | null>
+  ): Promise<Message | null>
 
   abstract findManyByChatId(
     params: MessagesRepositoryFindManyByChatIdParams,
-  ): Promise<EitherMessage[]>
+  ): Promise<Message[]>
 
   abstract countManyByChatId(
     params: MessagesRepositoryCountManyByChatIdParams,
@@ -54,23 +54,23 @@ export abstract class MessagesRepository {
 
   abstract findByWAMessageId(
     params: MessagesRepositoryFindByWAMessageIdParams,
-  ): Promise<EitherMessage | null>
+  ): Promise<Message | null>
 
   abstract findManyByWAMessagesIds(
     params: MessagesRepositoryFindManyByWAMessagesIdsParams,
-  ): Promise<EitherMessage[]>
+  ): Promise<Message[]>
 
   abstract findToRevoke(
     params: MessagesRepositoryFindToRevokeParams,
-  ): Promise<EitherMessage | null>
+  ): Promise<Message | null>
 
-  abstract save(message: EitherMessage): Promise<void>
+  abstract save(message: Message): Promise<void>
 
   abstract deleteManyByChatId(
     params: MessagesRepositoryDeleteManyByChatIdParams,
   ): Promise<void>
 
-  abstract create(message: EitherMessage): Promise<void>
+  abstract create(message: Message): Promise<void>
 
   abstract getMessagesIdsByChatId(
     params: MessagesRepositoryGetMessagesIdsByChatIdParams,

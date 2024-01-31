@@ -1,6 +1,5 @@
 import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
 import { GroupMessage } from '@/domain/chat/enterprise/entities/group-message'
 import { GroupQuotedMessage } from '@/domain/chat/enterprise/entities/group-quoted-message'
 import { CreateMessageProps } from '@/domain/chat/enterprise/entities/message'
@@ -19,6 +18,8 @@ import { MessageMediasRepository } from '../../repositories/message-medias-repos
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
 import { CreateContactsFromWaContactsUseCase } from '../contacts/create-contacts-from-wa-contacts-use-case'
+import { Message, isGroupMessage } from '@/domain/chat/enterprise/types/message'
+import { isPrivateChat } from '@/domain/chat/enterprise/types/chat'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -29,7 +30,7 @@ interface CreateMessageFromWAMessageUseCaseRequest {
 type CreateMessageFromWAMessageUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    message: EitherMessage
+    message: Message
   }
 >
 
@@ -65,9 +66,9 @@ export class CreateMessageFromWAMessageUseCase {
       : null
 
     const messageProps: CreateMessageProps = {
-      waChatId: chat.value.waChatId,
-      whatsAppId: chat.value.whatsAppId,
-      chatId: chat.value.id,
+      waChatId: chat.waChatId,
+      whatsAppId: chat.whatsAppId,
+      chatId: chat.id,
       type: waMessage.type,
       waMessageId: waMessage.id,
       ack: waMessage.ack,
@@ -78,18 +79,16 @@ export class CreateMessageFromWAMessageUseCase {
       createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
     }
 
-    const message = EitherMessage.create(
-      chat.isPrivate()
-        ? PrivateMessage.create({
-            ...messageProps,
-            isStatus: waMessage.isStatus,
-            isBroadcast: waMessage.isBroadcast,
-          })
-        : GroupMessage.create({
-            ...messageProps,
-            author: chat.value.contact,
-          }),
-    )
+    const message = isPrivateChat(chat)
+      ? PrivateMessage.create({
+          ...messageProps,
+          isStatus: waMessage.isStatus,
+          isBroadcast: waMessage.isBroadcast,
+        })
+      : GroupMessage.create({
+          ...messageProps,
+          author: chat.contact,
+        })
 
     if (waMessage.hasQuoted()) {
       const waQuotedMessage = waMessage.quoted
@@ -99,8 +98,8 @@ export class CreateMessageFromWAMessageUseCase {
       })
 
       if (quotedMessage) {
-        message.value.set({
-          quoted: quotedMessage.value.toQuoted() as GroupQuotedMessage &
+        message.set({
+          quoted: quotedMessage.toQuoted() as GroupQuotedMessage &
             PrivateQuotedMessage,
         })
       }
@@ -111,17 +110,17 @@ export class CreateMessageFromWAMessageUseCase {
         waContacts: waMessage.contacts,
       })
 
-      const contacts = response.value?.contacts ?? null
-      message.value.set({ contacts })
+      const contacts = response?.value?.contacts ?? null
+      message.set({ contacts })
     }
 
-    if (waMessage.hasMentions() && message.isGroup()) {
+    if (waMessage.hasMentions() && isGroupMessage(message)) {
       const response = await this.createContactsFromWaContacts.execute({
         waContacts: waMessage.mentions,
       })
 
-      const mentions = response.value?.contacts ?? null
-      message.value.set({ mentions })
+      const mentions = response?.value?.contacts ?? null
+      message.set({ mentions })
     }
 
     if (waMessage.hasMedia()) {
@@ -142,12 +141,12 @@ export class CreateMessageFromWAMessageUseCase {
       const messageMedia = MessageMedia.create({
         mimetype,
         key: mediaKey,
-        messageId: message.value.id,
+        messageId: message.id,
       })
 
       await this.messageMediasRepository.create(messageMedia)
 
-      message.value.set({ media: messageMedia })
+      message.set({ media: messageMedia })
     }
 
     await this.messagesRepository.create(message)

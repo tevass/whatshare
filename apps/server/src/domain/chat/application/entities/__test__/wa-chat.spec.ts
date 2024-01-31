@@ -1,10 +1,10 @@
-import { EitherChat } from '@/domain/chat/enterprise/entities/either-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
 import dayjs from 'dayjs'
 import { WAChat } from '../wa-chat'
+import { PrivateChat } from '@/domain/chat/enterprise/entities/private-chat'
 
 describe('WAChat', () => {
   test('create', () => {
@@ -25,10 +25,10 @@ describe('WAChat', () => {
     expect(waChat).toBeTruthy()
   })
 
-  test('toEitherChat', () => {
+  test('toChat', () => {
     const waChat = WAChat.create(
       {
-        isGroup: faker.datatype.boolean(),
+        isGroup: false,
         name: faker.person.firstName(),
         timestamp: dayjs().unix(),
         unreadCount: faker.number.int({ max: 99 }),
@@ -40,6 +40,6 @@ describe('WAChat', () => {
       makeWAEntityID(),
     )
 
-    expect(waChat.toEitherChat()).toBeInstanceOf(EitherChat)
+    expect(waChat.toChat()).toBeInstanceOf(PrivateChat)
   })
 })

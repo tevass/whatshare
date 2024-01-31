@@ -6,7 +6,7 @@ import { faker } from '@faker-js/faker'
 import dayjs from 'dayjs'
 import { WAMessage } from '../wa-message'
 
-describe('WA', () => {
+describe('WAMessage', () => {
   test('create', () => {
     const waMessage = WAMessage.create(
       {

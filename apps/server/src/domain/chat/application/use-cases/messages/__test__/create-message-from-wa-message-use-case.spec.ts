@@ -1,5 +1,3 @@
-import { EitherChat } from '@/domain/chat/enterprise/entities/either-chat'
-import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
 import { GroupQuotedMessage } from '@/domain/chat/enterprise/entities/group-quoted-message'
 import { PrivateQuotedMessage } from '@/domain/chat/enterprise/entities/private-quoted-message'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
@@ -19,6 +17,10 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
+import {
+  isGroupMessage,
+  isPrivateMessage,
+} from '@/domain/chat/enterprise/types/message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -84,7 +86,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
       whatsAppId,
     })
 
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -97,8 +99,8 @@ describe('CreateMessageFromWAMessageUseCase', () => {
 
     const { message } = response.value
 
-    expect(message.value.hasContacts()).toBe(true)
-    expect(message.value.contacts).toHaveLength(3)
+    expect(message.hasContacts()).toBe(true)
+    expect(message.contacts).toHaveLength(3)
 
     expect(inMemoryContactsRepository.items).toHaveLength(4)
   })
@@ -118,7 +120,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makePrivateChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -131,8 +133,8 @@ describe('CreateMessageFromWAMessageUseCase', () => {
 
     const { message } = response.value
 
-    expect(message.value.hasMedia()).toBe(true)
-    expect(message.value.media).toBeTruthy()
+    expect(message.hasMedia()).toBe(true)
+    expect(message.media).toBeTruthy()
 
     expect(inMemoryMessageMediasRepository.items).toHaveLength(1)
     expect(fakeUploader.uploads).toHaveLength(1)
@@ -155,7 +157,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
       whatsAppId,
       deletedAt: new Date(),
     })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -205,7 +207,7 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makePrivateChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -218,7 +220,7 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
 
     const { message } = response.value
 
-    expect(message.isPrivate()).toBe(true)
+    expect(isPrivateMessage(message)).toBe(true)
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
   })
 
@@ -235,7 +237,7 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makePrivateChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const quotedMessage = makePrivateMessage({
       waMessageId: waQuotedMessage.id,
@@ -244,7 +246,7 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
       chatId: chat.id,
     })
 
-    inMemoryMessagesRepository.items.push(EitherMessage.create(quotedMessage))
+    inMemoryMessagesRepository.items.push(quotedMessage)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -256,8 +258,8 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
     if (response.isLeft()) return
 
     const { message } = response.value
-    expect(message.value.quoted).toBeInstanceOf(PrivateQuotedMessage)
-    expect(message.value.createdAt.toString()).toBe(
+    expect(message.quoted).toBeInstanceOf(PrivateQuotedMessage)
+    expect(message.createdAt.toString()).toBe(
       fakeDateAdapter.fromUnix(waMessage.timestamp).toDate().toString(),
     )
   })
@@ -300,7 +302,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -313,7 +315,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
 
     const { message } = response.value
 
-    expect(message.isGroup()).toBe(true)
+    expect(isGroupMessage(message)).toBe(true)
     expect(inMemoryMessagesRepository.items).toHaveLength(1)
   })
 
@@ -330,7 +332,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const quotedMessage = makeGroupMessage({
       waMessageId: waQuotedMessage.id,
@@ -339,7 +341,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
       chatId: chat.id,
     })
 
-    inMemoryMessagesRepository.items.push(EitherMessage.create(quotedMessage))
+    inMemoryMessagesRepository.items.push(quotedMessage)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -348,12 +350,12 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     })
 
     expect(response.isRight()).toBe(true)
-    if (response.isLeft() || response.value.message.isPrivate()) return
+    if (response.isLeft()) return
 
     const { message } = response.value
 
-    expect(message.value.quoted).toBeInstanceOf(GroupQuotedMessage)
-    expect(message.value.createdAt.toString()).toBe(
+    expect(message.quoted).toBeInstanceOf(GroupQuotedMessage)
+    expect(message.createdAt.toString()).toBe(
       fakeDateAdapter.fromUnix(waMessage.timestamp).toDate().toString(),
     )
   })
@@ -372,7 +374,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     inMemoryContactsRepository.items.push(contact)
 
     const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(EitherChat.create(chat))
+    inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
       waChatId: waChat.id.toString(),
@@ -381,15 +383,15 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     })
 
     expect(response.isRight()).toBe(true)
-    if (response.isLeft() || response.value.message.isPrivate()) return
+    if (response.isLeft()) return
 
     const { message } = response.value
 
-    if (message.isGroup()) {
-      expect(message.value.hasMentions()).toBe(true)
-      expect(message.value.mentions).toHaveLength(3)
-      expect(inMemoryContactsRepository.items).toHaveLength(4)
-      expect(inMemoryMessagesRepository.items).toHaveLength(1)
-    }
+    if (isPrivateMessage(message)) return
+
+    expect(message.hasMentions()).toBe(true)
+    expect(message.mentions).toHaveLength(3)
+    expect(inMemoryContactsRepository.items).toHaveLength(4)
+    expect(inMemoryMessagesRepository.items).toHaveLength(1)
   })
 })

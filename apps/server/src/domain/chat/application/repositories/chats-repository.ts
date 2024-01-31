@@ -1,6 +1,6 @@
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { PaginationParams } from '@/domain/shared/application/repositories/pagination-params'
-import { EitherChat } from '../../enterprise/entities/either-chat'
+import { Chat } from '../../enterprise/types/chat'
 
 export interface ChatsRepositoryFilters {
   deleted?: boolean
@@ -29,7 +29,7 @@ export interface ChatsRepositoryFindManyByWAChatsIdsParams {
 export abstract class ChatsRepository {
   abstract findManyByWhatsAppId(
     params: ChatsRepositoryFindManyByWhatsAppIdParams,
-  ): Promise<EitherChat[]>
+  ): Promise<Chat[]>
 
   abstract countManyByWhatsAppId(
     params: ChatsRepositoryCountManyByWhatsAppIdParams,
@@ -37,17 +37,17 @@ export abstract class ChatsRepository {
 
   abstract findByWAChatIdAndWhatsAppId(
     params: ChatsRepositoryFindByWAChatIdAndWhatsAppIdParams,
-  ): Promise<EitherChat | null>
+  ): Promise<Chat | null>
 
   abstract findManyByWAChatsIds(
     params: ChatsRepositoryFindManyByWAChatsIdsParams,
-  ): Promise<EitherChat[]>
+  ): Promise<Chat[]>
 
-  abstract save(chat: EitherChat): Promise<void>
+  abstract save(chat: Chat): Promise<void>
 
-  abstract softDelete(chat: EitherChat): Promise<void>
+  abstract softDelete(chat: Chat): Promise<void>
 
-  abstract create(chat: EitherChat): Promise<void>
+  abstract create(chat: Chat): Promise<void>
 
-  abstract createMany(chats: EitherChat[]): Promise<void>
+  abstract createMany(chats: Chat[]): Promise<void>
 }
