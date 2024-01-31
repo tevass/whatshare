@@ -10,7 +10,7 @@ import { Contact } from './contact'
 import { MessageMedia } from './message-media'
 import { MessageBody } from './value-objects/message-body'
 
-export interface MessageProps<Quoted> {
+export interface MessageProps<Quoted = null> {
   waMessageId: WAMessageID
   waChatId: WAEntityID
   whatsAppId: UniqueEntityID
@@ -30,25 +30,27 @@ export interface MessageProps<Quoted> {
   revokedBy: AttendantProfile | null
 }
 
-export class Message<
+export type CreateMessageProps = SetOptional<
+  MessageProps,
+  | 'body'
+  | 'contacts'
+  | 'media'
+  | 'revokedAt'
+  | 'senderBy'
+  | 'revokedBy'
+  | 'ack'
+  | 'createdAt'
+  | 'isForwarded'
+  | 'isFromMe'
+  | 'isGif'
+  | 'quoted'
+>
+
+export abstract class Message<
   Props extends MessageProps<Props['quoted']>,
 > extends Entity<Props> {
   protected constructor(
-    props: SetOptional<
-      Props,
-      | 'body'
-      | 'contacts'
-      | 'media'
-      | 'revokedAt'
-      | 'senderBy'
-      | 'revokedBy'
-      | 'ack'
-      | 'createdAt'
-      | 'isForwarded'
-      | 'isFromMe'
-      | 'isGif'
-      | 'quoted'
-    >,
+    props: SetOptional<Props, keyof CreateMessageProps>,
     id?: UniqueEntityID,
   ) {
     super(
@@ -185,4 +187,6 @@ export class Message<
   > {
     return !!this.revokedBy
   }
+
+  abstract toQuoted(): NonNullable<Props['quoted']>
 }

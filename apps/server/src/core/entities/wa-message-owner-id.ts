@@ -22,6 +22,10 @@ export class WAMessageOwnerID {
     return this.props.ref
   }
 
+  get itsSelf() {
+    return this.ref === 'out'
+  }
+
   toString() {
     const ownerIsNotEntityId = this.ref !== 'out'
 

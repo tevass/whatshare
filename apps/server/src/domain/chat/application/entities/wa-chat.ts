@@ -2,7 +2,10 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
-import { Chat } from '../../enterprise/entities/chat'
+import { CreateChatProps } from '../../enterprise/entities/chat'
+import { EitherChat } from '../../enterprise/entities/either-chat'
+import { GroupChat } from '../../enterprise/entities/group-chat'
+import { PrivateChat } from '../../enterprise/entities/private-chat'
 import { WAContact } from './wa-contact'
 import { WAMessage } from './wa-message'
 
@@ -15,6 +18,7 @@ export interface WAChatProps {
   lastMessage: WAMessage | null
   contact: WAContact
   waClientId: UniqueEntityID
+  participants: WAContact[] | null
 }
 
 export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
@@ -30,7 +34,7 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
     return this.props.unreadCount
   }
 
-  get isGroup() {
+  isGroup(): this is SetNonNullable<WAChatProps, 'participants'> {
     return this.props.isGroup
   }
 
@@ -54,13 +58,32 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
     return this.props.waClientId
   }
 
-  toChat() {
-    return Chat.create({
+  get participants() {
+    return this.props.participants
+  }
+
+  hasParticipants(): this is SetNonNullable<WAChatProps, 'participants'> {
+    return !!this.participants?.length
+  }
+
+  toEitherChat() {
+    const chatProps: CreateChatProps = {
       contact: this.contact.toContact(),
       waChatId: this.id,
       unreadCount: this.unreadCount,
       whatsAppId: this.waClientId,
-    })
+    }
+
+    return EitherChat.create(
+      this.isGroup()
+        ? GroupChat.create({
+            ...chatProps,
+            participants: this.participants.map((waContact) =>
+              waContact.toContact(),
+            ),
+          })
+        : PrivateChat.create({ ...chatProps }),
+    )
   }
 
   static create(

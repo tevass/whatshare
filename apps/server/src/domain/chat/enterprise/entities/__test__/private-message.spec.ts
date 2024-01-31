@@ -5,6 +5,7 @@ import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
 import { PrivateMessage } from '../private-message'
+import { PrivateQuotedMessage } from '../private-quoted-message'
 
 describe('PrivateMessage', () => {
   test('create', () => {
@@ -46,5 +47,21 @@ describe('PrivateMessage', () => {
         contacts: null,
       }),
     )
+  })
+
+  test('toQuoted', () => {
+    const message = PrivateMessage.create({
+      chatId: makeUniqueEntityID(),
+      type: 'image',
+      waChatId: makeWAEntityID(),
+      waMessageId: makeWAMessageID(),
+      whatsAppId: makeUniqueEntityID(),
+      contacts: [makeContact()],
+      senderBy: makeAttendantProfile(),
+      revokedBy: makeAttendantProfile(),
+      media: makeMessageMedia(),
+    })
+
+    expect(message.toQuoted()).toBeInstanceOf(PrivateQuotedMessage)
   })
 })

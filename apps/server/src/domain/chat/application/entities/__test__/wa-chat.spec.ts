@@ -1,4 +1,4 @@
-import { Chat } from '@/domain/chat/enterprise/entities/chat'
+import { EitherChat } from '@/domain/chat/enterprise/entities/either-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
@@ -17,6 +17,7 @@ describe('WAChat', () => {
         imageUrl: faker.internet.url(),
         contact: makeWAContact(),
         waClientId: makeUniqueEntityID(),
+        participants: Array.from(Array(2)).map(() => makeWAContact()),
       },
       makeWAEntityID(),
     )
@@ -24,7 +25,7 @@ describe('WAChat', () => {
     expect(waChat).toBeTruthy()
   })
 
-  test('toChat', () => {
+  test('toEitherChat', () => {
     const waChat = WAChat.create(
       {
         isGroup: faker.datatype.boolean(),
@@ -34,10 +35,11 @@ describe('WAChat', () => {
         imageUrl: faker.internet.url(),
         contact: makeWAContact(),
         waClientId: makeUniqueEntityID(),
+        participants: Array.from(Array(2)).map(() => makeWAContact()),
       },
       makeWAEntityID(),
     )
 
-    expect(waChat.toChat()).toBeInstanceOf(Chat)
+    expect(waChat.toEitherChat()).toBeInstanceOf(EitherChat)
   })
 })

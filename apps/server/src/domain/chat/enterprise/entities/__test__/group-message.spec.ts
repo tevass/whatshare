@@ -5,6 +5,7 @@ import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
 import { GroupMessage } from '../group-message'
+import { GroupQuotedMessage } from '../group-quoted-message'
 
 describe('GroupMessage', () => {
   test('create', () => {
@@ -50,5 +51,22 @@ describe('GroupMessage', () => {
         mentions: null,
       }),
     )
+  })
+
+  test('toQuoted', () => {
+    const message = GroupMessage.create({
+      chatId: makeUniqueEntityID(),
+      type: 'image',
+      waChatId: makeWAEntityID(),
+      waMessageId: makeWAMessageID(),
+      whatsAppId: makeUniqueEntityID(),
+      contacts: [makeContact()],
+      senderBy: makeAttendantProfile(),
+      revokedBy: makeAttendantProfile(),
+      media: makeMessageMedia(),
+      author: makeContact(),
+    })
+
+    expect(message.toQuoted()).toBeInstanceOf(GroupQuotedMessage)
   })
 })

@@ -1,6 +1,10 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetOptional } from 'type-fest'
-import { QuotedMessage, QuotedMessageProps } from './quoted-message'
+import {
+  CreateQuotedMessageProps,
+  QuotedMessage,
+  QuotedMessageProps,
+} from './quoted-message'
 
 export interface PrivateQuotedMessageProps extends QuotedMessageProps {
   isStatus: boolean
@@ -14,7 +18,7 @@ export class PrivateQuotedMessage extends QuotedMessage<PrivateQuotedMessageProp
   static create(
     props: SetOptional<
       PrivateQuotedMessageProps,
-      'body' | 'media' | 'senderBy' | 'isFromMe' | 'isStatus'
+      keyof CreateQuotedMessageProps | 'isStatus'
     >,
     id?: UniqueEntityID,
   ) {

@@ -18,6 +18,7 @@ export const makeWAChat = (
       imageUrl: faker.internet.url(),
       contact: makeWAContact({}, id),
       waClientId: makeUniqueEntityID(),
+      participants: Array.from(Array(2)).map(() => makeWAContact()),
       ...override,
     },
     id,

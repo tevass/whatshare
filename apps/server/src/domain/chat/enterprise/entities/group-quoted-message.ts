@@ -1,7 +1,11 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
-import { QuotedMessage, QuotedMessageProps } from './quoted-message'
+import {
+  CreateQuotedMessageProps,
+  QuotedMessage,
+  QuotedMessageProps,
+} from './quoted-message'
 
 export interface GroupQuotedMessageProps extends QuotedMessageProps {
   author: Contact
@@ -24,7 +28,7 @@ export class GroupQuotedMessage extends QuotedMessage<GroupQuotedMessageProps> {
   static create(
     props: SetOptional<
       GroupQuotedMessageProps,
-      'body' | 'media' | 'senderBy' | 'isFromMe' | 'mentions'
+      keyof CreateQuotedMessageProps | 'mentions'
     >,
     id?: UniqueEntityID,
   ) {

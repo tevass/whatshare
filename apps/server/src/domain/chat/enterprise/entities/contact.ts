@@ -10,6 +10,7 @@ export interface ContactProps {
   phone: ContactPhone
   imageUrl: string | null
 
+  isWAClient: boolean
   isGroup: boolean
   isBusiness: boolean
   isEnterprise: boolean
@@ -31,6 +32,10 @@ export class Contact extends Entity<ContactProps> {
 
   get imageUrl() {
     return this.props.imageUrl
+  }
+
+  get isWAClient() {
+    return this.props.isWAClient
   }
 
   get isGroup() {
@@ -56,7 +61,12 @@ export class Contact extends Entity<ContactProps> {
   static create(
     props: SetOptional<
       ContactProps,
-      'imageUrl' | 'isMyContact' | 'isBusiness' | 'isEnterprise' | 'isGroup'
+      | 'imageUrl'
+      | 'isMyContact'
+      | 'isBusiness'
+      | 'isEnterprise'
+      | 'isGroup'
+      | 'isWAClient'
     >,
     id?: UniqueEntityID,
   ) {
@@ -64,6 +74,7 @@ export class Contact extends Entity<ContactProps> {
       {
         ...props,
         imageUrl: props.imageUrl ?? null,
+        isWAClient: props.isWAClient ?? false,
         isMyContact: props.isMyContact ?? true,
         isBusiness: props.isBusiness ?? false,
         isEnterprise: props.isEnterprise ?? false,

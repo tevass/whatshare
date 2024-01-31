@@ -4,7 +4,7 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Contact } from './contact'
 
-export interface ChatProps<LastMessage> {
+export interface ChatProps<LastMessage = null> {
   waChatId: WAEntityID
   whatsAppId: UniqueEntityID
   contact: Contact
@@ -14,11 +14,16 @@ export interface ChatProps<LastMessage> {
   deletedAt: Date | null
 }
 
-export class Chat<
+export type CreateChatProps = SetOptional<
+  ChatProps,
+  'lastInteraction' | 'lastMessage' | 'deletedAt'
+>
+
+export abstract class Chat<
   Props extends ChatProps<Props['lastMessage']>,
 > extends Entity<Props> {
   protected constructor(
-    props: SetOptional<Props, 'lastInteraction' | 'lastMessage' | 'deletedAt'>,
+    props: SetOptional<Props, keyof CreateChatProps>,
     id?: UniqueEntityID,
   ) {
     super(

@@ -3,7 +3,7 @@ import type { SetNonNullable, SetOptional } from 'type-fest'
 import { AttendantProfile } from './attendant-profile'
 import { Contact } from './contact'
 import { GroupQuotedMessage } from './group-quoted-message'
-import { Message, MessageProps } from './message'
+import { CreateMessageProps, Message, MessageProps } from './message'
 
 export interface GroupMessageProps extends MessageProps<GroupQuotedMessage> {
   author: Contact
@@ -28,22 +28,26 @@ export class GroupMessage extends Message<GroupMessageProps> {
     this.set({ mentions: null })
   }
 
+  toQuoted(): GroupQuotedMessage {
+    return GroupQuotedMessage.create({
+      body: this.body,
+      chatId: this.chatId,
+      isFromMe: this.isFromMe,
+      media: this.media,
+      senderBy: this.senderBy,
+      type: this.type,
+      waChatId: this.waChatId,
+      waMessageId: this.waMessageId,
+      whatsAppId: this.whatsAppId,
+      author: this.author,
+      mentions: this.mentions,
+    })
+  }
+
   static create(
     props: SetOptional<
       GroupMessageProps,
-      | 'body'
-      | 'contacts'
-      | 'media'
-      | 'revokedAt'
-      | 'senderBy'
-      | 'revokedBy'
-      | 'ack'
-      | 'createdAt'
-      | 'isForwarded'
-      | 'isFromMe'
-      | 'isGif'
-      | 'quoted'
-      | 'mentions'
+      keyof CreateMessageProps | 'mentions'
     >,
     id?: UniqueEntityID,
   ) {

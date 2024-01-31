@@ -1,6 +1,6 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { Except, SetOptional } from 'type-fest'
-import { Chat, ChatProps } from './chat'
+import { Chat, ChatProps, CreateChatProps } from './chat'
 import { PrivateMessage } from './private-message'
 
 export interface PrivateChatProps extends ChatProps<PrivateMessage> {
@@ -15,7 +15,7 @@ export class PrivateChat extends Chat<PrivateChatProps> {
   static create(
     props: SetOptional<
       Except<PrivateChatProps, 'isGroup'>,
-      'lastInteraction' | 'lastMessage' | 'deletedAt'
+      keyof CreateChatProps
     >,
     id?: UniqueEntityID,
   ) {

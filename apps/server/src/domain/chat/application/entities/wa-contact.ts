@@ -15,6 +15,7 @@ export interface WAContactProps {
   isGroup: boolean
   isBusiness: boolean
   isEnterprise: boolean
+  isMe: boolean
   isMyContact: boolean
   imageUrl: string | null
 }
@@ -65,6 +66,10 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
     return this.props.isEnterprise
   }
 
+  get isMe() {
+    return this.props.isMe
+  }
+
   get isMyContact() {
     return this.props.isMyContact
   }
@@ -86,6 +91,7 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
       isEnterprise: this.isEnterprise,
       isGroup: this.isGroup,
       isMyContact: this.isMyContact,
+      isWAClient: this.isMe,
     })
   }
 
@@ -126,6 +132,7 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
         isEnterprise: isBusinessOrEnterprise,
         isMyContact: false,
         description,
+        isMe: false,
       },
       waContactId,
     )
@@ -134,7 +141,7 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
   static create(
     props: SetOptional<
       WAContactProps,
-      'name' | 'shortName' | 'pushName' | 'imageUrl' | 'description'
+      'name' | 'shortName' | 'pushName' | 'imageUrl' | 'description' | 'isMe'
     >,
     id: WAEntityID,
   ) {
@@ -146,6 +153,7 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
         pushName: props.pushName ?? null,
         imageUrl: props.imageUrl ?? null,
         description: props.description ?? null,
+        isMe: props.isMe ?? false,
       },
       id,
     )

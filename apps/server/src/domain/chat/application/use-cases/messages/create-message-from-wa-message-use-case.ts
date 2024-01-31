@@ -1,7 +1,12 @@
 import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { Message } from '@/domain/chat/enterprise/entities/message'
+import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
+import { GroupMessage } from '@/domain/chat/enterprise/entities/group-message'
+import { GroupQuotedMessage } from '@/domain/chat/enterprise/entities/group-quoted-message'
+import { CreateMessageProps } from '@/domain/chat/enterprise/entities/message'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
+import { PrivateMessage } from '@/domain/chat/enterprise/entities/private-message'
+import { PrivateQuotedMessage } from '@/domain/chat/enterprise/entities/private-quoted-message'
 import { MessageBody } from '@/domain/chat/enterprise/entities/value-objects/message-body'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
@@ -24,7 +29,7 @@ interface CreateMessageFromWAMessageUseCaseRequest {
 type CreateMessageFromWAMessageUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    message: Message
+    message: EitherMessage
   }
 >
 
@@ -59,22 +64,32 @@ export class CreateMessageFromWAMessageUseCase {
         })
       : null
 
-    const message = Message.create({
-      waChatId: chat.waChatId,
-      chatId: chat.id,
+    const messageProps: CreateMessageProps = {
+      waChatId: chat.value.waChatId,
+      whatsAppId: chat.value.whatsAppId,
+      chatId: chat.value.id,
       type: waMessage.type,
       waMessageId: waMessage.id,
-      whatsAppId: chat.whatsAppId,
       ack: waMessage.ack,
-      author: chat.contact,
       body: messageBody,
-      isBroadcast: waMessage.isBroadcast,
       isForwarded: waMessage.isForwarded,
       isGif: waMessage.isGif,
-      isStatus: waMessage.isStatus,
       isFromMe: waMessage.isFromMe,
       createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
-    })
+    }
+
+    const message = EitherMessage.create(
+      chat.isPrivate()
+        ? PrivateMessage.create({
+            ...messageProps,
+            isStatus: waMessage.isStatus,
+            isBroadcast: waMessage.isBroadcast,
+          })
+        : GroupMessage.create({
+            ...messageProps,
+            author: chat.value.contact,
+          }),
+    )
 
     if (waMessage.hasQuoted()) {
       const waQuotedMessage = waMessage.quoted
@@ -83,7 +98,12 @@ export class CreateMessageFromWAMessageUseCase {
         waMessageId: waQuotedMessage.id,
       })
 
-      if (quotedMessage) message.set({ quoted: quotedMessage })
+      if (quotedMessage) {
+        message.value.set({
+          quoted: quotedMessage.value.toQuoted() as GroupQuotedMessage &
+            PrivateQuotedMessage,
+        })
+      }
     }
 
     if (waMessage.hasContacts()) {
@@ -92,16 +112,16 @@ export class CreateMessageFromWAMessageUseCase {
       })
 
       const contacts = response.value?.contacts ?? null
-      message.set({ contacts })
+      message.value.set({ contacts })
     }
 
-    if (waMessage.hasMentions()) {
+    if (waMessage.hasMentions() && message.isGroup()) {
       const response = await this.createContactsFromWaContacts.execute({
         waContacts: waMessage.mentions,
       })
 
       const mentions = response.value?.contacts ?? null
-      message.set({ mentions })
+      message.value.set({ mentions })
     }
 
     if (waMessage.hasMedia()) {
@@ -122,12 +142,12 @@ export class CreateMessageFromWAMessageUseCase {
       const messageMedia = MessageMedia.create({
         mimetype,
         key: mediaKey,
-        messageId: message.id,
+        messageId: message.value.id,
       })
 
       await this.messageMediasRepository.create(messageMedia)
 
-      message.set({ media: messageMedia })
+      message.value.set({ media: messageMedia })
     }
 
     await this.messagesRepository.create(message)

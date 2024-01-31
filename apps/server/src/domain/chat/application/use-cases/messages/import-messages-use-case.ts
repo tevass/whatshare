@@ -2,7 +2,7 @@ import { Either, left, right } from '@/core/either'
 import { MessagesRepository } from '../../repositories/messages-repository'
 
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { Message } from '@/domain/chat/enterprise/entities/message'
+import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { ChatsRepository } from '../../repositories/chats-repository'
@@ -17,7 +17,7 @@ interface ImportMessagesUseCaseRequest {
 type ImportMessagesUseCaseResponse = Either<
   ResourceNotFoundError | WAClientNotFoundError,
   {
-    messages: Message[]
+    messages: EitherMessage[]
   }
 >
 
@@ -43,12 +43,16 @@ export class ImportMessagesUseCase {
       return left(new ResourceNotFoundError(`${waChatId}-${whatsAppId}`))
     }
 
-    const waClient = this.waManager.getConnectedClientById(chat.whatsAppId)
+    const waClient = this.waManager.getConnectedClientById(
+      chat.value.whatsAppId,
+    )
     if (!waClient) {
-      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
+      return left(new WAClientNotFoundError(chat.value.whatsAppId.toString()))
     }
 
-    const waMessages = await waClient.message.getManyByChatId(chat.waChatId)
+    const waMessages = await waClient.message.getManyByChatId(
+      chat.value.waChatId,
+    )
 
     const waMessagesIds = waMessages.map((waMessage) => waMessage.id)
 
@@ -60,7 +64,7 @@ export class ImportMessagesUseCase {
     const messagesToCreate = waMessages.filter(
       (waMessage) =>
         !messagesAlreadyExists.some((message) =>
-          message.waMessageId.equals(waMessage.id),
+          message.value.waMessageId.equals(waMessage.id),
         ),
     )
 
@@ -68,7 +72,7 @@ export class ImportMessagesUseCase {
       await Promise.all(
         messagesToCreate.map((waMessage) => {
           return this.createMessageFromWAMessage.execute({
-            waChatId: chat.waChatId.toString(),
+            waChatId: chat.value.waChatId.toString(),
             waMessage,
             whatsAppId,
           })
@@ -76,7 +80,7 @@ export class ImportMessagesUseCase {
       )
     )
       .filter((response) => response.isRight())
-      .map((response) => response.value.message as Message)
+      .map((response) => response.value.message as EitherMessage)
 
     return right({
       messages,

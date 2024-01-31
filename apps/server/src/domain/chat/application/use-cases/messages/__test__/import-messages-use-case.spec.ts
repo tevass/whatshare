@@ -1,6 +1,8 @@
+import { EitherChat } from '@/domain/chat/enterprise/entities/either-chat'
+import { EitherMessage } from '@/domain/chat/enterprise/entities/either-message'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
-import { makeChat } from '@/test/factories/make-chat'
-import { makeMessage } from '@/test/factories/make-message'
+import { makePrivateChat } from '@/test/factories/make-private-chat'
+import { makePrivateMessage } from '@/test/factories/make-private-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { makeWAMessage } from '@/test/factories/make-wa-message'
@@ -12,9 +14,9 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 import { FakeUploader } from '@/test/storage/fake-uploader'
+import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
 import { ImportMessagesUseCase } from '../import-messages-use-case'
-import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -67,8 +69,8 @@ describe('ImportMessagesUseCase', () => {
     const whatsApp = makeWhatsApp({ status: 'connected' }, whatsAppId)
 
     const waChat = makeWAChat({ waClientId: whatsAppId })
-    const chat = makeChat({ whatsAppId, waChatId: waChat.id })
-    inMemoryChatsRepository.items.push(chat)
+    const chat = makePrivateChat({ whatsAppId, waChatId: waChat.id })
+    inMemoryChatsRepository.items.push(EitherChat.create(chat))
 
     const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
     fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
@@ -80,12 +82,14 @@ describe('ImportMessagesUseCase', () => {
 
     inMemoryMessagesRepository.items.push(
       ...waMessages.slice(2).map((waMessage) =>
-        makeMessage({
-          whatsAppId,
-          chatId: chat.id,
-          waChatId: waChat.id,
-          waMessageId: waMessage.id,
-        }),
+        EitherMessage.create(
+          makePrivateMessage({
+            whatsAppId,
+            chatId: chat.id,
+            waChatId: waChat.id,
+            waMessageId: waMessage.id,
+          }),
+        ),
       ),
     )
 

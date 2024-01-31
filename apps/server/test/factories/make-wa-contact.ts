@@ -23,6 +23,7 @@ export const makeWAContact = (
       isEnterprise: faker.datatype.boolean(),
       isMyContact: faker.datatype.boolean(),
       description: faker.company.buzzPhrase(),
+      isMe: faker.datatype.boolean(),
       ...override,
     },
     id,
