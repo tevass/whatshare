@@ -1,5 +1,4 @@
 import { Either, left, right } from '@/core/either'
-import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
 import { ChatEmitter } from '../emitters/chat-emitter'
@@ -9,6 +8,11 @@ import { WAMessage } from '../entities/wa-message'
 import { ChatsRepository } from '../repositories/chats-repository'
 import { ContactsRepository } from '../repositories/contacts-repository'
 import { CreateMessageFromWAMessageUseCase } from '../use-cases/messages/create-message-from-wa-message-use-case'
+import { Message } from '../../enterprise/types/message'
+import { PrivateMessage } from '../../enterprise/entities/private-message'
+import { GroupMessage } from '../../enterprise/entities/group-message'
+import { CreateChatFromWaChatUseCase } from '../use-cases/chats/create-chat-from-wa-chat-use-case'
+import { ChatAlreadyExistsError } from '../use-cases/errors/chat-already-exists-error'
 
 interface HandleWAReceivedMessageRequest {
   waChat: WAChat
@@ -17,7 +21,7 @@ interface HandleWAReceivedMessageRequest {
 }
 
 type HandleWAReceivedMessageResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | ChatAlreadyExistsError,
   {
     message: Message
   }
@@ -28,6 +32,7 @@ export class HandleWAReceivedMessage {
   constructor(
     private contactsRepository: ContactsRepository,
     private chatsRepository: ChatsRepository,
+    private createChatFromWAChat: CreateChatFromWaChatUseCase,
     private createMessageFromWAMessage: CreateMessageFromWAMessageUseCase,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
@@ -51,17 +56,21 @@ export class HandleWAReceivedMessage {
       }),
     ])
 
-    const isPreviousActiveChat = !!chat && chat.isActive()
     if (!contact) {
       contact = waContact.toContact()
       await this.contactsRepository.create(contact)
     }
 
-    if (!chat) {
-      chat = waChat.toChat()
-      chat.set({ contact })
+    const isPreviousActiveChat = !!chat && chat.isActive()
 
-      await this.chatsRepository.create(chat)
+    if (!chat) {
+      const response = await this.createChatFromWAChat.execute({
+        waChat,
+      })
+
+      if (response.isLeft()) return left(response.value)
+
+      chat = response.value.chat
       this.chatEmitter.emitCreate({
         chat,
       })
@@ -79,7 +88,7 @@ export class HandleWAReceivedMessage {
 
     const { message } = response.value
 
-    chat.interact(message)
+    chat.interact(message as PrivateMessage & GroupMessage)
     await this.chatsRepository.save(chat)
 
     this.messageEmitter.emitCreate({

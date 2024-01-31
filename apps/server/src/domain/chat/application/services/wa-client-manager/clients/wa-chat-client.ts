@@ -8,5 +8,7 @@ export abstract class WAChatClient {
 
   abstract clearById(chatId: WAEntityID): Promise<void>
 
+  abstract getById(chatId: WAEntityID): Promise<WAChat>
+
   abstract getMany(): Promise<WAChat[]>
 }

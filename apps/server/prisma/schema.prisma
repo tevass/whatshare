@@ -58,48 +58,45 @@ model Attendant {
 }
 
 model Contact {
-  id             String  @id @default(auto()) @map("_id") @db.ObjectId
-  waContactId    String  @unique @map("wa_contact_id")
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  waContactId    String   @unique @map("wa_contact_id")
   name           String
-  phone          String  @unique
-  formattedPhone String  @map("formatted_phone")
-  imageUrl       String? @map("image_url")
+  phone          String   @unique
+  formattedPhone String   @map("formatted_phone")
+  imageUrl       String?  @map("image_url")
+  isGroup        Boolean  @map("is_group")
+  isBusiness     Boolean  @map("is_business")
+  isEnterprise   Boolean  @map("is_enterprise")
+  isMyContact    Boolean  @map("is_my_contact")
+  isWAClient     Boolean  @map("is_wa_client")
+  chatsIds       String[] @db.ObjectId
+  mentionsIds    String[] @map("mentions_messages_ids") @db.ObjectId
 
-  isGroup      Boolean @map("is_group")
-  isBusiness   Boolean @map("is_business")
-  isEnterprise Boolean @map("is_enterprise")
-  isMyContact  Boolean @map("is_my_contact")
-
-  chats Chat[]
-
-  vCardsMessagesIds String[]  @map("vcards_messages_ids") @db.ObjectId
-  vCardsMessages    Message[] @relation("MessageVCardsContacts", fields: [vCardsMessagesIds], references: [id])
-
+  groups   Chat[]    @relation("ChatGroupParticipants", fields: [chatsIds], references: [id])
+  chats    Chat[]    @relation("ChatContact")
   messages Message[] @relation("MessageAuthor")
-
-  mentionsMessagesIds String[]  @map("mentions_messages_ids") @db.ObjectId
-  mentions            Message[] @relation("MessageMentions", fields: [mentionsMessagesIds], references: [id])
+  mentions Message[] @relation("MessageMentions", fields: [mentionsIds], references: [id])
 
   @@map("wa_contacts")
 }
 
 model Chat {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  waChatId      String  @map("wa_chat_id")
-  whatsAppId    String  @map("whats_app_id") @db.ObjectId
-  contactId     String  @map("contact_id") @db.ObjectId
-  lastMessageId String? @map("last_message_id") @db.ObjectId
-
-  unreadCount Int @map("unread_count")
-
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  waChatId        String    @map("wa_chat_id")
+  whatsAppId      String    @map("whats_app_id") @db.ObjectId
+  contactId       String    @map("contact_id") @db.ObjectId
+  lastMessageId   String?   @map("last_message_id") @db.ObjectId
+  unreadCount     Int       @map("unread_count")
   lastInteraction DateTime? @map("last_interaction_date")
   deletedAt       DateTime? @map("deleted_at")
+  isGroup         Boolean   @map("is_group")
+  participantsIds String[]  @db.ObjectId
 
-  contact  Contact   @relation(fields: [contactId], references: [id])
-  whatsApp WhatsApp  @relation(fields: [whatsAppId], references: [id])
-  messages Message[] @relation("ChatMessages")
-
-  lastMessage Message[] @relation("LastMessage")
+  participants Contact[] @relation("ChatGroupParticipants", fields: [participantsIds], references: [id])
+  contact      Contact   @relation("ChatContact", fields: [contactId], references: [id])
+  whatsApp     WhatsApp  @relation(fields: [whatsAppId], references: [id])
+  messages     Message[] @relation("ChatMessages")
+  lastMessage  Message[] @relation("LastMessage")
 
   @@unique([waChatId, whatsAppId])
   @@index([waChatId])
@@ -144,35 +141,29 @@ type MessageBody {
 }
 
 model Message {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  waMessageId String  @unique @map("wa_message_id")
-  waChatId    String  @map("wa_chat_id")
-  whatsAppId  String  @map("whats_app_id") @db.ObjectId
-  chatId      String  @map("chat_id") @db.ObjectId
-  authorId    String? @map("author_id") @db.ObjectId
-  senderId    String? @map("sender_id") @db.ObjectId
-  revokerId   String? @map("revoker_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  waMessageId String       @unique @map("wa_message_id")
+  waChatId    String       @map("wa_chat_id")
+  whatsAppId  String       @map("whats_app_id") @db.ObjectId
+  chatId      String       @map("chat_id") @db.ObjectId
+  ack         MessageAck
+  type        MessageType
+  body        MessageBody?
+  senderId    String?      @map("sender_id") @db.ObjectId
+  revokerId   String?      @map("revoker_id") @db.ObjectId
+  mediaId     String?      @map("media_id") @db.ObjectId
+  quotedId    String?      @map("quoted_id") @db.ObjectId
+  authorId    String?      @map("author_id") @db.ObjectId
+  mentionsIds String[]     @db.ObjectId
 
-  ack      MessageAck
-  type     MessageType
-  body     MessageBody?
-  mediaId  String?      @map("media_id") @db.ObjectId
-  quotedId String?      @map("quoted_id") @db.ObjectId
-
-  isBroadcast Boolean @map("is_broadcast")
   isForwarded Boolean @map("is_forwarded")
   isFromMe    Boolean @map("is_from_me")
-  isStatus    Boolean @map("is_status")
   isGif       Boolean @map("is_gif")
+  isBroadcast Boolean @map("is_broadcast")
+  isStatus    Boolean @map("is_status")
 
   createdAt DateTime  @map("created_at")
   revokedAt DateTime? @map("revoked_at")
-
-  waMentionsIds String[]  @map("wa_mentions_ids") @db.ObjectId
-  mentions      Contact[] @relation("MessageMentions", fields: [waMentionsIds], references: [id])
-
-  vCardsContactsIds String[]  @map("vcards_contacts_ids") @db.ObjectId
-  vCardsContacts    Contact[] @relation("MessageVCardsContacts", fields: [vCardsContactsIds], references: [id])
 
   author     Contact?          @relation("MessageAuthor", fields: [authorId], references: [id])
   media      Media?            @relation(fields: [mediaId], references: [id])
@@ -183,6 +174,7 @@ model Message {
   chat       Chat              @relation("ChatMessages", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   whatsApp   WhatsApp          @relation(fields: [whatsAppId], references: [id])
   lastOfChat Chat?             @relation("LastMessage", fields: [chatId], references: [id])
+  mentions   Contact[]         @relation("MessageMentions", fields: [mentionsIds], references: [id])
 
   @@unique([waChatId, whatsAppId, createdAt])
   @@index([waChatId])

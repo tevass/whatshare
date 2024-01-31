@@ -1,7 +1,8 @@
-import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { FetchChatsUseCase } from '../fetch-chats-use-case'
+import { makePrivateChat } from '@/test/factories/make-private-chat'
+import { makeGroupChat } from '@/test/factories/make-group-chat'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 
@@ -18,7 +19,8 @@ describe('FetchChatsUseCase', () => {
     const whatsAppId = makeUniqueEntityID()
 
     inMemoryChatsRepository.items.push(
-      ...Array.from(Array(3)).map(() => makeChat({ whatsAppId })),
+      ...Array.from(Array(2)).map(() => makePrivateChat({ whatsAppId })),
+      makeGroupChat({ whatsAppId }),
     )
 
     const response = await sut.execute({

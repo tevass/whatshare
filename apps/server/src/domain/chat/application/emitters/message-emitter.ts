@@ -1,4 +1,4 @@
-import { Message } from '../../enterprise/entities/message'
+import { Message } from '../../enterprise/types/message'
 
 export interface MessageEmitterPayload {
   message: Message

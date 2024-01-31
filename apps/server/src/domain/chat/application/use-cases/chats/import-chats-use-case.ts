@@ -1,7 +1,7 @@
 import { Either, left, right } from '@/core/either'
-import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { ChatsRepository } from '../../repositories/chats-repository'
 
+import { Chat } from '@/domain/chat/enterprise/types/chat'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { ContactsRepository } from '../../repositories/contacts-repository'

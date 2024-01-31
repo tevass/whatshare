@@ -18,6 +18,10 @@ export class GroupChat extends Chat<GroupChatProps> {
     return this.props.participants
   }
 
+  interact(message: GroupMessage): void {
+    super.interact(message)
+  }
+
   static create(
     props: SetOptional<
       Except<GroupChatProps, 'isGroup'>,

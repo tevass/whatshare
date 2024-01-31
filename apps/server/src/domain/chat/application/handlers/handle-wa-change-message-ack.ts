@@ -1,5 +1,4 @@
 import { Either, left, right } from '@/core/either'
-import { Message } from '@/domain/chat/enterprise/entities/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { MessageAck } from '@whatshare/core-schemas/enums'
 import { MessageEmitter } from '../emitters/message-emitter'
@@ -7,6 +6,7 @@ import { WAMessage } from '../entities/wa-message'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { Injectable } from '@nestjs/common'
 import { DateAdapter } from '../adapters/date-adapter'
+import { Message } from '../../enterprise/types/message'
 
 interface HandleWAChangeMessageAckRequest {
   waMessage: WAMessage

@@ -12,6 +12,10 @@ export class PrivateChat extends Chat<PrivateChatProps> {
     return this.props.isGroup
   }
 
+  interact(message: PrivateMessage): void {
+    super.interact(message)
+  }
+
   static create(
     props: SetOptional<
       Except<PrivateChatProps, 'isGroup'>,

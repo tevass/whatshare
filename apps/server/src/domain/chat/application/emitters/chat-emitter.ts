@@ -1,4 +1,4 @@
-import { Chat } from '../../enterprise/entities/chat'
+import { Chat } from '../../enterprise/types/chat'
 
 export interface ChatEmitterPayload {
   chat: Chat

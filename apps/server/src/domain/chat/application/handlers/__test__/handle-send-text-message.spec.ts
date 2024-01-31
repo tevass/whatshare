@@ -1,9 +1,7 @@
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
 import { makeAttendant } from '@/test/factories/make-attendant'
-import { makeChat } from '@/test/factories/make-chat'
 import { makeContact } from '@/test/factories/make-contact'
-import { makeMessage } from '@/test/factories/make-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
@@ -15,6 +13,11 @@ import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
 import { faker } from '@faker-js/faker'
 import { HandleSendTextMessage } from '../handle-send-text-message'
+import { makePrivateChat } from '@/test/factories/make-private-chat'
+import { makePrivateMessage } from '@/test/factories/make-private-message'
+import { makeGroupChat } from '@/test/factories/make-group-chat'
+import { isPrivateMessage } from '@/domain/chat/enterprise/types/message'
+import { makeWAChat } from '@/test/factories/make-wa-chat'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
@@ -62,7 +65,7 @@ describe('HandleSendTextMessage', () => {
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)
 
-    const chat = makeChat({ whatsAppId })
+    const chat = makePrivateChat({ whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
@@ -95,10 +98,10 @@ describe('HandleSendTextMessage', () => {
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)
 
-    const chat = makeChat({ whatsAppId })
+    const chat = makePrivateChat({ whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
-    const quotedMessage = makeMessage({
+    const quotedMessage = makePrivateMessage({
       chatId: chat.id,
       waChatId: chat.waChatId,
       whatsAppId,
@@ -135,6 +138,10 @@ describe('HandleSendTextMessage', () => {
     const contact = makeContact()
     inMemoryContactsRepository.items.push(contact)
 
+    fakeWAClient.chat.chats.push(
+      makeWAChat({ waClientId: whatsAppId }, contact.waContactId),
+    )
+
     const response = await sut.execute({
       attendantId: attendant.id.toString(),
       body: faker.lorem.paragraph(),
@@ -162,7 +169,7 @@ describe('HandleSendTextMessage', () => {
     const attendant = makeAttendant()
     inMemoryAttendantsRepository.items.push(attendant)
 
-    const chat = makeChat({ whatsAppId })
+    const chat = makeGroupChat({ whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
     const contacts = Array.from(Array(3)).map(() => makeContact())
@@ -180,6 +187,8 @@ describe('HandleSendTextMessage', () => {
     if (response.isLeft()) return
 
     const { message } = response.value
+    if (isPrivateMessage(message)) return
+
     expect(message.hasMentions()).toBe(true)
   })
 })

@@ -1,6 +1,5 @@
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeMessageEmitter } from '@/test/emitters/fake-message-emitter'
-import { makeMessage } from '@/test/factories/make-message'
 import { makeMessageMedia } from '@/test/factories/make-message-media'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
@@ -9,6 +8,7 @@ import { InMemoryMessageMediasRepository } from '@/test/repositories/in-memory-m
 import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messages-repository'
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { HandleWARevokeMessage } from '../handle-wa-revoke-message'
+import { makePrivateMessage } from '@/test/factories/make-private-message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryMessageMediasRepository: InMemoryMessageMediasRepository
@@ -44,7 +44,7 @@ describe('HandleWARevokeMessage', () => {
     const waMessage = makeWAMessage()
 
     inMemoryMessagesRepository.items.push(
-      makeMessage({
+      makePrivateMessage({
         waChatId,
         whatsAppId,
         waMessageId: waMessage.id,
@@ -75,7 +75,7 @@ describe('HandleWARevokeMessage', () => {
     const messageMedia = makeMessageMedia()
     inMemoryMessageMediasRepository.items.push(messageMedia)
 
-    const messageToRevoke = makeMessage({
+    const messageToRevoke = makePrivateMessage({
       waChatId,
       whatsAppId,
       waMessageId: waMessage.id,

@@ -18,6 +18,13 @@ export class FakeWAChatClient implements WAChatClient {
     this.values.push(chatId.toString())
   }
 
+  async getById(chatId: WAEntityID): Promise<WAChat> {
+    const item = this.chats.find((item) => item.id.equals(chatId))
+    if (!item) throw new Error(`Not found "${chatId.toString()}"`)
+
+    return item
+  }
+
   async getMany(): Promise<WAChat[]> {
     return this.chats
   }

@@ -1,5 +1,4 @@
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
-import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
@@ -7,6 +6,7 @@ import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-rep
 import { HandleReadChat } from '../handle-read-chat'
 import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
+import { makePrivateChat } from '@/test/factories/make-private-chat'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let fakeWAClientManager: FakeWAClientManager
@@ -35,7 +35,9 @@ describe('HandleReadChat', () => {
     fakeWAClientManager.clients.set(whatsAppId.toString(), fakeWAClient)
 
     const waChatId = makeWAEntityID()
-    inMemoryChatsRepository.items.push(makeChat({ whatsAppId, waChatId }))
+    inMemoryChatsRepository.items.push(
+      makePrivateChat({ whatsAppId, waChatId }),
+    )
 
     const response = await sut.execute({
       waChatId: waChatId.toString(),

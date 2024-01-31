@@ -1,9 +1,9 @@
 import { FakeChatEmitter } from '@/test/emitters/fake-chat-emitter'
-import { makeChat } from '@/test/factories/make-chat'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
 import { HandleWAChangeUnreadCount } from '../handle-wa-change-chat-unread-count'
+import { makePrivateChat } from '@/test/factories/make-private-chat'
 
 let inMemoryChatsRepository: InMemoryChatsRepository
 let fakeChatEmitter: FakeChatEmitter
@@ -29,7 +29,7 @@ describe('WAChangeChatUnreadHandler', () => {
     })
 
     inMemoryChatsRepository.items.push(
-      makeChat({ waChatId: waChat.id, whatsAppId }),
+      makePrivateChat({ waChatId: waChat.id, whatsAppId }),
     )
 
     const response = await sut.execute({

@@ -4,8 +4,6 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
-import { Chat } from '../../enterprise/entities/chat'
-import { Message } from '../../enterprise/entities/message'
 import { MessageBody } from '../../enterprise/entities/value-objects/message-body'
 import { ChatEmitter } from '../emitters/chat-emitter'
 import { MessageEmitter } from '../emitters/message-emitter'
@@ -15,6 +13,13 @@ import { ContactsRepository } from '../repositories/contacts-repository'
 import { MessagesRepository } from '../repositories/messages-repository'
 import { WAClientManager } from '../services/wa-client-manager'
 import { WAClientNotFoundError } from './errors/wa-client-not-found-error'
+import { Message } from '../../enterprise/types/message'
+import { CreateMessageProps } from '../../enterprise/entities/message'
+import { isPrivateChat } from '../../enterprise/types/chat'
+import { PrivateMessage } from '../../enterprise/entities/private-message'
+import { GroupMessage } from '../../enterprise/entities/group-message'
+import { GroupQuotedMessage } from '../../enterprise/entities/group-quoted-message'
+import { PrivateQuotedMessage } from '../../enterprise/entities/private-quoted-message'
 
 interface HandleSendTextMessageRequest {
   waChatId: string
@@ -50,6 +55,12 @@ export class HandleSendTextMessage {
     const { waChatId, attendantId, body, quotedId, whatsAppId, waMentionsIds } =
       request
 
+    const waClientId = new UniqueEntityID(whatsAppId)
+    const waClient = this.waManager.getConnectedClientById(waClientId)
+    if (!waClient) {
+      return left(new WAClientNotFoundError(waClientId.toString()))
+    }
+
     const [attendant, quotedMessage, mentions] = await Promise.all([
       this.attendantsRepository.findById({ id: attendantId }),
       quotedId
@@ -80,23 +91,16 @@ export class HandleSendTextMessage {
         return left(new ResourceNotFoundError(waChatId))
       }
 
-      chat = Chat.create({
-        contact,
-        unreadCount: 0,
-        waChatId: waChatEntityId,
-        whatsAppId: new UniqueEntityID(whatsAppId),
-      })
+      const waChat = await waClient.chat.getById(
+        WAEntityID.createFromString(waChatId),
+      )
 
+      chat = waChat.toChat()
       await this.chatsRepository.create(chat)
     }
 
     if (!attendant) {
       return left(new ResourceNotFoundError(attendantId))
-    }
-
-    const waClient = this.waManager.getConnectedClientById(chat.whatsAppId)
-    if (!waClient) {
-      return left(new WAClientNotFoundError(chat.whatsAppId.toString()))
     }
 
     const tmpWAMessageId = new WAMessageID({
@@ -110,23 +114,36 @@ export class HandleSendTextMessage {
       header: attendant.profile.displayName,
     })
 
-    const message = Message.create({
-      mentions,
+    const messageProps: CreateMessageProps = {
       type: 'text',
       isFromMe: true,
       body: messageBody,
-      quoted: quotedMessage,
       waChatId: chat.waChatId,
       chatId: chat.id,
       waMessageId: tmpWAMessageId,
       whatsAppId: chat.whatsAppId,
       senderBy: attendant.profile,
+    }
+
+    const message = isPrivateChat(chat)
+      ? PrivateMessage.create({
+          ...messageProps,
+        })
+      : GroupMessage.create({
+          ...messageProps,
+          author: chat.contact,
+          mentions,
+        })
+
+    message.set({
+      quoted: quotedMessage?.toQuoted() as PrivateQuotedMessage &
+        GroupQuotedMessage,
     })
 
     await this.messagesRepository.create(message)
     const isPreviousActiveChat = chat.isActive()
 
-    chat.interact(message)
+    chat.interact(message as GroupMessage & PrivateMessage)
     await this.chatsRepository.save(chat)
 
     this.messageEmitter.emitCreate({
