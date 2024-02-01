@@ -106,4 +106,8 @@ export class InMemoryContactsRepository implements ContactsRepository {
 
     this.items[itemIndex] = contact
   }
+
+  async saveMany(contacts: Contact[]): Promise<void> {
+    await Promise.all(contacts.map((contact) => this.save(contact)))
+  }
 }

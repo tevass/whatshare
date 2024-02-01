@@ -61,4 +61,6 @@ export abstract class ContactsRepository {
   abstract createMany(contact: Contact[]): Promise<void>
 
   abstract save(contact: Contact): Promise<void>
+
+  abstract saveMany(contacts: Contact[]): Promise<void>
 }

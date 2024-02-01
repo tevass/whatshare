@@ -3,6 +3,7 @@ import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { WAContact } from '../../entities/wa-contact'
 import { Injectable } from '@nestjs/common'
+import { ContactPhone } from '@/domain/chat/enterprise/entities/value-objects/contact-phone'
 
 interface CreateContactsFromWaContactsUseCaseRequest {
   waContacts: WAContact[]
@@ -37,7 +38,23 @@ export class CreateContactsFromWaContactsUseCase {
       waContactsIds: waContactsThatAreMineIds,
     })
 
-    const contactsAteMineButNotExists = waContactsThatAreMine.filter(
+    myContacts.forEach((contact) => {
+      const waContact = waContactsThatAreMine.find((waContact) =>
+        waContact.id.equals(contact.waContactId),
+      )
+
+      if (!waContact) return
+
+      contact.set({
+        imageUrl: waContact.imageUrl,
+        phone: ContactPhone.create({
+          number: waContact.number,
+          formattedNumber: waContact.formattedNumber,
+        }),
+      })
+    })
+
+    const contactsAreMineButNotExists = waContactsThatAreMine.filter(
       (waContact) => {
         return !myContacts.find((contact) =>
           contact.waContactId.equals(waContact.id),
@@ -46,10 +63,13 @@ export class CreateContactsFromWaContactsUseCase {
     )
 
     const contactsToCreate = waMyContactsThatAreNotMineYet
-      .concat(contactsAteMineButNotExists)
+      .concat(contactsAreMineButNotExists)
       .map((waContact) => waContact.toContact())
 
-    await this.contactsRepository.createMany(contactsToCreate)
+    await Promise.all([
+      this.contactsRepository.createMany(contactsToCreate),
+      this.contactsRepository.saveMany(myContacts),
+    ])
 
     const contacts = myContacts.concat(contactsToCreate)
 
