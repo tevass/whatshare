@@ -15,6 +15,10 @@
     "./response": {
       "import": "./dist/response/index.mjs",
       "require": "./dist/response/index.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js"
     }
   },
   "scripts": {

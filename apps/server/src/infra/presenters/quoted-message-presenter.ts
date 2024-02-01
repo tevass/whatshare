@@ -1,55 +1,22 @@
-import { Message } from '@/domain/chat/enterprise/entities/message'
-import { HttpQuotedMessage } from '@whatshare/http-schemas/entities'
-import { WsQuotedMessage } from '@whatshare/ws-schemas/entities'
-import { ContactPresenter } from './contact-presenter'
-import { MessageBodyPresenter } from './message-body-presenter'
+import {
+  QuotedMessage,
+  isPrivateQuotedMessage,
+} from '@/domain/chat/enterprise/types/quoted-message'
+import { HttpQuotedMessage } from '@whatshare/http-schemas/types'
+import { WsQuotedMessage } from '@whatshare/ws-schemas/types'
+import { GroupQuotedMessagePresenter } from './group-quoted-message-presenter'
+import { PrivateQuotedMessagePresenter } from './private-quoted-message-presenter'
 
 export class QuotedMessagePresenter {
-  static toHttp(message: Message): HttpQuotedMessage {
-    return {
-      id: message.id.toString(),
-      chatId: message.chatId.toString(),
-      waChatId: message.waChatId.toString(),
-      whatsAppId: message.whatsAppId.toString(),
-      waMessageId: message.waMessageId.toString(),
-      ack: message.ack,
-      type: message.type,
-      author: message.hasAuthor()
-        ? ContactPresenter.toHttp(message.author)
-        : null,
-      body: message.hasBody()
-        ? MessageBodyPresenter.toHttp(message.body)
-        : null,
-      isBroadcast: message.isBroadcast,
-      isForwarded: message.isForwarded,
-      isFromMe: message.isFromMe,
-      isGif: message.isGif,
-      isStatus: message.isStatus,
-      createdAt: message.createdAt,
-      revokedAt: message.revokedAt,
-    }
+  static toHttp(message: QuotedMessage): HttpQuotedMessage {
+    return isPrivateQuotedMessage(message)
+      ? PrivateQuotedMessagePresenter.toHttp(message)
+      : GroupQuotedMessagePresenter.toHttp(message)
   }
 
-  static toWs(message: Message): WsQuotedMessage {
-    return {
-      id: message.id.toString(),
-      chatId: message.chatId.toString(),
-      waChatId: message.waChatId.toString(),
-      whatsAppId: message.whatsAppId.toString(),
-      waMessageId: message.waMessageId.toString(),
-      ack: message.ack,
-      type: message.type,
-      author: message.hasAuthor()
-        ? ContactPresenter.toWs(message.author)
-        : null,
-      body: message.hasBody() ? MessageBodyPresenter.toWs(message.body) : null,
-      isBroadcast: message.isBroadcast,
-      isForwarded: message.isForwarded,
-      isFromMe: message.isFromMe,
-      isGif: message.isGif,
-      isStatus: message.isStatus,
-      createdAt: message.createdAt,
-      revokedAt: message.revokedAt,
-    }
+  static toWs(message: QuotedMessage): WsQuotedMessage {
+    return isPrivateQuotedMessage(message)
+      ? PrivateQuotedMessagePresenter.toWs(message)
+      : GroupQuotedMessagePresenter.toWs(message)
   }
 }
