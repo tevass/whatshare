@@ -3,7 +3,6 @@ import {
   GroupMessage,
   GroupMessageProps,
 } from '@/domain/chat/enterprise/entities/group-message'
-import { PrismaMessageMapper } from '@/infra/database/prisma/mappers/prisma-message-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import { makeAttendantProfile } from './make-attendant-profile'
@@ -13,6 +12,7 @@ import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
 import { makeMessageBody } from './value-objects/make-message-body'
+import { PrismaGroupMessageMapper } from '@/infra/database/prisma/mappers/prisma-group-message-mapper'
 
 export const makeGroupMessage = (
   override: Partial<GroupMessageProps> = {},
@@ -45,12 +45,11 @@ export const makeGroupMessage = (
   )
 }
 
-// TODO: REFACTOR
 @Injectable()
-export class FakeMessageFactory {
+export class FakeGroupMessageFactory {
   constructor(private prisma: PrismaService) {}
 
-  async makePrismaMessage(
+  async makePrismaGroupMessage(
     data: Partial<GroupMessageProps> = {},
     id?: UniqueEntityID,
   ): Promise<GroupMessage> {
@@ -68,7 +67,7 @@ export class FakeMessageFactory {
     )
 
     await this.prisma.message.create({
-      data: PrismaMessageMapper.toPrismaCreate(message),
+      data: PrismaGroupMessageMapper.toPrismaCreate(message),
     })
 
     return message

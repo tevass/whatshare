@@ -6,13 +6,13 @@ import {
   ChatsRepositoryFindManyByWAChatsIdsParams,
   ChatsRepositoryFindManyByWhatsAppIdParams,
 } from '@/domain/chat/application/repositories/chats-repository'
-import { Chat } from '@/domain/chat/enterprise/entities/chat'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import { TypeGuards } from '@/infra/utils/type-guards'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaChatMapper } from '../mappers/prisma-chat-mapper'
 import { PrismaService } from '../prisma.service'
+import { Chat } from '@/domain/chat/enterprise/types/chat'
 
 @Injectable()
 export class PrismaChatsRepository implements ChatsRepository {
@@ -34,6 +34,7 @@ export class PrismaChatsRepository implements ChatsRepository {
   private aggregate = {
     contact: true,
     lastMessage: true,
+    participants: true,
   }
 
   async findManyByWhatsAppId(
@@ -53,7 +54,7 @@ export class PrismaChatsRepository implements ChatsRepository {
       include: this.aggregate,
     })
 
-    return raw.map(PrismaChatMapper.toDomain)
+    return raw.map((f) => PrismaChatMapper.toDomain(f))
   }
 
   async countManyByWhatsAppId(

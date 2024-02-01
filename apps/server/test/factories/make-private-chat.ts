@@ -3,13 +3,13 @@ import {
   PrivateChat,
   PrivateChatProps,
 } from '@/domain/chat/enterprise/entities/private-chat'
-import { PrismaChatMapper } from '@/infra/database/prisma/mappers/prisma-chat-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 import { FakeContactFactory, makeContact } from './make-contact'
 import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
+import { PrismaPrivateChatMapper } from '@/infra/database/prisma/mappers/prisma-private-chat-mapper'
 
 export const makePrivateChat = (
   override: Partial<PrivateChatProps> = {},
@@ -27,15 +27,14 @@ export const makePrivateChat = (
   )
 }
 
-// TODO: REFACTOR
 @Injectable()
-export class FakeChatFactory {
+export class FakePrivateChatFactory {
   constructor(
     private prisma: PrismaService,
     private fakeContact: FakeContactFactory,
   ) {}
 
-  async makePrismaChat(
+  async makePrismaPrivateChat(
     data: Partial<PrivateChatProps> = {},
     id?: UniqueEntityID,
   ): Promise<PrivateChat> {
@@ -44,7 +43,7 @@ export class FakeChatFactory {
     const chat = makePrivateChat({ ...data, contact }, id)
 
     await this.prisma.chat.create({
-      data: PrismaChatMapper.toPrismaCreate(chat),
+      data: PrismaPrivateChatMapper.toPrismaCreate(chat),
     })
 
     return chat

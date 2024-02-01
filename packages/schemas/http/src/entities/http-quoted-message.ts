@@ -2,9 +2,9 @@ import { z } from 'zod'
 
 import { messageType } from '@whatshare/core-schemas/enums'
 import { mongoId, waEntityId, waMessageId } from '@whatshare/shared-schemas'
-import { httpMessageMedia } from 'entities'
 import { httpAttendantProfile } from './http-attendant-profile'
 import { httpMessageBody } from './http-message-body'
+import { httpMessageMedia } from './http-message-media'
 
 export const httpQuotedMessage = z.object({
   id: mongoId,

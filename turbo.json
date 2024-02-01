@@ -2,20 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "clean": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "lint": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "lint:fix": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "test": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "build": {
       "cache": true,

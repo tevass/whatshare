@@ -3,13 +3,13 @@ import {
   GroupChat,
   GroupChatProps,
 } from '@/domain/chat/enterprise/entities/group-chat'
-import { PrismaChatMapper } from '@/infra/database/prisma/mappers/prisma-chat-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 import { FakeContactFactory, makeContact } from './make-contact'
 import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
+import { PrismaGroupChatMapper } from '@/infra/database/prisma/mappers/prisma-group-chat-mapper'
 
 export const makeGroupChat = (
   override: Partial<GroupChatProps> = {},
@@ -28,15 +28,14 @@ export const makeGroupChat = (
   )
 }
 
-// TODO: REFACTOR
 @Injectable()
-export class FakeChatFactory {
+export class FakeGroupChatFactory {
   constructor(
     private prisma: PrismaService,
     private fakeContact: FakeContactFactory,
   ) {}
 
-  async makePrismaChat(
+  async makePrismaGroupChat(
     data: Partial<GroupChatProps> = {},
     id?: UniqueEntityID,
   ): Promise<GroupChat> {
@@ -45,7 +44,7 @@ export class FakeChatFactory {
     const chat = makeGroupChat({ ...data, contact }, id)
 
     await this.prisma.chat.create({
-      data: PrismaChatMapper.toPrismaCreate(chat),
+      data: PrismaGroupChatMapper.toPrismaCreate(chat),
     })
 
     return chat

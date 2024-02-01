@@ -1,8 +1,8 @@
 import { AppModule } from '@/infra/app.module'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
@@ -14,7 +14,7 @@ describe('Fetch Chats (HTTP)', () => {
   let NEST_TESTING_APP: NestTestingApp
 
   let whatsAppFactory: FakeWhatsAppFactory
-  let chatsFactory: FakeChatFactory
+  let privateChatsFactory: FakePrivateChatFactory
   let attendantFactory: FakeAttendantFactory
 
   beforeEach(async () => {
@@ -23,7 +23,7 @@ describe('Fetch Chats (HTTP)', () => {
       providers: [
         FakeWhatsAppFactory,
         FakeContactFactory,
-        FakeChatFactory,
+        FakePrivateChatFactory,
         FakeAttendantProfileFactory,
         FakeAttendantFactory,
       ],
@@ -33,7 +33,7 @@ describe('Fetch Chats (HTTP)', () => {
     NEST_TESTING_APP = new NestTestingApp(app)
 
     whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
-    chatsFactory = moduleRef.get(FakeChatFactory)
+    privateChatsFactory = moduleRef.get(FakePrivateChatFactory)
     attendantFactory = moduleRef.get(FakeAttendantFactory)
 
     await NEST_TESTING_APP.init()
@@ -54,7 +54,7 @@ describe('Fetch Chats (HTTP)', () => {
 
     await Promise.all(
       Array.from(Array(2)).map(() =>
-        chatsFactory.makePrismaChat({ whatsAppId: whatsApp.id }),
+        privateChatsFactory.makePrismaPrivateChat({ whatsAppId: whatsApp.id }),
       ),
     )
 

@@ -12,33 +12,44 @@ import {
   MessagesRepositoryFindToRevokeParams,
   MessagesRepositoryGetMessagesIdsByChatIdParams,
 } from '@/domain/chat/application/repositories/messages-repository'
-import { Message } from '@/domain/chat/enterprise/entities/message'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import { PrismaMessageMapper } from '../mappers/prisma-message-mapper'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Message } from '@/domain/chat/enterprise/types/message'
 
 @Injectable()
 export class PrismaMessagesRepository implements MessagesRepository {
   constructor(private prisma: PrismaService) {}
 
-  private aggregate = {
-    author: true,
+  private AGGREGATE_MEDIA = {
+    message: {
+      select: {
+        id: true,
+      },
+    },
+  }
+
+  private AGGREGATE_QUOTED = {
     media: {
-      include: {
-        message: {
-          select: { id: true },
-        },
-      },
+      include: this.AGGREGATE_MEDIA,
     },
-    quoted: {
-      include: {
-        author: true,
-      },
-    },
-    vCardsContacts: true,
-    mentions: true,
-    revokedBy: true,
     senderBy: true,
+    author: true,
+    mentions: true,
+  }
+
+  private AGGREGATE = {
+    vCardsContacts: true,
+    media: {
+      include: this.AGGREGATE_MEDIA,
+    },
+    senderBy: true,
+    revokedBy: true,
+    quoted: {
+      include: this.AGGREGATE_QUOTED,
+    },
+    author: true,
+    mentions: true,
   }
 
   async findById(
@@ -50,7 +61,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
       where: {
         id,
       },
-      include: this.aggregate,
+      include: this.AGGREGATE,
     })
 
     if (!raw) return null
@@ -69,7 +80,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
       },
       take,
       skip: Pagination.skip({ limit: take, page }),
-      include: this.aggregate,
+      include: this.AGGREGATE,
     })
 
     return raw.map(PrismaMessageMapper.toDomain)
@@ -98,7 +109,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
       where: {
         waMessageId: waMessageId.toString(),
       },
-      include: this.aggregate,
+      include: this.AGGREGATE,
     })
 
     if (!raw) return null
@@ -117,7 +128,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
           in: waMessagesIds.map((id) => id.toString()),
         },
       },
-      include: this.aggregate,
+      include: this.AGGREGATE,
     })
 
     return raw.map(PrismaMessageMapper.toDomain)
@@ -136,7 +147,7 @@ export class PrismaMessagesRepository implements MessagesRepository {
           createdAt,
         },
       },
-      include: this.aggregate,
+      include: this.AGGREGATE,
     })
 
     if (!raw) return null

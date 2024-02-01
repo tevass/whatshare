@@ -2,9 +2,9 @@ import { z } from 'zod'
 
 import { messageType } from '@whatshare/core-schemas/enums'
 import { mongoId, waEntityId, waMessageId } from '@whatshare/shared-schemas'
-import { wsMessageMedia } from 'entities'
 import { wsAttendantProfile } from './ws-attendant-profile'
 import { wsMessageBody } from './ws-message-body'
+import { wsMessageMedia } from './ws-message-media'
 
 export const wsQuotedMessage = z.object({
   id: mongoId,

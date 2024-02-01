@@ -28,6 +28,7 @@ import { WWJSHandleUnreadCount } from './handlers/wwjs-handle-unread-count'
 import { WWJSHandleMessageReceived } from './handlers/wwjs-handle-message-received'
 import { CreateMessageFromWAMessageUseCase } from '@/domain/chat/application/use-cases/messages/create-message-from-wa-message-use-case'
 import { CreateContactsFromWaContactsUseCase } from '@/domain/chat/application/use-cases/contacts/create-contacts-from-wa-contacts-use-case'
+import { CreateChatFromWaChatUseCase } from '@/domain/chat/application/use-cases/chats/create-chat-from-wa-chat-use-case'
 
 @Module({
   imports: [EmittersModule, AdaptersModule, StorageModule],
@@ -55,6 +56,7 @@ import { CreateContactsFromWaContactsUseCase } from '@/domain/chat/application/u
     HandleWARevokeMessage,
     WWJSHandleMessageReceived,
     HandleWAReceivedMessage,
+    CreateChatFromWaChatUseCase,
     CreateMessageFromWAMessageUseCase,
     CreateContactsFromWaContactsUseCase,
   ],

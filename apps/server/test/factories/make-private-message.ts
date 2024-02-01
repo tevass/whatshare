@@ -3,7 +3,6 @@ import {
   PrivateMessage,
   PrivateMessageProps,
 } from '@/domain/chat/enterprise/entities/private-message'
-import { PrismaMessageMapper } from '@/infra/database/prisma/mappers/prisma-message-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import { makeAttendantProfile } from './make-attendant-profile'
@@ -13,6 +12,7 @@ import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
 import { makeMessageBody } from './value-objects/make-message-body'
+import { PrismaPrivateMessageMapper } from '@/infra/database/prisma/mappers/prisma-private-message-mapper'
 
 export const makePrivateMessage = (
   override: Partial<PrivateMessageProps> = {},
@@ -46,12 +46,11 @@ export const makePrivateMessage = (
   )
 }
 
-// TODO: REFACTOR
 @Injectable()
-export class FakeMessageFactory {
+export class FakePrivateMessageFactory {
   constructor(private prisma: PrismaService) {}
 
-  async makePrismaMessage(
+  async makePrismaPrivateMessage(
     data: Partial<PrivateMessageProps> = {},
     id?: UniqueEntityID,
   ): Promise<PrivateMessage> {
@@ -69,7 +68,7 @@ export class FakeMessageFactory {
     )
 
     await this.prisma.message.create({
-      data: PrismaMessageMapper.toPrismaCreate(message),
+      data: PrismaPrivateMessageMapper.toPrismaCreate(message),
     })
 
     return message

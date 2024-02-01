@@ -1,9 +1,9 @@
 import { AppModule } from '@/infra/app.module'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
+import { FakePrivateMessageFactory } from '@/test/factories/make-private-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { INestApplication } from '@nestjs/common'
@@ -15,8 +15,8 @@ describe('Fetch Messages (HTTP)', () => {
   let NEST_TESTING_APP: NestTestingApp
 
   let whatsAppFactory: FakeWhatsAppFactory
-  let chatsFactory: FakeChatFactory
-  let messagesFactory: FakeMessageFactory
+  let privateChatsFactory: FakePrivateChatFactory
+  let privateMessagesFactory: FakePrivateMessageFactory
   let attendantFactory: FakeAttendantFactory
 
   beforeEach(async () => {
@@ -25,8 +25,8 @@ describe('Fetch Messages (HTTP)', () => {
       providers: [
         FakeWhatsAppFactory,
         FakeContactFactory,
-        FakeChatFactory,
-        FakeMessageFactory,
+        FakePrivateChatFactory,
+        FakePrivateMessageFactory,
         FakeAttendantProfileFactory,
         FakeAttendantFactory,
       ],
@@ -36,8 +36,8 @@ describe('Fetch Messages (HTTP)', () => {
     NEST_TESTING_APP = new NestTestingApp(app)
 
     whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
-    chatsFactory = moduleRef.get(FakeChatFactory)
-    messagesFactory = moduleRef.get(FakeMessageFactory)
+    privateChatsFactory = moduleRef.get(FakePrivateChatFactory)
+    privateMessagesFactory = moduleRef.get(FakePrivateMessageFactory)
     attendantFactory = moduleRef.get(FakeAttendantFactory)
 
     await NEST_TESTING_APP.init()
@@ -55,11 +55,11 @@ describe('Fetch Messages (HTTP)', () => {
     })
 
     const whatsApp = await whatsAppFactory.makePrismaWhatsApp()
-    const chat = await chatsFactory.makePrismaChat()
+    const chat = await privateChatsFactory.makePrismaPrivateChat()
 
     await Promise.all(
       Array.from(Array(2)).map(() =>
-        messagesFactory.makePrismaMessage({
+        privateMessagesFactory.makePrismaPrivateMessage({
           whatsAppId: whatsApp.id,
           chatId: chat.id,
           waChatId: chat.waChatId,
