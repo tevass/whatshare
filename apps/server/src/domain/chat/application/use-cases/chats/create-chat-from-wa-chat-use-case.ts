@@ -6,6 +6,7 @@ import { ChatsRepository } from '../../repositories/chats-repository'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { CreateContactsFromWaContactsUseCase } from '../contacts/create-contacts-from-wa-contacts-use-case'
 import { ChatAlreadyExistsError } from '../errors/chat-already-exists-error'
+import { Injectable } from '@nestjs/common'
 
 interface CreateChatFromWaChatUseCaseRequest {
   waChat: WAChat
@@ -18,6 +19,7 @@ type CreateChatFromWaChatUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateChatFromWaChatUseCase {
   constructor(
     private contactsRepository: ContactsRepository,

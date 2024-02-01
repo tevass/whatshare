@@ -22,6 +22,8 @@ import { HandleReadChat } from '@/domain/chat/application/handlers/handle-read-c
 import { HandleSendTextMessage } from '@/domain/chat/application/handlers/handle-send-text-message'
 import { HandleUnreadChat } from '@/domain/chat/application/handlers/handle-unread-chat'
 import { StorageModule } from '@/infra/storage/storage.module'
+import { CreateChatFromWaChatUseCase } from '@/domain/chat/application/use-cases/chats/create-chat-from-wa-chat-use-case'
+import { CreateContactsFromWaContactsUseCase } from '@/domain/chat/application/use-cases/contacts/create-contacts-from-wa-contacts-use-case'
 
 @Module({
   imports: [StorageModule],
@@ -48,6 +50,8 @@ import { StorageModule } from '@/infra/storage/storage.module'
     HandleReadChat,
     WsHandleSendTextMessage,
     HandleSendTextMessage,
+    CreateChatFromWaChatUseCase,
+    CreateContactsFromWaContactsUseCase,
     WsHandleUnreadChat,
     HandleUnreadChat,
   ],

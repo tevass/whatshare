@@ -5,9 +5,7 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
@@ -23,13 +21,15 @@ import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
 import { WWJSHandleMessageRevokedEveryone } from '../wwjs-handle-message-revoke-everyone'
 import { WWJSHandleMessageAck } from '../wwjs-handle-message-ack'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
+import { FakePrivateMessageFactory } from '@/test/factories/make-private-message'
 
 describe('Handle Revoked Every One (WWJS)', () => {
   let app: INestApplication
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
-  let messageFactory: FakeMessageFactory
+  let privateChatFactory: FakePrivateChatFactory
+  let privateMessageFactory: FakePrivateMessageFactory
   let dateAdapter: FakeDateAdapter
 
   let whatsApp: WhatsApp
@@ -45,8 +45,8 @@ describe('Handle Revoked Every One (WWJS)', () => {
         providers: [
           FakeWhatsAppFactory,
           FakeContactFactory,
-          FakeChatFactory,
-          FakeMessageFactory,
+          FakePrivateChatFactory,
+          FakePrivateMessageFactory,
           FakeDateAdapter,
         ],
       }).compile()
@@ -58,8 +58,8 @@ describe('Handle Revoked Every One (WWJS)', () => {
       const env = moduleRef.get(EnvService)
 
       contactFactory = moduleRef.get(FakeContactFactory)
-      chatFactory = moduleRef.get(FakeChatFactory)
-      messageFactory = moduleRef.get(FakeMessageFactory)
+      privateChatFactory = moduleRef.get(FakePrivateChatFactory)
+      privateMessageFactory = moduleRef.get(FakePrivateMessageFactory)
 
       const wwjsManager = moduleRef.get(WWJSClientManager)
       const wwjsService = moduleRef.get(WWJSClientService)
@@ -136,7 +136,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
       waContactId: helperWWJSClientWAId,
     })
 
-    const chat = await chatFactory.makePrismaChat({
+    const chat = await privateChatFactory.makePrismaPrivateChat({
       waChatId: helperWWJSClientWAId,
       whatsAppId: whatsApp.id,
       contact,
@@ -174,7 +174,7 @@ describe('Handle Revoked Every One (WWJS)', () => {
         body: '@test',
       })
 
-      await messageFactory.makePrismaMessage({
+      await privateMessageFactory.makePrismaPrivateMessage({
         waMessageId: waMessage.id,
         type: 'text',
         ack: 'pending',

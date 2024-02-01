@@ -9,9 +9,8 @@ import { WWJSClientManager } from '@/infra/services/wwjs/wwjs-client-manager.ser
 import { WWJSClientService } from '@/infra/services/wwjs/wwjs-client.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { WsTestingClient } from '@/test/utils/ws-testing-client'
@@ -28,7 +27,7 @@ describe('Handle Read Chat (WS)', () => {
   let prisma: PrismaService
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
+  let privateChatFactory: FakePrivateChatFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<ChatServerEvents, ChatClientEvents>
@@ -42,8 +41,7 @@ describe('Handle Read Chat (WS)', () => {
         FakeWhatsAppFactory,
         FakeAttendantFactory,
         FakeAttendantProfileFactory,
-        FakeChatFactory,
-        FakeMessageFactory,
+        FakePrivateChatFactory,
         FakeContactFactory,
       ],
     }).compile()
@@ -60,7 +58,7 @@ describe('Handle Read Chat (WS)', () => {
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
     const attendantFactory = moduleRef.get(FakeAttendantFactory)
     contactFactory = moduleRef.get(FakeContactFactory)
-    chatFactory = moduleRef.get(FakeChatFactory)
+    privateChatFactory = moduleRef.get(FakePrivateChatFactory)
 
     await NEST_TESTING_APP.init()
 
@@ -112,7 +110,7 @@ describe('Handle Read Chat (WS)', () => {
       waContactId: waClientId,
     })
 
-    const chat = await chatFactory.makePrismaChat({
+    const chat = await privateChatFactory.makePrismaPrivateChat({
       whatsAppId: whatsApp.id,
       waChatId: contact.waContactId,
       contact,

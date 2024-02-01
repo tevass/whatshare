@@ -9,9 +9,9 @@ import { WWJSClientManager } from '@/infra/services/wwjs/wwjs-client-manager.ser
 import { WWJSClientService } from '@/infra/services/wwjs/wwjs-client.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
+import { FakePrivateMessageFactory } from '@/test/factories/make-private-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { WsTestingClient } from '@/test/utils/ws-testing-client'
@@ -28,8 +28,8 @@ describe('Handle Clear Chat (WS)', () => {
   let prisma: PrismaService
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
-  let messageFactory: FakeMessageFactory
+  let privateChatFactory: FakePrivateChatFactory
+  let privateMessageFactory: FakePrivateMessageFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<ChatServerEvents, ChatClientEvents>
@@ -43,8 +43,8 @@ describe('Handle Clear Chat (WS)', () => {
         FakeWhatsAppFactory,
         FakeAttendantFactory,
         FakeAttendantProfileFactory,
-        FakeChatFactory,
-        FakeMessageFactory,
+        FakePrivateChatFactory,
+        FakePrivateMessageFactory,
         FakeContactFactory,
       ],
     }).compile()
@@ -61,8 +61,8 @@ describe('Handle Clear Chat (WS)', () => {
     const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
     const attendantFactory = moduleRef.get(FakeAttendantFactory)
     contactFactory = moduleRef.get(FakeContactFactory)
-    chatFactory = moduleRef.get(FakeChatFactory)
-    messageFactory = moduleRef.get(FakeMessageFactory)
+    privateChatFactory = moduleRef.get(FakePrivateChatFactory)
+    privateMessageFactory = moduleRef.get(FakePrivateMessageFactory)
 
     await NEST_TESTING_APP.init()
 
@@ -114,7 +114,7 @@ describe('Handle Clear Chat (WS)', () => {
       waContactId: waClientId,
     })
 
-    const chat = await chatFactory.makePrismaChat({
+    const chat = await privateChatFactory.makePrismaPrivateChat({
       whatsAppId: whatsApp.id,
       waChatId: contact.waContactId,
       contact,
@@ -122,13 +122,12 @@ describe('Handle Clear Chat (WS)', () => {
 
     await Promise.all(
       Array.from(Array(2)).map(() =>
-        messageFactory.makePrismaMessage({
+        privateMessageFactory.makePrismaPrivateMessage({
           type: 'text',
           ack: 'sent',
           whatsAppId: whatsApp.id,
           chatId: chat.id,
           waChatId: chat.waChatId,
-          author: contact,
         }),
       ),
     )

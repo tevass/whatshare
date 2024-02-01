@@ -16,11 +16,11 @@ export class WWJSHandleGenerateQrCode implements WWJSHandler {
 
   event = WWJS.Events.QR_RECEIVED
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async (qrCode: string) => {
       await this.handleWAGenerateQRCode.execute({
         qrCode,
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

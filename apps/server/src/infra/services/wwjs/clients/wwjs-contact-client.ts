@@ -9,8 +9,8 @@ import { WWJSClient } from './wwjs-client'
 export class WWJSContactClient implements WAContactClient {
   private raw: WWJS.Client
 
-  protected constructor(private waClient: WWJSClient) {
-    this.raw = waClient.switchToRaw()
+  protected constructor(private wwjsClient: WWJSClient) {
+    this.raw = wwjsClient.switchToRaw()
   }
 
   async getById(contactId: WAEntityID): Promise<WAContact> {
@@ -24,7 +24,7 @@ export class WWJSContactClient implements WAContactClient {
 
     const waContacts = allWaContacts.filter(
       (waContact) =>
-        waContact.isMyContact || !waContact.isMe || waContact.isWAContact,
+        waContact.isMyContact || waContact.isMe || waContact.isWAContact,
     )
 
     return await Promise.all(

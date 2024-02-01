@@ -4,9 +4,7 @@ import { WhatsApp } from '@/domain/chat/enterprise/entities/whats-app'
 import { AppModule } from '@/infra/app.module'
 import { EnvService } from '@/infra/env/env.service'
 import { Time } from '@/infra/utils/time'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { makeMessageBody } from '@/test/factories/value-objects/make-message-body'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
@@ -20,13 +18,15 @@ import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
 import { WWJSHandleMessageAck } from '../wwjs-handle-message-ack'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
+import { FakePrivateMessageFactory } from '@/test/factories/make-private-message'
 
 describe('Handle Message Ack (WWJS)', () => {
   let app: INestApplication
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
-  let messageFactory: FakeMessageFactory
+  let privateChatFactory: FakePrivateChatFactory
+  let privateMessageFactory: FakePrivateMessageFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<MessageServerEvents>
@@ -41,8 +41,8 @@ describe('Handle Message Ack (WWJS)', () => {
         providers: [
           FakeWhatsAppFactory,
           FakeContactFactory,
-          FakeChatFactory,
-          FakeMessageFactory,
+          FakePrivateChatFactory,
+          FakePrivateMessageFactory,
         ],
       }).compile()
 
@@ -52,8 +52,8 @@ describe('Handle Message Ack (WWJS)', () => {
       const env = moduleRef.get(EnvService)
 
       contactFactory = moduleRef.get(FakeContactFactory)
-      chatFactory = moduleRef.get(FakeChatFactory)
-      messageFactory = moduleRef.get(FakeMessageFactory)
+      privateChatFactory = moduleRef.get(FakePrivateChatFactory)
+      privateMessageFactory = moduleRef.get(FakePrivateMessageFactory)
 
       const wwjsManager = moduleRef.get(WWJSClientManager)
       const wwjsService = moduleRef.get(WWJSClientService)
@@ -127,7 +127,7 @@ describe('Handle Message Ack (WWJS)', () => {
       waContactId: helperWWJSClientWAId,
     })
 
-    const chat = await chatFactory.makePrismaChat({
+    const chat = await privateChatFactory.makePrismaPrivateChat({
       waChatId: helperWWJSClientWAId,
       whatsAppId: whatsApp.id,
       contact,
@@ -139,7 +139,7 @@ describe('Handle Message Ack (WWJS)', () => {
       body: '@test',
     })
 
-    await messageFactory.makePrismaMessage({
+    await privateMessageFactory.makePrismaPrivateMessage({
       waMessageId: waMessage.id,
       type: 'text',
       ack: 'sent',

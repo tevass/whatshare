@@ -25,7 +25,7 @@ export class WsHandleSendTextMessage {
     @WsRoom() whatsAppId: string,
     @WsUser('sub') attendantId: string,
   ) {
-    const { waChatId, body, quotedId } = payload
+    const { waChatId, body, quotedId, waMentionsIds } = payload
 
     await this.handleSendTextMessage.execute({
       whatsAppId,
@@ -33,6 +33,7 @@ export class WsHandleSendTextMessage {
       waChatId,
       body,
       quotedId,
+      waMentionsIds,
     })
   }
 }

@@ -9,28 +9,38 @@ import { Time } from '@/infra/utils/time'
 export class WWJSChatClient implements WAChatClient {
   private raw: Client
 
-  protected constructor(private waClient: WWJSClient) {
-    this.raw = waClient.switchToRaw()
+  protected constructor(private wwjsClient: WWJSClient) {
+    this.raw = wwjsClient.switchToRaw()
   }
 
-  private async getById(chatId: WAEntityID) {
+  private async getRawById(chatId: WAEntityID) {
     return await this.raw.getChatById(chatId.toString())
   }
 
+  async getById(chatId: WAEntityID): Promise<WAChat> {
+    const raw = await this.getRawById(chatId)
+
+    return await WWJSChatMapper.toDomain({
+      raw,
+      client: this.raw,
+      waClientId: this.wwjsClient.id,
+    })
+  }
+
   async sendSeenById(chatId: WAEntityID): Promise<void> {
-    const waChat = await this.getById(chatId)
+    const waChat = await this.getRawById(chatId)
     await waChat.sendSeen()
     await Time.delay()
   }
 
   async markUnreadById(chatId: WAEntityID): Promise<void> {
-    const waChat = await this.getById(chatId)
+    const waChat = await this.getRawById(chatId)
     await waChat.markUnread()
     await Time.delay()
   }
 
   async clearById(chatId: WAEntityID): Promise<void> {
-    const waChat = await this.getById(chatId)
+    const waChat = await this.getRawById(chatId)
     await waChat.clearMessages()
     await Time.delay()
   }
@@ -42,7 +52,8 @@ export class WWJSChatClient implements WAChatClient {
       waChats.map((raw) =>
         WWJSChatMapper.toDomain({
           raw,
-          waClientId: this.waClient.id,
+          client: this.raw,
+          waClientId: this.wwjsClient.id,
         }),
       ),
     )

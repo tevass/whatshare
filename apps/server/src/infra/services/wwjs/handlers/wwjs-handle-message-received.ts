@@ -22,7 +22,7 @@ export class WWJSHandleMessageReceived implements WWJSHandler {
 
   event = WWJS.Events.MESSAGE_RECEIVED
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async (message: WWJS.Message) => {
       const isValidMessageType =
         WWJSMessageTypeMapper.toDomain(message.type) in MESSAGE_TYPES
@@ -32,7 +32,8 @@ export class WWJSHandleMessageReceived implements WWJSHandler {
       const rawChat = await message.getChat()
       const waChat = await WWJSChatMapper.toDomain({
         raw: rawChat,
-        waClientId: waClient.id,
+        waClientId: wwjsClient.id,
+        client: wwjsClient.switchToRaw(),
       })
 
       const waMessage = await WWJSMessageMapper.toDomain({
@@ -43,7 +44,7 @@ export class WWJSHandleMessageReceived implements WWJSHandler {
       await this.handleWAReceivedMessage.execute({
         waChat,
         waMessage,
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

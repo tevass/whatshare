@@ -18,6 +18,8 @@ import { makePrivateMessage } from '@/test/factories/make-private-message'
 import { makeGroupChat } from '@/test/factories/make-group-chat'
 import { isPrivateMessage } from '@/domain/chat/enterprise/types/message'
 import { makeWAChat } from '@/test/factories/make-wa-chat'
+import { CreateContactsFromWaContactsUseCase } from '../../use-cases/contacts/create-contacts-from-wa-contacts-use-case'
+import { CreateChatFromWaChatUseCase } from '../../use-cases/chats/create-chat-from-wa-chat-use-case'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
@@ -27,6 +29,9 @@ let inMemoryContactsRepository: InMemoryContactsRepository
 let fakeWAClientManager: FakeWAClientManager
 let fakeMessageEmitter: FakeMessageEmitter
 let fakeChatEmitter: FakeChatEmitter
+
+let createChatFromWAChat: CreateChatFromWaChatUseCase
+let createContactsFromWaContacts: CreateContactsFromWaContactsUseCase
 
 let sut: HandleSendTextMessage
 
@@ -44,11 +49,22 @@ describe('HandleSendTextMessage', () => {
     fakeMessageEmitter = new FakeMessageEmitter()
     fakeChatEmitter = new FakeChatEmitter()
 
+    createContactsFromWaContacts = new CreateContactsFromWaContactsUseCase(
+      inMemoryContactsRepository,
+    )
+
+    createChatFromWAChat = new CreateChatFromWaChatUseCase(
+      inMemoryContactsRepository,
+      inMemoryChatsRepository,
+      createContactsFromWaContacts,
+    )
+
     sut = new HandleSendTextMessage(
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
       inMemoryAttendantsRepository,
       inMemoryContactsRepository,
+      createChatFromWAChat,
       fakeWAClientManager,
       fakeMessageEmitter,
       fakeChatEmitter,

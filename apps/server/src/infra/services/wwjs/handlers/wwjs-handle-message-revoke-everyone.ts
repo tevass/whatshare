@@ -18,7 +18,7 @@ export class WWJSHandleMessageRevokedEveryone implements WWJSHandler {
 
   event = WWJS.Events.MESSAGE_REVOKED_EVERYONE
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async (_: WWJS.Message, revokedMessage?: WWJS.Message) => {
       if (!revokedMessage) return
 
@@ -33,7 +33,7 @@ export class WWJSHandleMessageRevokedEveryone implements WWJSHandler {
       await this.handleWARevokeMessage.execute({
         waRevokedMessage,
         waChatId,
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

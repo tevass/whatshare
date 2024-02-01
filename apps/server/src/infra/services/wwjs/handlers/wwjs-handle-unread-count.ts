@@ -33,6 +33,7 @@ export class WWJSHandleUnreadCount implements WWJSHandler {
       const waChat = await WWJSChatMapper.toDomain({
         raw: chat,
         waClientId: wwjsClient.id,
+        client: wwjsClient.switchToRaw(),
       })
 
       await this.handleWAChangeUnreadCount.execute({

@@ -10,7 +10,6 @@ import { WWJSClientService } from '@/infra/services/wwjs/wwjs-client.service'
 import { FakeAttendantFactory } from '@/test/factories/make-attendant'
 import { FakeAttendantProfileFactory } from '@/test/factories/make-attendant-profile'
 import { FakeContactFactory } from '@/test/factories/make-contact'
-import { FakeMessageFactory } from '@/test/factories/make-message'
 import { FakeWhatsAppFactory } from '@/test/factories/make-whats-app'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { WsTestingClient } from '@/test/utils/ws-testing-client'
@@ -40,7 +39,6 @@ describe('Handle Send Text Message (WS)', () => {
         FakeWhatsAppFactory,
         FakeAttendantFactory,
         FakeAttendantProfileFactory,
-        FakeMessageFactory,
         FakeContactFactory,
       ],
     }).compile()

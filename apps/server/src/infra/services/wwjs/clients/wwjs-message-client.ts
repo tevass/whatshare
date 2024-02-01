@@ -11,8 +11,8 @@ import { WWJSClient } from './wwjs-client'
 export class WWJSMessageClient implements WAMessageClient {
   private raw: WWJS.Client
 
-  protected constructor(private waClient: WWJSClient) {
-    this.raw = waClient.switchToRaw()
+  protected constructor(private wwjsClient: WWJSClient) {
+    this.raw = wwjsClient.switchToRaw()
   }
 
   private async getChatById(chatId: WAEntityID) {

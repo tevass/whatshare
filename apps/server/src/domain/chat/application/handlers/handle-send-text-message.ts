@@ -20,6 +20,7 @@ import { PrivateMessage } from '../../enterprise/entities/private-message'
 import { GroupMessage } from '../../enterprise/entities/group-message'
 import { GroupQuotedMessage } from '../../enterprise/entities/group-quoted-message'
 import { PrivateQuotedMessage } from '../../enterprise/entities/private-quoted-message'
+import { CreateChatFromWaChatUseCase } from '../use-cases/chats/create-chat-from-wa-chat-use-case'
 
 interface HandleSendTextMessageRequest {
   waChatId: string
@@ -44,6 +45,7 @@ export class HandleSendTextMessage {
     private chatsRepository: ChatsRepository,
     private attendantsRepository: AttendantsRepository,
     private contactsRepository: ContactsRepository,
+    private createChatFromWAChat: CreateChatFromWaChatUseCase,
     private waManager: WAClientManager,
     private messageEmitter: MessageEmitter,
     private chatEmitter: ChatEmitter,
@@ -57,6 +59,7 @@ export class HandleSendTextMessage {
 
     const waClientId = new UniqueEntityID(whatsAppId)
     const waClient = this.waManager.getConnectedClientById(waClientId)
+
     if (!waClient) {
       return left(new WAClientNotFoundError(waClientId.toString()))
     }
@@ -82,21 +85,20 @@ export class HandleSendTextMessage {
       whatsAppId,
     })
 
+    const isPreviousActiveChat = !!chat && chat.isActive()
+
     if (!chat) {
-      const contact = await this.contactsRepository.findByWAContactId({
-        waContactId: waChatEntityId,
-      })
-
-      if (!contact) {
-        return left(new ResourceNotFoundError(waChatId))
-      }
-
       const waChat = await waClient.chat.getById(
         WAEntityID.createFromString(waChatId),
       )
 
-      chat = waChat.toChat()
-      await this.chatsRepository.create(chat)
+      const response = await this.createChatFromWAChat.execute({
+        waChat,
+      })
+
+      if (response.isLeft()) return left(response.value)
+
+      chat = response.value.chat
     }
 
     if (!attendant) {
@@ -141,7 +143,6 @@ export class HandleSendTextMessage {
     })
 
     await this.messagesRepository.create(message)
-    const isPreviousActiveChat = chat.isActive()
 
     chat.interact(message as GroupMessage & PrivateMessage)
     await this.chatsRepository.save(chat)

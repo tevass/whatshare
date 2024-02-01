@@ -9,7 +9,6 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { EnvService } from '@/infra/env/env.service'
-import { FakeChatFactory } from '@/test/factories/make-chat'
 import { FakeContactFactory } from '@/test/factories/make-contact'
 import { NestTestingApp } from '@/test/utils/nest-testing-app'
 import { WsTestingClient } from '@/test/utils/ws-testing-client'
@@ -21,6 +20,7 @@ import { WWJSClient } from '../../clients/wwjs-client'
 import { WWJSClientManager } from '../../wwjs-client-manager.service'
 import { WWJSClientService } from '../../wwjs-client.service'
 import { WWJSHandleUnreadCount } from '../wwjs-handle-unread-count'
+import { FakePrivateChatFactory } from '@/test/factories/make-private-chat'
 
 describe('Handle Unread Count (WWJS)', () => {
   let app: INestApplication
@@ -28,7 +28,7 @@ describe('Handle Unread Count (WWJS)', () => {
   let env: EnvService
 
   let contactFactory: FakeContactFactory
-  let chatFactory: FakeChatFactory
+  let privateChatFactory: FakePrivateChatFactory
 
   let whatsApp: WhatsApp
   let socket: Socket<ChatServerEvents & WhatsAppServerEvents>
@@ -39,7 +39,11 @@ describe('Handle Unread Count (WWJS)', () => {
     async () => {
       const moduleRef = await Test.createTestingModule({
         imports: [AppModule],
-        providers: [FakeWhatsAppFactory, FakeChatFactory, FakeContactFactory],
+        providers: [
+          FakeWhatsAppFactory,
+          FakePrivateChatFactory,
+          FakeContactFactory,
+        ],
       }).compile()
 
       app = moduleRef.createNestApplication()
@@ -49,7 +53,7 @@ describe('Handle Unread Count (WWJS)', () => {
       env = moduleRef.get(EnvService)
 
       contactFactory = moduleRef.get(FakeContactFactory)
-      chatFactory = moduleRef.get(FakeChatFactory)
+      privateChatFactory = moduleRef.get(FakePrivateChatFactory)
 
       const wwjsManager = moduleRef.get(WWJSClientManager)
       const whatsAppFactory = moduleRef.get(FakeWhatsAppFactory)
@@ -99,7 +103,7 @@ describe('Handle Unread Count (WWJS)', () => {
       waContactId: helperWAId,
     })
 
-    await chatFactory.makePrismaChat({
+    await privateChatFactory.makePrismaPrivateChat({
       waChatId: helperWAId,
       whatsAppId: whatsApp.id,
       contact,

@@ -16,10 +16,10 @@ export class WWJSHandleDisconnected implements WWJSHandler {
 
   event = WWJS.Events.DISCONNECTED
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async () => {
       await this.handleWADisconnected.execute({
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }

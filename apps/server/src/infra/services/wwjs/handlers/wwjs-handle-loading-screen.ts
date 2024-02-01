@@ -16,10 +16,10 @@ export class WWJSHandleLoadingScreen implements WWJSHandler {
 
   event = WWJS.Events.LOADING_SCREEN
 
-  register(waClient: WWJSClient): WWJSListener {
+  register(wwjsClient: WWJSClient): WWJSListener {
     return async () => {
       await this.handleWAConnecting.execute({
-        whatsAppId: waClient.id.toString(),
+        whatsAppId: wwjsClient.id.toString(),
       })
     }
   }
