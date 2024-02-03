@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "@whatshare/eslint-config/node"
+  ],
+  "ignorePatterns": ["dist"]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@whatshare/ui-theme",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "@whatshare/tsup-config": "workspace:^",
+    "@whatshare/ui-tokens": "workspace:^",
+    "eslint": "^8.56.0",
+    "tailwindcss": "^3.3.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

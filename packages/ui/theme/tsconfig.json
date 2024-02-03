@@ -1,0 +1,7 @@
+{
+  "extends": "@whatshare/tsconfig/node.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "esModuleInterop": true
+  }
+}
