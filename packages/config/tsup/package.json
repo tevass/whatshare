@@ -7,6 +7,10 @@
     "./node": {
       "import": "./dist/node.mjs",
       "require": "./dist/node.js"
+    },
+    "./react": {
+      "import": "./dist/react.mjs",
+      "require": "./dist/react.js"
     }
   },
   "scripts": {

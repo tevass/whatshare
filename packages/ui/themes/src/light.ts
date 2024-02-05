@@ -1,10 +1,11 @@
 import type { ThemeConfig } from 'tailwindcss-themer/lib/utils/optionsUtils'
 
 import { colors } from '@whatshare/ui-tokens'
+import { extendsTheme } from './utils/extends-theme'
 
 export const lightTheme: ThemeConfig = {
   name: 'light',
-  extend: {
+  extend: extendsTheme({
     colors: {
       background: {
         DEFAULT: colors.woodsmoke[50],
@@ -31,5 +32,5 @@ export const lightTheme: ThemeConfig = {
         muted: colors.woodsmoke[100],
       },
     },
-  },
+  }),
 }

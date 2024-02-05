@@ -25,6 +25,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@whatshare/ui-tokens": "workspace:^"
+    "@whatshare/ui-tokens": "workspace:^",
+    "ts-deepmerge": "^7.0.0"
   }
 }

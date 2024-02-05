@@ -1,0 +1,6 @@
+{
+  "extends": "@whatshare/tsconfig/react.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  }
+}

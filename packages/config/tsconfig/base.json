@@ -5,9 +5,21 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
     "paths": {
       "@/*": ["./src/*"],
       "@/test/*": ["./test/*"]
     }
-  }
+  },
+  "exclude": ["node_modules"]
 }
