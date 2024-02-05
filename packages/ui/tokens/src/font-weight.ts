@@ -3,4 +3,4 @@ export const fontWeight = {
   medium: '500',
   bold: '700',
   extrabold: '800',
-}
+} as const

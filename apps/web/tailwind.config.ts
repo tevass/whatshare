@@ -1,4 +1,3 @@
-import theme from '@whatshare/ui-theme'
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -7,6 +6,5 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  plugins: [theme],
 }
 export default config

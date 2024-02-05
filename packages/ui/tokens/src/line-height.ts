@@ -4,4 +4,4 @@ export const lineHeight = {
   normal: '1.5',
   relaxed: '1.625',
   tall: '1.875',
-}
+} as const

@@ -1,5 +1,7 @@
 export const colors = {
-  'mountain-meadow': {
+  white: '#fff',
+  black: '#000',
+  brand: {
     '50': '#eafff6',
     '100': '#cdfee7',
     '200': '#a0fad4',
@@ -38,4 +40,4 @@ export const colors = {
     '900': '#6f2c33',
     '950': '#3d1417',
   },
-}
+} as const
