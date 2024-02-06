@@ -1,3 +1,9 @@
-export default function Home() {
-  return <h1 className="text-xxs">Hello World</h1>
+import { SignInForm } from './components/sign-in-form'
+
+export default function SignIn() {
+  return (
+    <main className="h-screen flex items-center justify-center">
+      <SignInForm />
+    </main>
+  )
 }

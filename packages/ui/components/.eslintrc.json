@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "@whatshare/eslint-config/react",
-    "plugin:storybook/recommended"
-  ]
-}
