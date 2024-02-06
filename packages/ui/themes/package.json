@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@whatshare/ui-tokens": "workspace:^",
-    "ts-deepmerge": "^7.0.0"
+    "ts-deepmerge": "^7.0.0",
+    "tw-colors": "^3.3.1"
   }
 }

@@ -5,6 +5,8 @@ import { defaultTheme } from './default-theme'
 import { lightTheme } from './light'
 
 export const plugin = createTheme({
-  defaultTheme,
+  defaultTheme: {
+    extend: defaultTheme,
+  },
   themes: [lightTheme],
 }) as ReturnType<typeof createPlugin>
