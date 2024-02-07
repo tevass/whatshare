@@ -6,7 +6,7 @@ import { useBoolean } from 'usehooks-ts'
 
 import { IconButton } from '@/components/ui/icon-button'
 import { Input, InputProps } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 
 type InputPasswordProps = InputProps
 

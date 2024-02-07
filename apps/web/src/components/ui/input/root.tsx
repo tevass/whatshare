@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { InputHTMLAttributes, forwardRef } from 'react'
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement>

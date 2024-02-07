@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { ElementRef, forwardRef } from 'react'
 import { LabelProps, Label as RootLabel } from '../label'
 import { useFormField } from './use-form-field'

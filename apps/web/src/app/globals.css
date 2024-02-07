@@ -13,13 +13,13 @@
     --primary: 162 100% 32%;
     --primary-foreground: 0 0% 98%;
  
-    --secondary: 240 7% 86%;
+    --secondary: 240 10% 94%;
     --secondary-foreground: 0 0% 9%;
  
-    --muted: 240 7% 86%;
+    --muted: 240 10% 94%;
     --muted-foreground: 0 0% 45.1%;
  
-    --accent: 240 7% 86%;
+    --accent: 240 10% 94%;
     --accent-foreground: 0 0% 9%;
  
     --destructive: 0 84.2% 60.2%;
@@ -67,6 +67,7 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
   }
@@ -74,6 +75,6 @@
 
 @layer utilities {
   .inset-x-center {
-    @apply absolute top-1/2 -translate-y-1/2;
+    @apply absolute -translate-y-1/2 top-1/2;
   }
 }
