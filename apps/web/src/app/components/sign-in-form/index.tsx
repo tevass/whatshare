@@ -31,7 +31,7 @@ export function SignInForm() {
       onSubmit={handleSubmit(handleSignIn)}
     >
       <Form {...formProps}>
-        <Card className="pt-4">
+        <Card className="pt-4 shadow-md">
           <Card.Content className="pb-3 space-y-2">
             <Form.Field
               control={control}

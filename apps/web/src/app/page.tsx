@@ -7,8 +7,12 @@ export const metadata: Metadata = {
 
 export default function SignIn() {
   return (
-    <main className="flex items-center justify-center h-full">
-      <SignInForm />
+    <main className="w-full h-full">
+      <div className="bg-primary w-full h-[50vh]" />
+
+      <div className="flex items-center justify-center -mt-[10vh]">
+        <SignInForm />
+      </div>
     </main>
   )
 }
