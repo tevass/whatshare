@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { forwardRef, ElementRef } from 'react'
-import { Label as RootLabel, LabelProps } from '../label'
+import { ElementRef, forwardRef } from 'react'
+import { LabelProps, Label as RootLabel } from '../label'
 import { useFormField } from './use-form-field'
 
 type LabelRef = ElementRef<typeof RootLabel>

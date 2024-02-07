@@ -11,7 +11,7 @@ export const InputLeftElement = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'absolute flex items-center justify-center inset-x-center left-2.5',
+        'absolute flex items-center justify-center inset-x-center left-3',
         className,
       )}
       {...props}

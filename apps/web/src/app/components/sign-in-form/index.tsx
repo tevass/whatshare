@@ -1,15 +1,14 @@
 'use client'
 
-import { useBoolean } from 'usehooks-ts'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { useZodForm } from '@/hooks/use-zod-form'
 import { SignInFormOutput, signInFormSchema } from './schema'
-import { Input } from '@/components/ui/input'
 
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
-import { IconButton } from '@/components/ui/icon-button'
+import { Mail } from 'lucide-react'
+import { InputPassword } from './input-password'
 
 export function SignInForm() {
   const formProps = useZodForm({
@@ -19,8 +18,6 @@ export function SignInForm() {
       password: '',
     },
   })
-
-  const { value: showPassword, toggle: toggleShowPassword } = useBoolean()
 
   const { control, handleSubmit } = formProps
 
@@ -35,7 +32,7 @@ export function SignInForm() {
     >
       <Form {...formProps}>
         <Card className="pt-4">
-          <Card.Content className="space-y-2 pb-3">
+          <Card.Content className="pb-3 space-y-2">
             <Form.Field
               control={control}
               name="email"
@@ -49,7 +46,7 @@ export function SignInForm() {
                     </Input.LeftElement>
 
                     <Form.Control>
-                      <Input type="email" className="ps-8" {...field} />
+                      <Input type="email" className="ps-9" {...field} />
                     </Form.Control>
                   </Input.Group>
 
@@ -65,34 +62,9 @@ export function SignInForm() {
                 <Form.Item>
                   <Form.Label>Senha</Form.Label>
 
-                  <Input.Group>
-                    <Input.LeftElement>
-                      <Lock className="w-4 h-4" />
-                    </Input.LeftElement>
-
-                    <Form.Control>
-                      <Input
-                        type={!showPassword ? 'password' : 'text'}
-                        className="ps-8 pe-8"
-                        {...field}
-                      />
-                    </Form.Control>
-
-                    <Input.RightElement className="right-0.5">
-                      <IconButton
-                        size="sm"
-                        variant="transparent"
-                        onClick={toggleShowPassword}
-                        type="button"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </IconButton>
-                    </Input.RightElement>
-                  </Input.Group>
+                  <Form.Control>
+                    <InputPassword {...field} />
+                  </Form.Control>
 
                   <Form.ErrorMessage />
                 </Form.Item>

@@ -1,7 +1,7 @@
 'use client'
 
 import { Slot, SlotProps } from '@radix-ui/react-slot'
-import { forwardRef, ElementRef } from 'react'
+import { ElementRef, forwardRef } from 'react'
 import { useFormField } from './use-form-field'
 
 type ControlRef = ElementRef<typeof Slot>

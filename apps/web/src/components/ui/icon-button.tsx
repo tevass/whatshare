@@ -22,9 +22,10 @@ const iconButtonVariants = cva(
         transparent: 'bg-transparent',
       },
       size: {
-        sm: 'h-8 w-8 rounded-sm',
-        md: 'h-9 w-9 rounded-md',
-        lg: 'h-10 w-10 rounded-md',
+        xs: 'h-7 w-7 rounded-sm',
+        sm: 'h-9 w-9 rounded-sm',
+        md: 'h-10 w-10 rounded-md',
+        lg: 'h-12 w-12 rounded-md',
       },
     },
     defaultVariants: {
