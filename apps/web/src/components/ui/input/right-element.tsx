@@ -11,7 +11,7 @@ export const InputRightElement = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'absolute flex items-center justify-center inset-x-center right-3',
+        'absolute flex items-center justify-center inset-y-center right-3',
         className,
       )}
       {...props}

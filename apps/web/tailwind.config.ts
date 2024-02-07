@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      width: {
+        popover: 'var(--radix-popover-trigger-width)',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -44,20 +47,19 @@ const config = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        shape: {
-          DEFAULT: 'hsl(var(--shape))',
-          foreground: 'hsl(var(--shape-foreground))',
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
-      },
-      gridTemplateColumns({ theme }) {
-        return {
-          'main-aside': `${theme('spacing.14')} 1fr`,
-        }
       },
       keyframes: {
         'accordion-down': {
