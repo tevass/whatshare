@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config = {
+  mode: 'jit',
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -46,6 +47,10 @@ const config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
+        },
+        shape: {
+          DEFAULT: 'hsl(var(--shape))',
+          foreground: 'hsl(var(--shape-foreground))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',

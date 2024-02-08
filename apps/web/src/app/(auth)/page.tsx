@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+
 import { SignInForm } from './components/sign-in-form'
 
 export const metadata: Metadata = {
@@ -7,10 +8,10 @@ export const metadata: Metadata = {
 
 export default function SignIn() {
   return (
-    <main className="w-full h-full">
-      <div className="bg-primary w-full h-[50vh]" />
+    <main className="relative flex items-center justify-center w-full h-full">
+      <div className="bg-primary w-full h-[45vh] absolute inset-0 -z-[1]" />
 
-      <div className="flex items-center justify-center -mt-[10vh]">
+      <div className="flex items-center justify-center">
         <SignInForm />
       </div>
     </main>
