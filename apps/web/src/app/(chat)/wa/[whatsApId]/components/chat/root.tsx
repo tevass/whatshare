@@ -15,7 +15,7 @@ export const Chat = forwardRef<HTMLAnchorElement, ChatProps>(
       <Link
         ref={ref}
         className={cn(
-          'rounded-md p-3 transition-colors flex border border-transparent items-center space-x-3 hover:bg-accent data-[state=active]:bg-accent data-[state=active]:border-border',
+          'rounded-md p-2.5 transition-colors flex items-center space-x-3 hover:bg-muted data-[state=active]:bg-accent',
           className,
         )}
         data-state={isActive ? 'active' : 'inactive'}

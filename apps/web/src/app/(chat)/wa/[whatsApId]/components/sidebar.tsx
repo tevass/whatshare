@@ -1,25 +1,28 @@
 import { Aside } from '@/components/ui/aside'
 import { Text } from '@/components/ui/typography/text'
-import { User } from 'lucide-react'
+import { SquarePen, User } from 'lucide-react'
 
 import { Chat } from './chat'
 import { Scroll } from '@/components/ui/scroll'
 import { Header } from '@/components/ui/header'
 import { Heading } from '@/components/ui/typography/heading'
+import { IconButton } from '@/components/ui/icon-button'
 
 export function Sidebar() {
   return (
     <Aside>
-      <Header className="p-3 pb-2 space-y-2">
-        <Heading.H3>Conversas</Heading.H3>
+      <Header className="px-5 pt-4 space-y-3 pb-2">
+        <div className="flex items-center justify-between">
+          <Heading.H3>Conversas</Heading.H3>
 
-        <section>
-          <div className="h-9 border rounded-md" />
-        </section>
+          <IconButton variant="ghost">
+            <SquarePen className="w-4 h-4" />
+          </IconButton>
+        </div>
       </Header>
 
-      <Scroll className="h-[calc(100lvh_-_20px)]">
-        <section className="px-3 pb-2 pt-1 space-y-1.5">
+      <Scroll className="h-[calc(100lvh_-_theme(spacing.16)))]">
+        <section className="px-2.5 pb-2 pt-1 space-y-1.5">
           {Array.from(Array(15)).map((_, i) => (
             <Chat.Root href={`/wa/${i}`} key={i}>
               <Chat.Avatar>

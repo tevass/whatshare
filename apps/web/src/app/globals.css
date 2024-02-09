@@ -47,11 +47,11 @@
     --secondary: var(--woodsmoke-100);
     --secondary-foreground: var(--woodsmoke-800);
  
-    --muted: var(--woodsmoke-50);
+    --muted: var(--woodsmoke-100);
     --muted-foreground: 0 0% 45.1%;
  
     --accent: var(--woodsmoke-100);
-    --accent-foreground: var(--woodsmoke-800);
+    --accent-foreground: var(--woodsmoke-700);
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;

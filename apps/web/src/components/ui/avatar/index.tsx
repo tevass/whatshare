@@ -14,4 +14,3 @@ export const Avatar = Object.assign(
 export type { AvatarFallbackProps } from './fallback'
 export type { AvatarImageProps } from './image'
 export type { AvatarProps } from './root'
-
