@@ -3,16 +3,14 @@
 import * as Primitive from '@radix-ui/react-avatar'
 
 import { cn } from '@/utils/cn'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 import { VariantProps, cva } from 'class-variance-authority'
+import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 const avatarVariants = cva(
   'relative fle shrink-0 overflow-hidden rounded-full',
   {
     variants: {
       size: {
-        xs: 'h-6 w-6',
-        sm: 'h-8 w-8',
         md: 'h-10 w-10',
         lg: 'h-12 w-12',
       },

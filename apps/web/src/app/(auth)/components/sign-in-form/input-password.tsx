@@ -22,7 +22,7 @@ export const InputPassword = forwardRef<HTMLInputElement, InputPasswordProps>(
           <Lock className="w-4 h-4" />
         </Input.LeftElement>
 
-        <Input
+        <Input.Root
           type={showPassword ? 'text' : 'password'}
           ref={ref}
           className={cn('ps-9 pe-9', className)}

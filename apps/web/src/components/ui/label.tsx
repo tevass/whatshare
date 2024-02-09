@@ -20,7 +20,7 @@ type LabelRef = React.ElementRef<typeof Primitive.Root>
 
 export type LabelProps = Primitive.PrimitiveLabelProps & LabelVariantsProps
 
-const Label = forwardRef<LabelRef, LabelProps>(
+export const Label = forwardRef<LabelRef, LabelProps>(
   ({ variant, className, ...props }, ref) => (
     <Primitive.Root
       ref={ref}
@@ -30,5 +30,3 @@ const Label = forwardRef<LabelRef, LabelProps>(
   ),
 )
 Label.displayName = Primitive.Root.displayName
-
-export { Label }

@@ -30,8 +30,8 @@ export function SignInForm() {
       className="w-[310px] sm:w-96 p-2"
       onSubmit={handleSubmit(handleSignIn)}
     >
-      <Form {...formProps}>
-        <Card className="pt-4 shadow-md">
+      <Form.Root {...formProps}>
+        <Card.Root className="pt-4 shadow-md">
           <Card.Content className="pb-3 space-y-2">
             <Form.Field
               control={control}
@@ -46,7 +46,7 @@ export function SignInForm() {
                     </Input.LeftElement>
 
                     <Form.Control>
-                      <Input type="email" className="ps-9" {...field} />
+                      <Input.Root type="email" className="ps-9" {...field} />
                     </Form.Control>
                   </Input.Group>
 
@@ -77,8 +77,8 @@ export function SignInForm() {
               ENTRAR
             </Button>
           </Card.Footer>
-        </Card>
-      </Form>
+        </Card.Root>
+      </Form.Root>
     </form>
   )
 }

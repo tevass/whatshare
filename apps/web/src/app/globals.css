@@ -35,6 +35,9 @@
     --input: 0 0% 89.8%;
     --ring: 164 100% 26%;
 
+    --highlight: 149 71% 39%;
+    --highlight-foreground: 0 0% 98%;
+
     --radius: 0.5rem;
   }
 /*  
