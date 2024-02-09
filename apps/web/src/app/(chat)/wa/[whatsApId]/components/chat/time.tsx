@@ -6,7 +6,7 @@ const chatTimeVariants = cva('text-xs font-bold', {
   variants: {
     variant: {
       default: 'text-muted-foreground',
-      highlight: 'text-highlight',
+      highlight: 'text-mountain-meadow-600',
     },
   },
   defaultVariants: {

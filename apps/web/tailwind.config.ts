@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss'
 
 const config = {
-  mode: 'jit',
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -20,15 +19,37 @@ const config = {
     },
     extend: {
       colors: {
+        woodsmoke: {
+          '50': 'hsl(var(--woodsmoke-50))',
+          '100': 'hsl(var(--woodsmoke-100))',
+          '200': 'hsl(var(--woodsmoke-200))',
+          '300': 'hsl(var(--woodsmoke-300))',
+          '400': 'hsl(var(--woodsmoke-400))',
+          '500': 'hsl(var(--woodsmoke-500))',
+          '600': 'hsl(var(--woodsmoke-600))',
+          '700': 'hsl(var(--woodsmoke-700))',
+          '800': 'hsl(var(--woodsmoke-800))',
+          '900': 'hsl(var(--woodsmoke-900))',
+          '950': 'hsl(var(--woodsmoke-950))',
+        },
+        'mountain-meadow': {
+          '50': 'hsl(var(--mountain-meadow-50))',
+          '100': 'hsl(var(--mountain-meadow-100))',
+          '200': 'hsl(var(--mountain-meadow-200))',
+          '300': 'hsl(var(--mountain-meadow-300))',
+          '400': 'hsl(var(--mountain-meadow-400))',
+          '500': 'hsl(var(--mountain-meadow-500))',
+          '600': 'hsl(var(--mountain-meadow-600))',
+          '700': 'hsl(var(--mountain-meadow-700))',
+          '800': 'hsl(var(--mountain-meadow-800))',
+          '900': 'hsl(var(--mountain-meadow-900))',
+          '950': 'hsl(var(--mountain-meadow-950))',
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        highlight: {
-          DEFAULT: 'hsl(var(--highlight))',
-          foreground: 'hsl(var(--highlight-foreground))',
-        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -49,10 +70,6 @@ const config = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        shape: {
-          DEFAULT: 'hsl(var(--shape))',
-          foreground: 'hsl(var(--shape-foreground))',
-        },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
@@ -63,9 +80,9 @@ const config = {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 2px)',
+        lg: 'var(--radius)',
       },
       keyframes: {
         'accordion-down': {

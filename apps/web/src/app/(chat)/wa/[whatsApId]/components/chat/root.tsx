@@ -1,31 +1,24 @@
+'use client'
+
+import { Link, LinkProps } from '@/components/ui/link'
+import { useIsActiveLink } from '@/hooks/use-is-active-link'
 import { cn } from '@/utils/cn'
-import { VariantProps, cva } from 'class-variance-authority'
-import { HTMLAttributes, forwardRef } from 'react'
+import { forwardRef } from 'react'
 
-const chatVariants = cva(
-  'rounded-md px-4 py-3 transition-colors flex items-center space-x-3',
-  {
-    variants: {
-      variant: {
-        inactive: 'hover:bg-accent',
-        active: 'bg-accent',
-      },
-    },
-    defaultVariants: {
-      variant: 'inactive',
-    },
-  },
-)
+type ChatProps = LinkProps
 
-type ChatVariantsProps = VariantProps<typeof chatVariants>
-interface ChatProps extends HTMLAttributes<HTMLDivElement>, ChatVariantsProps {}
+export const Chat = forwardRef<HTMLAnchorElement, ChatProps>(
+  ({ className, ...props }, ref) => {
+    const isActive = useIsActiveLink({ href: props.href, exactMatch: true })
 
-export const Chat = forwardRef<HTMLDivElement, ChatProps>(
-  ({ variant, className, ...props }, ref) => {
     return (
-      <div
+      <Link
         ref={ref}
-        className={cn(chatVariants({ variant, className }))}
+        className={cn(
+          'rounded-md p-3 transition-colors flex border border-transparent items-center space-x-3 hover:bg-accent data-[state=active]:bg-accent data-[state=active]:border-border',
+          className,
+        )}
+        data-state={isActive ? 'active' : 'inactive'}
         {...props}
       />
     )

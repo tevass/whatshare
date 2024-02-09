@@ -29,10 +29,10 @@ export const InputPassword = forwardRef<HTMLInputElement, InputPasswordProps>(
           {...props}
         />
 
-        <Input.RightElement className="right-0.5">
+        <Input.RightElement className="right-1">
           <IconButton
             type="button"
-            variant="transparent"
+            variant="ghost"
             size="sm"
             onClick={toggleShowPassword}
           >

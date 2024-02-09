@@ -73,9 +73,7 @@ export function SignInForm() {
           </Card.Content>
 
           <Card.Footer>
-            <Button type="submit" full>
-              ENTRAR
-            </Button>
+            <Button type="submit">ENTRAR</Button>
           </Card.Footer>
         </Card.Root>
       </Form.Root>

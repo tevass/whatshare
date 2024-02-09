@@ -12,7 +12,7 @@ export const ChatMessagesCounter = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-center aspect-square w-5 rounded-full text-xs font-semibold transition-colors bg-highlight text-highlight-foreground',
+        'flex items-center justify-center aspect-square w-5 rounded-full text-xs font-semibold transition-colors bg-primary text-primary-foreground',
         className,
       )}
       {...props}
