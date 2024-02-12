@@ -1,39 +1,17 @@
-'use client'
+import { Avatar as _Avatar } from './avatar'
+import { AvatarFallback } from './fallback'
+import { AvatarImage } from './image'
 
-import * as Primitive from '@radix-ui/react-avatar'
-
-import { cn } from '@/utils/cn'
-import { VariantProps, cva } from 'class-variance-authority'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
-
-const avatarVariants = cva(
-  'relative fle shrink-0 overflow-hidden rounded-full',
+export const Avatar = Object.assign(
+  {},
   {
-    variants: {
-      size: {
-        md: 'h-10 w-10',
-        lg: 'h-12 w-12',
-      },
-    },
-    defaultVariants: {
-      size: 'md',
-    },
+    Root: _Avatar,
+    Image: AvatarImage,
+    Fallback: AvatarFallback,
   },
 )
 
-type AvatarRef = ElementRef<typeof Primitive.Root>
+export type { AvatarProps } from './avatar'
+export type { AvatarFallbackProps } from './fallback'
+export type { AvatarImageProps } from './image'
 
-type AvatarVariants = VariantProps<typeof avatarVariants>
-export type AvatarProps = ComponentPropsWithoutRef<typeof Primitive.Root> &
-  AvatarVariants
-
-export const Avatar = forwardRef<AvatarRef, AvatarProps>(
-  ({ className, size, ...props }, ref) => (
-    <Primitive.Root
-      ref={ref}
-      className={cn(avatarVariants({ size, className }), className)}
-      {...props}
-    />
-  ),
-)
-Avatar.displayName = Primitive.Root.displayName

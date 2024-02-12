@@ -4,66 +4,38 @@
  
 @layer base {
   :root {
-    --white: 0 0% 100%;
-    --black: 0 0% 0%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
 
-    --woodsmoke-50: 240 7% 97%;
-    --woodsmoke-100: 240 6% 94%;
-    --woodsmoke-200: 240 7% 86%;
-    --woodsmoke-300: 233 7% 74%;
-    --woodsmoke-400: 235 6% 60%;
-    --woodsmoke-500: 236 6% 48%;
-    --woodsmoke-600: 235 6% 39%;
-    --woodsmoke-700: 234 6% 32%;
-    --woodsmoke-800: 240 6% 27%;
-    --woodsmoke-900: 240 5% 24%;
-    --woodsmoke-950: 240 5% 7%;
-
-    --mountain-meadow-50: 154 100% 96%;
-    --mountain-meadow-100: 152 96% 90%;
-    --mountain-meadow-200: 155 90% 80%;
-    --mountain-meadow-300: 158 85% 67%;
-    --mountain-meadow-400: 160 77% 52%;
-    --mountain-meadow-500: 162 100% 35%;
-    --mountain-meadow-600: 162 100% 32%;
-    --mountain-meadow-700: 164 100% 26%;
-    --mountain-meadow-800: 165 100% 20%;
-    --mountain-meadow-900: 166 100% 17%;
-    --mountain-meadow-950: 168 100% 9%;
-
-    /* Light */
-    --background: var(--woodsmoke-50);
-    --foreground: var(--woodsmoke-950);
-
-    --card: var(--woodsmoke-50);
-    --card-foreground: var(--woodsmoke-900);
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
  
-    --popover: var(--woodsmoke-50);
-    --popover-foreground: var(--woodsmoke-900);
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
  
-    --primary: var(--mountain-meadow-500);
-    --primary-foreground: var(--woodsmoke-50);
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
  
-    --secondary: var(--woodsmoke-100);
-    --secondary-foreground: var(--woodsmoke-800);
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
  
-    --muted: var(--woodsmoke-100);
+    --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
  
-    --accent: var(--woodsmoke-100);
-    --accent-foreground: var(--woodsmoke-700);
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: var(--woodsmoke-200);
-    --input: var(--woodsmoke-200);
-    --ring: var(--mountain-meadow-500);
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
  
     --radius: 0.5rem;
   }
  
-  /* .dark {
+  .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
  
@@ -91,14 +63,14 @@
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
-  } */
+  }
 }
  
 @layer base {
   * {
     @apply border-border;
   }
-
+  
   body {
     @apply bg-background text-foreground;
   }
@@ -106,10 +78,10 @@
 
 @layer utilities {
   .inset-y-center {
-    @apply absolute -translate-y-1/2 top-1/2;
+    @apply -translate-y-1/2 top-1/2;
   }
 
   .inset-x-center {
-    @apply absolute -translate-x-1/2 left-1/2;
+    @apply -translate-x-1/2 left-1/2;
   }
 }

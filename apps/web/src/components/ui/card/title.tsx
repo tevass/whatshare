@@ -1,9 +1,12 @@
+import { forwardRef, type HTMLAttributes } from 'react'
+
 import { cn } from '@/utils/cn'
-import { HTMLAttributes, forwardRef } from 'react'
+
+type CardTitleRef = HTMLHeadingElement
 
 export type CardTitleProps = HTMLAttributes<HTMLHeadingElement>
 
-export const CardTitle = forwardRef<HTMLParagraphElement, CardTitleProps>(
+export const CardTitle = forwardRef<CardTitleRef, CardTitleProps>(
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}

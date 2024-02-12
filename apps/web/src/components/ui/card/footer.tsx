@@ -1,9 +1,11 @@
 import { cn } from '@/utils/cn'
-import { HTMLAttributes, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
+
+type CardFooterRef = HTMLElement
 
 export type CardFooterProps = HTMLAttributes<HTMLElement>
 
-export const CardFooter = forwardRef<HTMLElement, CardFooterProps>(
+export const CardFooter = forwardRef<CardFooterRef, CardFooterProps>(
   ({ className, ...props }, ref) => (
     <footer
       ref={ref}

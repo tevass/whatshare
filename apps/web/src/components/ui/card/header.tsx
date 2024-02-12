@@ -1,9 +1,12 @@
+import { forwardRef, type HTMLAttributes } from 'react'
+
 import { cn } from '@/utils/cn'
-import { HTMLAttributes, forwardRef } from 'react'
+
+type CardHeaderRef = HTMLElement
 
 export type CardHeaderProps = HTMLAttributes<HTMLElement>
 
-export const CardHeader = forwardRef<HTMLElement, CardHeaderProps>(
+export const CardHeader = forwardRef<CardHeaderRef, CardHeaderProps>(
   ({ className, ...props }, ref) => (
     <header
       ref={ref}

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { fontFamily } from 'tailwindcss/defaultTheme'
 
 const config = {
   darkMode: ['class'],
@@ -18,33 +19,13 @@ const config = {
       },
     },
     extend: {
+      spacing: {
+        '4.5': '1.125rem',
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', ...fontFamily.sans],
+      },
       colors: {
-        woodsmoke: {
-          '50': 'hsl(var(--woodsmoke-50))',
-          '100': 'hsl(var(--woodsmoke-100))',
-          '200': 'hsl(var(--woodsmoke-200))',
-          '300': 'hsl(var(--woodsmoke-300))',
-          '400': 'hsl(var(--woodsmoke-400))',
-          '500': 'hsl(var(--woodsmoke-500))',
-          '600': 'hsl(var(--woodsmoke-600))',
-          '700': 'hsl(var(--woodsmoke-700))',
-          '800': 'hsl(var(--woodsmoke-800))',
-          '900': 'hsl(var(--woodsmoke-900))',
-          '950': 'hsl(var(--woodsmoke-950))',
-        },
-        'mountain-meadow': {
-          '50': 'hsl(var(--mountain-meadow-50))',
-          '100': 'hsl(var(--mountain-meadow-100))',
-          '200': 'hsl(var(--mountain-meadow-200))',
-          '300': 'hsl(var(--mountain-meadow-300))',
-          '400': 'hsl(var(--mountain-meadow-400))',
-          '500': 'hsl(var(--mountain-meadow-500))',
-          '600': 'hsl(var(--mountain-meadow-600))',
-          '700': 'hsl(var(--mountain-meadow-700))',
-          '800': 'hsl(var(--mountain-meadow-800))',
-          '900': 'hsl(var(--mountain-meadow-900))',
-          '950': 'hsl(var(--mountain-meadow-950))',
-        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -80,9 +61,9 @@ const config = {
         },
       },
       borderRadius: {
-        sm: 'calc(var(--radius) - 4px)',
-        md: 'calc(var(--radius) - 2px)',
         lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {
@@ -98,8 +79,14 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
-      gridTemplateColumns: {
-        chats: '380px 1fr',
+      gridTemplateColumns({ theme }) {
+        return {
+          sidebar: `${theme('spacing.12')} 1fr`,
+          chat: `${theme('spacing.96')} 1fr`,
+        }
+      },
+      width: {
+        'popover-trigger': 'var(--radix-popover-trigger-width)',
       },
     },
   },

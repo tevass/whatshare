@@ -1,21 +1,18 @@
-import { cn } from '@/utils/cn'
+import { Slot } from '@radix-ui/react-slot'
 import NextLink from 'next/link'
-import { ComponentProps, forwardRef } from 'react'
+import { forwardRef, type ComponentProps } from 'react'
 
-export type LinkProps = ComponentProps<typeof NextLink>
+type LinkRef = HTMLAnchorElement
 
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <NextLink
-        ref={ref}
-        className={cn(
-          'focus-within:outline-none focus-within:ring-1 focus-within:ring-ring',
-          className,
-        )}
-        {...props}
-      />
-    )
+export type LinkProps = ComponentProps<typeof NextLink> & {
+  asChild?: boolean
+}
+
+export const Link = forwardRef<LinkRef, LinkProps>(
+  ({ asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : NextLink
+
+    return <Comp {...props} ref={ref} />
   },
 )
 Link.displayName = 'Link'

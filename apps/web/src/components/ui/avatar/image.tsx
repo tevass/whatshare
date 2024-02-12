@@ -2,8 +2,13 @@
 
 import * as Primitive from '@radix-ui/react-avatar'
 
+import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+} from 'react'
+
 import { cn } from '@/utils/cn'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 type AvatarImageRef = ElementRef<typeof Primitive.Image>
 

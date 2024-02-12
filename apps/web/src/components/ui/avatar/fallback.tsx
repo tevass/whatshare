@@ -2,24 +2,34 @@
 
 import * as Primitive from '@radix-ui/react-avatar'
 
+import { cva, type VariantProps } from 'class-variance-authority'
+import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+} from 'react'
+
 import { cn } from '@/utils/cn'
-import { VariantProps, cva } from 'class-variance-authority'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 const avatarFallbackVariants = cva(
   'flex h-full w-full items-center justify-center rounded-full bg-muted',
   {
     variants: {
       size: {
+        xs: 'text-xs',
+        sm: 'text-sm',
         md: 'text-base',
       },
+    },
+    defaultVariants: {
+      size: 'md',
     },
   },
 )
 
-type AvatarFallbackRef = ElementRef<typeof Primitive.Fallback>
-
 type AvatarFallbackVariants = VariantProps<typeof avatarFallbackVariants>
+
+type AvatarFallbackRef = ElementRef<typeof Primitive.Fallback>
 
 export interface AvatarFallbackProps
   extends ComponentPropsWithoutRef<typeof Primitive.Fallback>,

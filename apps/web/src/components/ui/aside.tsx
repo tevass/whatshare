@@ -1,11 +1,10 @@
-import { cn } from '@/utils/cn'
-import { HTMLAttributes, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
+
+type AsideRef = HTMLElement
 
 export type AsideProps = HTMLAttributes<HTMLElement>
 
-export const Aside = forwardRef<HTMLElement, AsideProps>(
-  ({ className, ...props }, ref) => {
-    return <aside className={cn(className)} ref={ref} {...props} />
-  },
-)
+export const Aside = forwardRef<AsideRef, AsideProps>(({ ...props }, ref) => {
+  return <aside ref={ref} {...props} />
+})
 Aside.displayName = 'Aside'
