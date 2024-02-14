@@ -12,21 +12,17 @@ export function Sidebar() {
       <SidebarContent>
         <Navigation.Root>
           <Navigation.List>
-            <Navigation.Item>
-              <SidebarLink.Root href="/wa">
-                <SidebarLink.Icon>
-                  <MessageCircle />
-                </SidebarLink.Icon>
-              </SidebarLink.Root>
-            </Navigation.Item>
+            <SidebarLink.Root href="/wa">
+              <SidebarLink.Icon>
+                <MessageCircle />
+              </SidebarLink.Icon>
+            </SidebarLink.Root>
 
-            <Navigation.Item>
-              <SidebarLink.Root href="/contacts">
-                <SidebarLink.Icon>
-                  <Users />
-                </SidebarLink.Icon>
-              </SidebarLink.Root>
-            </Navigation.Item>
+            <SidebarLink.Root href="/contacts">
+              <SidebarLink.Icon>
+                <Users />
+              </SidebarLink.Icon>
+            </SidebarLink.Root>
           </Navigation.List>
         </Navigation.Root>
 

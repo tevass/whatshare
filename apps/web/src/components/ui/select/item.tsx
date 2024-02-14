@@ -1,7 +1,6 @@
 'use client'
 
 import * as Primitive from '@radix-ui/react-select'
-import { cva, type VariantProps } from 'class-variance-authority'
 import {
   forwardRef,
   type ComponentPropsWithoutRef,
@@ -9,38 +8,31 @@ import {
 } from 'react'
 
 import { cn } from '@/utils/cn'
-
-const selectItemVariants = cva(
-  'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-  {
-    variants: {
-      alignIndicator: {
-        start: 'pl-8 pr-2',
-        end: 'pr-8 pl-2',
-      },
-    },
-    defaultVariants: {
-      alignIndicator: 'start',
-    },
-  },
-)
-
-type SelectItemVariantsProps = VariantProps<typeof selectItemVariants>
+import { Check } from 'lucide-react'
 
 type SelectItemRef = ElementRef<typeof Primitive.Item>
 
-export interface SelectItemProps
-  extends ComponentPropsWithoutRef<typeof Primitive.Item>,
-    SelectItemVariantsProps {}
+export type SelectItemProps = ComponentPropsWithoutRef<typeof Primitive.Item>
 
 export const SelectItem = forwardRef<SelectItemRef, SelectItemProps>(
-  ({ className, alignIndicator, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <Primitive.Item
         ref={ref}
-        className={cn(selectItemVariants({ alignIndicator, className }))}
+        className={cn(
+          'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+          className,
+        )}
         {...props}
-      />
+      >
+        <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+          <Primitive.ItemIndicator>
+            <Check className="size-4" />
+          </Primitive.ItemIndicator>
+        </span>
+
+        <Primitive.ItemText>{children}</Primitive.ItemText>
+      </Primitive.Item>
     )
   },
 )

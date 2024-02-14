@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CardContent } from '@/components/ui/card/content'
 import { Select } from '@/components/ui/select'
-import { Check, ChevronsUpDown } from 'lucide-react'
 
 export default function Page() {
   return (
@@ -21,24 +20,10 @@ export default function Page() {
           <Select.Root>
             <Select.Trigger>
               <Select.Value placeholder="Selecione..." />
-
-              <Select.TriggerIcon>
-                <ChevronsUpDown />
-              </Select.TriggerIcon>
             </Select.Trigger>
 
             <Select.Content>
-              <Select.Viewport>
-                <Select.Item value="1">
-                  <Select.ItemText>WhatsApp 1</Select.ItemText>
-
-                  <Select.ItemIndicator>
-                    <Select.ItemIndicatorIcon>
-                      <Check />
-                    </Select.ItemIndicatorIcon>
-                  </Select.ItemIndicator>
-                </Select.Item>
-              </Select.Viewport>
+              <Select.Item value="1">WhatsApp 1</Select.Item>
             </Select.Content>
           </Select.Root>
         </CardContent>

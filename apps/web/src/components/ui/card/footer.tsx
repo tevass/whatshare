@@ -1,13 +1,15 @@
+import { forwardRef, type ComponentRef } from 'react'
+import { Footer, type FooterProps } from '../footer'
+
 import { cn } from '@/utils/cn'
-import { forwardRef, type HTMLAttributes } from 'react'
 
-type CardFooterRef = HTMLElement
+type CardFooterRef = ComponentRef<typeof Footer>
 
-export type CardFooterProps = HTMLAttributes<HTMLElement>
+export type CardFooterProps = FooterProps
 
 export const CardFooter = forwardRef<CardFooterRef, CardFooterProps>(
   ({ className, ...props }, ref) => (
-    <footer
+    <Footer
       ref={ref}
       className={cn('flex items-center p-6 pt-0', className)}
       {...props}

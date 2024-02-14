@@ -2,16 +2,14 @@
 
 import * as Primitive from '@radix-ui/react-select'
 import {
-  Children,
-  ReactElement,
-  cloneElement,
   forwardRef,
   type ComponentPropsWithoutRef,
   type ElementRef,
 } from 'react'
 
 import { cn } from '@/utils/cn'
-import { SelectViewportProps } from './viewport'
+import { SelectScrollDownButton } from './scroll-down-button'
+import { SelectScrollUpButton } from './scroll-up-button'
 
 type SelectContentRef = ElementRef<typeof Primitive.Content>
 
@@ -20,13 +18,7 @@ export type SelectContentProps = ComponentPropsWithoutRef<
 >
 
 export const SelectContent = forwardRef<SelectContentRef, SelectContentProps>(
-  ({ className, position = 'popper', ...props }, ref) => {
-    const children = Children.toArray(props.children).map((el) =>
-      cloneElement(el as ReactElement<SelectViewportProps>, {
-        position,
-      }),
-    )
-
+  ({ className, children, position = 'popper', ...props }, ref) => {
     return (
       <Primitive.Portal>
         <Primitive.Content
@@ -40,7 +32,17 @@ export const SelectContent = forwardRef<SelectContentRef, SelectContentProps>(
           position={position}
           {...props}
         >
-          {children}
+          <SelectScrollUpButton />
+          <Primitive.Viewport
+            className={cn(
+              'p-1',
+              position === 'popper' &&
+                'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]',
+            )}
+          >
+            {children}
+          </Primitive.Viewport>
+          <SelectScrollDownButton />
         </Primitive.Content>
       </Primitive.Portal>
     )

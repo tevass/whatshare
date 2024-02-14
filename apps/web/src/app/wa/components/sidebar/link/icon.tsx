@@ -1,5 +1,5 @@
 import { cn } from '@/utils/cn'
-import { Slot, SlotProps } from '@radix-ui/react-slot'
+import { Slot, type SlotProps } from '@radix-ui/react-slot'
 
 export type SidebarLinkIconProps = SlotProps
 

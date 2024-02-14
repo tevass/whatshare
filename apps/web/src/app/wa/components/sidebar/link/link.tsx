@@ -20,14 +20,16 @@ export const SidebarLink = forwardRef<SidebarLinkRef, SidebarLinkProps>(
     const isActive = useIsActivePathname({ href: props.href })
 
     return (
-      <Button
-        size="icon"
-        variant={!isActive ? 'ghost' : 'primary'}
-        className={cn(!isActive && 'hover:bg-foreground/10', className)}
-        asChild
-      >
-        <Navigation.Link ref={ref} {...props} />
-      </Button>
+      <Navigation.Item>
+        <Button
+          size="icon"
+          variant={!isActive ? 'ghost' : 'primary'}
+          className={cn(!isActive && 'hover:bg-foreground/10', className)}
+          asChild
+        >
+          <Navigation.Link ref={ref} {...props} />
+        </Button>
+      </Navigation.Item>
     )
   },
 )

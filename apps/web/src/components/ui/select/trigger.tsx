@@ -8,6 +8,7 @@ import {
 } from 'react'
 
 import { cn } from '@/utils/cn'
+import { ChevronDown } from 'lucide-react'
 
 type SelectTriggerRef = ElementRef<typeof Primitive.Trigger>
 
@@ -16,7 +17,7 @@ export type SelectTriggerProps = ComponentPropsWithoutRef<
 >
 
 export const SelectTrigger = forwardRef<SelectTriggerRef, SelectTriggerProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <Primitive.Trigger
         ref={ref}
@@ -25,7 +26,13 @@ export const SelectTrigger = forwardRef<SelectTriggerRef, SelectTriggerProps>(
           className,
         )}
         {...props}
-      />
+      >
+        {children}
+
+        <Primitive.Icon asChild>
+          <ChevronDown className="size-4 opacity-50" />
+        </Primitive.Icon>
+      </Primitive.Trigger>
     )
   },
 )
