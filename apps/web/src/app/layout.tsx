@@ -17,9 +17,9 @@ export const fontSans = FontSans({
   variable: '--font-sans',
 })
 
-type LayoutProps = Readonly<PropsWithChildren>
+type RootLayoutProps = PropsWithChildren
 
-export default function RootLayout({ children }: LayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps) {
           fontSans.variable,
         )}
       >
-        <div className="h-lvh">{children}</div>
+        <div className="h-screen">{children}</div>
       </body>
     </html>
   )
