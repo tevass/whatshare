@@ -150,6 +150,10 @@ export class PrismaContactsRepository implements ContactsRepository {
     })
   }
 
+  async saveMany(contacts: Contact[]): Promise<void> {
+    await Promise.all(contacts.map((contact) => this.save(contact)))
+  }
+
   async create(contact: Contact): Promise<void> {
     const data = PrismaContactMapper.toPrismaCreate(contact)
 

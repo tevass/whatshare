@@ -3,6 +3,7 @@ import { makeGroupMessage } from '@/test/factories/make-group-message'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { faker } from '@faker-js/faker'
+import { GroupChatContactList } from '../grou-chat-contact-list'
 import { GroupChat } from '../group-chat'
 
 describe('GroupChat', () => {
@@ -12,7 +13,9 @@ describe('GroupChat', () => {
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: Array.from(Array(3)).map(() => makeContact()),
+      participants: GroupChatContactList.create(
+        Array.from(Array(3)).map(() => makeContact()),
+      ),
     })
 
     expect(chat).toBeTruthy()
@@ -24,7 +27,9 @@ describe('GroupChat', () => {
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: Array.from(Array(3)).map(() => makeContact()),
+      participants: GroupChatContactList.create(
+        Array.from(Array(3)).map(() => makeContact()),
+      ),
     })
 
     chat.read()
@@ -37,7 +42,9 @@ describe('GroupChat', () => {
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: Array.from(Array(3)).map(() => makeContact()),
+      participants: GroupChatContactList.create(
+        Array.from(Array(3)).map(() => makeContact()),
+      ),
     })
 
     chat.unread()
@@ -50,7 +57,9 @@ describe('GroupChat', () => {
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: Array.from(Array(3)).map(() => makeContact()),
+      participants: GroupChatContactList.create(
+        Array.from(Array(3)).map(() => makeContact()),
+      ),
     })
 
     chat.clear()
@@ -69,7 +78,9 @@ describe('GroupChat', () => {
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: Array.from(Array(3)).map(() => makeContact()),
+      participants: GroupChatContactList.create(
+        Array.from(Array(3)).map(() => makeContact()),
+      ),
     })
 
     const message = makeGroupMessage()

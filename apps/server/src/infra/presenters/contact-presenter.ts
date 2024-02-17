@@ -14,6 +14,7 @@ export class ContactPresenter {
       isEnterprise: contact.isEnterprise,
       isGroup: contact.isGroup,
       isMyContact: contact.isMyContact,
+      isWAClient: contact.isWAClient,
     }
   }
 
@@ -28,6 +29,7 @@ export class ContactPresenter {
       isEnterprise: contact.isEnterprise,
       isGroup: contact.isGroup,
       isMyContact: contact.isMyContact,
+      isWAClient: contact.isWAClient,
     }
   }
 }

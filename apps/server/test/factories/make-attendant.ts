@@ -10,18 +10,24 @@ import {
   FakeAttendantProfileFactory,
   makeAttendantProfile,
 } from './make-attendant-profile'
+import { makeUniqueEntityID } from './make-unique-entity-id'
 
 export const makeAttendant = (
   override: Partial<AttendantProps> = {},
   id?: UniqueEntityID,
 ) => {
-  return Attendant.create(
+  const attendantId = id ?? makeUniqueEntityID()
+  const attendant = Attendant.create(
     {
       profile: makeAttendantProfile(),
       ...override,
     },
-    id,
+    attendantId,
   )
+
+  attendant.profile.set({ attendantId })
+
+  return attendant
 }
 
 @Injectable()

@@ -18,7 +18,7 @@ export class GroupChatPresenter {
         : null,
       deletedAt: chat.deletedAt,
       isGroup: chat.isGroup,
-      participants: chat.participants.map(ContactPresenter.toHttp),
+      participants: chat.participants.getItems().map(ContactPresenter.toHttp),
     }
   }
 
@@ -35,7 +35,7 @@ export class GroupChatPresenter {
         : null,
       deletedAt: chat.deletedAt,
       isGroup: chat.isGroup,
-      participants: chat.participants.map(ContactPresenter.toWs),
+      participants: chat.participants.getItems().map(ContactPresenter.toWs),
     }
   }
 }

@@ -1,24 +1,24 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { GroupMessage } from '@/domain/chat/enterprise/entities/group-message'
-import { Prisma, Message as PrismaMessage } from '@prisma/client'
-import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
-import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
-import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
-import {
-  PrismaMessageMediaMapper,
-  RawMessageMedia,
-} from './prisma-message-media-mapper'
+import { GroupMessage } from '@/domain/chat/enterprise/entities/group-message'
+import { Prisma, Message as PrismaMessage } from '@prisma/client'
 import {
   PrismaAttendantProfileMapper,
   RawAttendantProfile,
 } from './prisma-attendant-profile-mapper'
+import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
 import {
   PrismaGroupQuotedMessageMapper,
   RawGroupQuotedMessage,
 } from './prisma-group-quoted-message-mapper'
+import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
+import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
+import {
+  PrismaMessageMediaMapper,
+  RawMessageMedia,
+} from './prisma-message-media-mapper'
+import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
 
 export type RawGroupMessage = PrismaMessage & {
   vCardsContacts?: RawContact[]
@@ -87,13 +87,19 @@ export class PrismaGroupMessageMapper {
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
-      vCardsContactsIds: message.contacts?.map((contact) =>
-        contact.id.toString(),
-      ),
       authorId: message.author.id.toString(),
-      mentionsIds: message.mentions?.map((contact) => contact.id.toString()),
       isBroadcast: false,
       isStatus: false,
+      vCardsContacts: {
+        connect: message.contacts?.map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
+      mentions: {
+        connect: message.mentions?.map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
     }
   }
 
@@ -119,13 +125,19 @@ export class PrismaGroupMessageMapper {
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
-      vCardsContactsIds: message.contacts?.map((contact) =>
-        contact.id.toString(),
-      ),
       authorId: message.author.id.toString(),
-      mentionsIds: message.mentions?.map((contact) => contact.id.toString()),
       isBroadcast: false,
       isStatus: false,
+      vCardsContacts: {
+        connect: message.contacts?.map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
+      mentions: {
+        connect: message.mentions?.map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
     }
   }
 }

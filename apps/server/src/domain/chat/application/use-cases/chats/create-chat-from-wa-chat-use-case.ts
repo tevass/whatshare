@@ -1,12 +1,12 @@
 import { Either, left, right } from '@/core/either'
-import { WAChat } from '../../entities/wa-chat'
-import { Chat } from '@/domain/chat/enterprise/types/chat'
-import { ContactsRepository } from '../../repositories/contacts-repository'
-import { ChatsRepository } from '../../repositories/chats-repository'
+import { Chat, isGroupChat } from '@/domain/chat/enterprise/types/chat'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
+import { WAChat } from '../../entities/wa-chat'
+import { ChatsRepository } from '../../repositories/chats-repository'
+import { ContactsRepository } from '../../repositories/contacts-repository'
 import { CreateContactsFromWaContactsUseCase } from '../contacts/create-contacts-from-wa-contacts-use-case'
 import { ChatAlreadyExistsError } from '../errors/chat-already-exists-error'
-import { Injectable } from '@nestjs/common'
 
 interface CreateChatFromWaChatUseCaseRequest {
   waChat: WAChat
@@ -55,13 +55,13 @@ export class CreateChatFromWaChatUseCase {
     const chat = waChat.toChat()
     chat.set({ contact })
 
-    if (waChat.isGroup()) {
+    if (waChat.isGroup() && isGroupChat(chat)) {
       const response = await this.createContactsFromWaContacts.execute({
         waContacts: waChat.participants,
       })
 
-      const participants = response.value?.contacts
-      chat.set({ participants })
+      const participants = response.value?.contacts ?? []
+      chat.participants.update(participants)
     }
 
     await this.chatsRepository.create(chat)

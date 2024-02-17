@@ -3,17 +3,17 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
 import { GroupQuotedMessage } from '@/domain/chat/enterprise/entities/group-quoted-message'
 import { Message as PrismaMessage } from '@prisma/client'
-import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
-import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
-import {
-  PrismaMessageMediaMapper,
-  RawMessageMedia,
-} from './prisma-message-media-mapper'
 import {
   PrismaAttendantProfileMapper,
   RawAttendantProfile,
 } from './prisma-attendant-profile-mapper'
 import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
+import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
+import {
+  PrismaMessageMediaMapper,
+  RawMessageMedia,
+} from './prisma-message-media-mapper'
+import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
 
 export type RawGroupQuotedMessage = PrismaMessage & {
   media?: RawMessageMedia | null

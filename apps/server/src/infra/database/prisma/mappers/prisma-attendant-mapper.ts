@@ -28,9 +28,11 @@ export class PrismaAttendantMapper {
       id: attendant.id.toString(),
       profileId: attendant.profile.id.toString(),
       password: attendant.password,
-      whatsAppsIds: attendant.whatsAppsList
-        .getItems()
-        .map((whatsApp) => whatsApp.id.toString()),
+      whatsApps: {
+        connect: attendant.whatsAppsList.getItems().map((whatsApp) => ({
+          id: whatsApp.id.toString(),
+        })),
+      },
     }
   }
 }

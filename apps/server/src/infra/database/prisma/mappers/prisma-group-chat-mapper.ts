@@ -1,5 +1,6 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { GroupChatContactList } from '@/domain/chat/enterprise/entities/grou-chat-contact-list'
 import { GroupChat } from '@/domain/chat/enterprise/entities/group-chat'
 import { Prisma, Chat as PrismaChat } from '@prisma/client'
 import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
@@ -27,7 +28,9 @@ export class PrismaGroupChatMapper {
         lastMessage: raw.lastMessage?.[0]
           ? PrismaGroupMessageMapper.toDomain(raw.lastMessage[0])
           : null,
-        participants: raw.participants.map(PrismaContactMapper.toDomain),
+        participants: GroupChatContactList.create(
+          raw.participants.map(PrismaContactMapper.toDomain),
+        ),
       },
       new UniqueEntityID(raw.id),
     )
@@ -44,9 +47,11 @@ export class PrismaGroupChatMapper {
       whatsAppId: chat.whatsAppId.toString(),
       lastMessageId: chat.lastMessage?.id.toString(),
       isGroup: chat.isGroup,
-      participantsIds: chat.participants.map((contact) =>
-        contact.id.toString(),
-      ),
+      participants: {
+        connect: chat.participants.getItems().map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
     }
   }
 
@@ -60,9 +65,14 @@ export class PrismaGroupChatMapper {
       whatsAppId: chat.whatsAppId.toString(),
       lastMessageId: chat.lastMessage?.id.toString(),
       isGroup: chat.isGroup,
-      participantsIds: chat.participants.map((contact) =>
-        contact.id.toString(),
-      ),
+      participants: {
+        connect: chat.participants.getNewItems().map((contact) => ({
+          id: contact.id.toString(),
+        })),
+        disconnect: chat.participants.getRemovedItems().map((contact) => ({
+          id: contact.id.toString(),
+        })),
+      },
     }
   }
 }
