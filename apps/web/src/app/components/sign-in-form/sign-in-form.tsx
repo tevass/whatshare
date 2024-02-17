@@ -4,6 +4,7 @@ import { useZodForm } from '@/hooks/use-zod-form'
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { InputGroup } from '@/components/ui/input-group'
@@ -17,6 +18,7 @@ export function SignInForm() {
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: false,
     },
   })
 
@@ -30,7 +32,7 @@ export function SignInForm() {
     <Form.Root {...formProps}>
       <Form.Content onSubmit={handleSubmit(handleSignIn)}>
         <Card.Root className="w-[310px] sm:w-96">
-          <Card.Content className="pt-5 pb-3.5 space-y-2">
+          <Card.Content className="pt-5 pb-3.5 space-y-3">
             <Form.Field
               control={control}
               name="email"
@@ -65,6 +67,20 @@ export function SignInForm() {
                   </Form.Control>
 
                   <Form.Message />
+                </Form.Item>
+              )}
+            />
+
+            <Form.Field
+              control={control}
+              name="rememberMe"
+              render={({ field }) => (
+                <Form.Item orientation="horizontal">
+                  <Form.Control>
+                    <Checkbox {...field} />
+                  </Form.Control>
+
+                  <Form.Label>Lembrar de mim?</Form.Label>
                 </Form.Item>
               )}
             />

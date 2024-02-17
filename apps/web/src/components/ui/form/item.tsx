@@ -1,21 +1,42 @@
 'use client'
 
+import { cva, type VariantProps } from 'class-variance-authority'
 import { forwardRef, useId, type HTMLAttributes } from 'react'
 import { FormItemProvider } from './item-context'
 
 import { cn } from '@/utils/cn'
 
+const formItemVariants = cva('', {
+  variants: {
+    orientation: {
+      vertical: 'space-y-2',
+      horizontal: 'flex items-center space-x-2',
+    },
+  },
+  defaultVariants: {
+    orientation: 'vertical',
+  },
+})
+
+type FormItemVariants = VariantProps<typeof formItemVariants>
+
 type FormItemRef = HTMLDivElement
 
-export type FormItemProps = HTMLAttributes<HTMLDivElement>
+export interface FormItemProps
+  extends HTMLAttributes<HTMLDivElement>,
+    FormItemVariants {}
 
 export const FormItem = forwardRef<FormItemRef, FormItemProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, orientation, ...props }, ref) => {
     const id = useId()
 
     return (
       <FormItemProvider value={{ id }}>
-        <div ref={ref} className={cn('space-y-2', className)} {...props} />
+        <div
+          ref={ref}
+          className={cn(formItemVariants({ orientation, className }))}
+          {...props}
+        />
       </FormItemProvider>
     )
   },
