@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import type { SetOptional } from 'type-fest'
+import type { SetNonNullable, SetOptional } from 'type-fest'
 import { Media, MediaProps } from './media'
 
 export interface MessageMediaProps extends MediaProps {
@@ -9,6 +9,10 @@ export interface MessageMediaProps extends MediaProps {
 export class MessageMedia extends Media<MessageMediaProps> {
   get messageId() {
     return this.props.messageId
+  }
+
+  hasMessageId(): this is SetNonNullable<MessageMediaProps, 'messageId'> {
+    return !!this.messageId
   }
 
   static create(

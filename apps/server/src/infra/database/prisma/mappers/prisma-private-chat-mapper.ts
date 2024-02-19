@@ -45,6 +45,20 @@ export class PrismaPrivateChatMapper {
     }
   }
 
+  static toPrismaCreateMany(chat: PrivateChat): Prisma.ChatCreateManyInput {
+    return {
+      id: chat.id.toString(),
+      contactId: chat.contact.id.toString(),
+      deletedAt: chat.deletedAt,
+      lastInteraction: chat.lastInteraction,
+      unreadCount: chat.unreadCount,
+      waChatId: chat.waChatId.toString(),
+      whatsAppId: chat.whatsAppId.toString(),
+      lastMessageId: chat.lastMessage?.id.toString(),
+      isGroup: chat.isGroup,
+    }
+  }
+
   static toPrismaUpdate(chat: PrivateChat): Prisma.ChatUncheckedUpdateInput {
     return {
       contactId: chat.contact.id.toString(),

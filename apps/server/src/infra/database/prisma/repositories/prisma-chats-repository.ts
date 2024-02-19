@@ -6,13 +6,13 @@ import {
   ChatsRepositoryFindManyByWAChatsIdsParams,
   ChatsRepositoryFindManyByWhatsAppIdParams,
 } from '@/domain/chat/application/repositories/chats-repository'
+import { Chat } from '@/domain/chat/enterprise/types/chat'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
 import { TypeGuards } from '@/infra/utils/type-guards'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaChatMapper } from '../mappers/prisma-chat-mapper'
 import { PrismaService } from '../prisma.service'
-import { Chat } from '@/domain/chat/enterprise/types/chat'
 
 @Injectable()
 export class PrismaChatsRepository implements ChatsRepository {
@@ -143,7 +143,7 @@ export class PrismaChatsRepository implements ChatsRepository {
   }
 
   async createMany(chats: Chat[]): Promise<void> {
-    const data = chats.map(PrismaChatMapper.toPrismaCreate)
+    const data = chats.map(PrismaChatMapper.toPrismaCreateMany)
 
     await this.prisma.chat.createMany({
       data,

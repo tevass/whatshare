@@ -16,6 +16,7 @@ export class PrismaWhatsAppsRepository implements WhatsAppsRepository {
     params: WhatsAppsRepositoryFindByIdParams,
   ): Promise<WhatsApp | null> {
     const { id } = params
+
     const raw = await this.prisma.whatsApp.findUnique({
       where: {
         id,
@@ -31,6 +32,7 @@ export class PrismaWhatsAppsRepository implements WhatsAppsRepository {
     params: WhatsAppsRepositoryFindManyByIdsParams,
   ): Promise<WhatsApp[]> {
     const { ids } = params
+
     const raw = await this.prisma.whatsApp.findMany({
       where: {
         id: {

@@ -2,10 +2,10 @@ import {
   MessageMediasRepository,
   MessageMediasRepositoryFindManyByMessagesIdsParams,
 } from '@/domain/chat/application/repositories/message-medias-repository'
-import { PrismaService } from '../prisma.service'
 import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
-import { PrismaMessageMediaMapper } from '../mappers/prisma-message-media-mapper'
 import { Injectable } from '@nestjs/common'
+import { PrismaMessageMediaMapper } from '../mappers/prisma-message-media-mapper'
+import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaMessageMediasRepository implements MessageMediasRepository {
@@ -18,19 +18,8 @@ export class PrismaMessageMediasRepository implements MessageMediasRepository {
 
     const raw = await this.prisma.media.findMany({
       where: {
-        message: {
-          some: {
-            id: {
-              in: messagesIds,
-            },
-          },
-        },
-      },
-      include: {
-        message: {
-          select: {
-            id: true,
-          },
+        messageId: {
+          in: messagesIds,
         },
       },
     })

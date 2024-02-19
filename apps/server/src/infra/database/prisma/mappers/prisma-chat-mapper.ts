@@ -1,10 +1,10 @@
-import { Prisma } from '@prisma/client'
 import { Chat, isPrivateChat } from '@/domain/chat/enterprise/types/chat'
+import { Prisma } from '@prisma/client'
+import { PrismaGroupChatMapper, RawGroupChat } from './prisma-group-chat-mapper'
 import {
   PrismaPrivateChatMapper,
   RawPrivateChat,
 } from './prisma-private-chat-mapper'
-import { PrismaGroupChatMapper, RawGroupChat } from './prisma-group-chat-mapper'
 
 export type RawChat = RawPrivateChat | RawGroupChat
 
@@ -23,6 +23,12 @@ export class PrismaChatMapper {
     return isPrivateChat(chat)
       ? PrismaPrivateChatMapper.toPrismaCreate(chat)
       : PrismaGroupChatMapper.toPrismaCreate(chat)
+  }
+
+  static toPrismaCreateMany(chat: Chat): Prisma.ChatCreateManyInput {
+    return isPrivateChat(chat)
+      ? PrismaPrivateChatMapper.toPrismaCreateMany(chat)
+      : PrismaGroupChatMapper.toPrismaCreateMany(chat)
   }
 
   static toPrismaUpdate(chat: Chat): Prisma.ChatUncheckedUpdateInput {

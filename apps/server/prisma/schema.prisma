@@ -25,7 +25,7 @@ model WhatsApp {
 
   attendants Attendant[] @relation(fields: [attendantsIds], references: [id])
   chats      Chat[]
-  messages   Message[]
+  messages   Message[]   @relation("MessageWhatsApps")
 
   @@map("whats_apps")
 }
@@ -104,11 +104,12 @@ model Chat {
 }
 
 model Media {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  key      String @unique
-  mimetype String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  key       String  @unique
+  mimetype  String
+  messageId String? @db.ObjectId
 
-  message Message[]
+  message Message? @relation("MessageMedia", fields: [messageId], references: [id])
 
   @@map("medias")
 }
@@ -151,7 +152,6 @@ model Message {
   body              MessageBody?
   senderId          String?      @db.ObjectId
   revokerId         String?      @db.ObjectId
-  mediaId           String?      @db.ObjectId
   quotedId          String?      @db.ObjectId
   authorId          String?      @db.ObjectId
   mentionsIds       String[]     @db.ObjectId
@@ -167,13 +167,13 @@ model Message {
   revokedAt DateTime?
 
   author         Contact?          @relation("MessageAuthor", fields: [authorId], references: [id])
-  media          Media?            @relation(fields: [mediaId], references: [id])
+  media          Media[]           @relation("MessageMedia")
   senderBy       AttendantProfile? @relation("SendMessageBy", fields: [senderId], references: [id])
   revokedBy      AttendantProfile? @relation("RevokeMessageBy", fields: [revokerId], references: [id])
   quoted         Message?          @relation("MessageQuoted", fields: [quotedId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies        Message[]         @relation("MessageQuoted")
   chat           Chat              @relation("ChatMessages", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  whatsApp       WhatsApp          @relation(fields: [whatsAppId], references: [id])
+  whatsApp       WhatsApp          @relation("MessageWhatsApps", fields: [whatsAppId], references: [id])
   lastOfChat     Chat?             @relation("LastMessage", fields: [chatId], references: [id])
   mentions       Contact[]         @relation("MessageMentions", fields: [mentionsIds], references: [id])
   vCardsContacts Contact[]         @relation("MessageVCardsContacts", fields: [vCardsContactsIds], references: [id])

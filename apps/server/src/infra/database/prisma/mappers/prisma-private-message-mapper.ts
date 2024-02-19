@@ -1,20 +1,20 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { PrivateMessage } from '@/domain/chat/enterprise/entities/private-message'
-import { Prisma, Message as PrismaMessage } from '@prisma/client'
-import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
-import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
-import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
-import {
-  PrismaMessageMediaMapper,
-  RawMessageMedia,
-} from './prisma-message-media-mapper'
+import { PrivateMessage } from '@/domain/chat/enterprise/entities/private-message'
+import { Prisma, Message as PrismaMessage } from '@prisma/client'
 import {
   PrismaAttendantProfileMapper,
   RawAttendantProfile,
 } from './prisma-attendant-profile-mapper'
+import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
+import { PrismaMessageAckMapper } from './prisma-message-ack-mapper'
+import { PrismaMessageBodyMapper } from './prisma-message-body-mapper'
+import {
+  PrismaMessageMediaMapper,
+  RawMessageMedia,
+} from './prisma-message-media-mapper'
+import { PrismaMessageTypeMapper } from './prisma-message-type-mapper'
 import {
   PrismaPrivateQuotedMessageMapper,
   RawPrivateQuotedMessage,
@@ -83,13 +83,19 @@ export class PrismaPrivateMessageMapper {
       isFromMe: message.isFromMe,
       isGif: message.isGif,
       isStatus: message.isStatus,
-      mediaId: message.media?.id.toString(),
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
       ),
+      ...(message.hasMedia() && {
+        media: {
+          connect: {
+            id: message.media.id.toString(),
+          },
+        },
+      }),
     }
   }
 
@@ -113,13 +119,19 @@ export class PrismaPrivateMessageMapper {
       isFromMe: message.isFromMe,
       isGif: message.isGif,
       isStatus: message.isStatus,
-      mediaId: message.media?.id.toString(),
       quotedId: message.quoted?.id.toString(),
       createdAt: message.createdAt,
       revokedAt: message.revokedAt,
       vCardsContactsIds: message.contacts?.map((contact) =>
         contact.id.toString(),
       ),
+      ...(message.hasMedia() && {
+        media: {
+          connect: {
+            id: message.media.id.toString(),
+          },
+        },
+      }),
     }
   }
 }

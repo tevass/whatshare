@@ -3,13 +3,7 @@ import { MessageMedia } from '@/domain/chat/enterprise/entities/message-media'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
 import { Prisma, Media as PrismaMessageMedia } from '@prisma/client'
 
-export type RawMessageMedia = PrismaMessageMedia & {
-  message:
-    | {
-        id: string
-      }[]
-    | null
-}
+export type RawMessageMedia = PrismaMessageMedia
 
 export class PrismaMessageMediaMapper {
   static toDomain(raw: RawMessageMedia): MessageMedia {
@@ -17,9 +11,7 @@ export class PrismaMessageMediaMapper {
       {
         key: raw.key,
         mimetype: MimeType.create(raw.mimetype),
-        messageId: raw.message?.[0]
-          ? new UniqueEntityID(raw.message[0].id)
-          : null,
+        messageId: raw.messageId ? new UniqueEntityID(raw.messageId) : null,
       },
       new UniqueEntityID(raw.id),
     )
@@ -30,11 +22,7 @@ export class PrismaMessageMediaMapper {
       id: media.id.toString(),
       key: media.key,
       mimetype: media.mimetype.toString(),
-      message: {
-        connect: {
-          id: media.messageId?.toString(),
-        },
-      },
+      messageId: media.messageId?.toString(),
     }
   }
 }

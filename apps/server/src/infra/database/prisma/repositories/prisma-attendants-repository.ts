@@ -12,6 +12,10 @@ import { PrismaService } from '../prisma.service'
 export class PrismaAttendantsRepository implements AttendantsRepository {
   constructor(private prisma: PrismaService) {}
 
+  private aggregate = {
+    profile: true,
+  }
+
   async findById(
     params: AttendantsRepositoryFindByIdParams,
   ): Promise<Attendant | null> {
@@ -21,9 +25,7 @@ export class PrismaAttendantsRepository implements AttendantsRepository {
       where: {
         id,
       },
-      include: {
-        profile: true,
-      },
+      include: this.aggregate,
     })
 
     if (!raw) return null
@@ -42,9 +44,7 @@ export class PrismaAttendantsRepository implements AttendantsRepository {
           email,
         },
       },
-      include: {
-        profile: true,
-      },
+      include: this.aggregate,
     })
 
     if (!raw) return null

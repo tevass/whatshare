@@ -55,6 +55,23 @@ export class PrismaGroupChatMapper {
     }
   }
 
+  static toPrismaCreateMany(chat: GroupChat): Prisma.ChatCreateManyInput {
+    return {
+      id: chat.id.toString(),
+      contactId: chat.contact.id.toString(),
+      deletedAt: chat.deletedAt,
+      lastInteraction: chat.lastInteraction,
+      unreadCount: chat.unreadCount,
+      waChatId: chat.waChatId.toString(),
+      whatsAppId: chat.whatsAppId.toString(),
+      lastMessageId: chat.lastMessage?.id.toString(),
+      isGroup: chat.isGroup,
+      participantsIds: chat.participants
+        .getItems()
+        .map((contact) => contact.id.toString()),
+    }
+  }
+
   static toPrismaUpdate(chat: GroupChat): Prisma.ChatUncheckedUpdateInput {
     return {
       contactId: chat.contact.id.toString(),
