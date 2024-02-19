@@ -1,5 +1,5 @@
 export interface EncryptOptions {
-  expiresIn?: number
+  expiresIn?: string
 }
 
 export abstract class Encrypter {

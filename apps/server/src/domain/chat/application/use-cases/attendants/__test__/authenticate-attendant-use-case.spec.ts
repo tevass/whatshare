@@ -1,4 +1,3 @@
-import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { FakeEncrypter } from '@/test/cryptography/faker-encrypter'
 import { FakeHashService } from '@/test/cryptography/faker-hash-service'
 import { makeAttendant } from '@/test/factories/make-attendant'
@@ -9,7 +8,6 @@ import { AuthenticateAttendantUseCase } from '../authenticate-attendant-use-case
 let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
 let fakerHashGenerator: FakeHashService
-let fakeDateAdapter: FakeDateAdapter
 let fakerEncrypter: FakeEncrypter
 
 let sut: AuthenticateAttendantUseCase
@@ -22,13 +20,11 @@ describe('AuthenticateAttendantUseCase', () => {
       inMemoryAttendantProfilesRepository,
     )
     fakerHashGenerator = new FakeHashService()
-    fakeDateAdapter = new FakeDateAdapter()
     fakerEncrypter = new FakeEncrypter()
 
     sut = new AuthenticateAttendantUseCase(
       inMemoryAttendantsRepository,
       fakerHashGenerator,
-      fakeDateAdapter,
       fakerEncrypter,
     )
   })

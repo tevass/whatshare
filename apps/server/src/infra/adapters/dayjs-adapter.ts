@@ -1,31 +1,15 @@
 import { DateAdapter } from '@/domain/chat/application/adapters/date-adapter'
-import { Injectable } from '@nestjs/common'
 import dayjs from 'dayjs'
 
-@Injectable()
 export class DayjsAdapter implements DateAdapter {
-  private dateRef = dayjs()
-
-  fromUnix(timestamp: number): this {
-    this.dateRef = dayjs.unix(timestamp)
-    return this
-  }
-
-  addDays(value: number): this {
-    this.dateRef.add(value, 'days')
-    return this
-  }
-
-  addHours(value: number): this {
-    this.dateRef.add(value, 'hours')
-    return this
-  }
+  private ref = dayjs()
 
   toDate(): Date {
-    return this.dateRef.toDate()
+    return this.ref.toDate()
   }
 
-  toUnix(): number {
-    return this.dateRef.unix()
+  fromUnix(timestamp: number): this {
+    this.ref = dayjs.unix(timestamp)
+    return this
   }
 }

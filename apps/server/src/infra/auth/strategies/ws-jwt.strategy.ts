@@ -1,7 +1,8 @@
 import { EnvService } from '@/infra/env/env.service'
 import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
-import { ExtractJwt, Strategy } from 'passport-jwt'
+import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt'
+
 import { CustomExtractJwt } from '../custom-extract-jwt'
 import { AttendantPayload, tokenPayloadSchema } from '../payload-schema'
 
@@ -17,7 +18,7 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, 'ws-jwt') {
       ]),
       secretOrKey: JWT_SECRET,
       ignoreExpiration: true,
-    })
+    } as StrategyOptions)
   }
 
   async validate(payload: AttendantPayload) {
