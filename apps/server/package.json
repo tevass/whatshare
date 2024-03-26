@@ -1,0 +1,25 @@
+{
+  "name": "@whatshare/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@types/node": "^20.11.30",
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vitest-globals": "^1.5.0",
+    "type-fest": "^4.14.0",
+    "typescript": "^5.4.3",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.4.0"
+  }
+}

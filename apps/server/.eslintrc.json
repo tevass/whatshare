@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "@whatshare/eslint-config/node",
+    "plugin:vitest-globals/recommended"
+  ],
+  "rules": {
+    "no-useless-constructor": "off"
+  },
+  "env": {
+    "vitest-globals/env": true
+  }
+}
