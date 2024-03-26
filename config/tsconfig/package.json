@@ -1,0 +1,8 @@
+{
+  "name": "@whatshare-config/tsconfig",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "license": "ISC"
+}
