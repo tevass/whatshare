@@ -1,24 +1,4 @@
 {
   "cSpell.words": [
-    "dayjs",
-    "encrypter",
-    "Encrypter",
-    "hasher",
-    "Hasher",
-    "tsup",
-    "vcard",
-    "WAID",
-    "websockets",
-    "whatsapp",
-    "whatshare",
-    "woodsmoke",
-    "wwebjs",
-    "wwjs",
-    "WWJS"
-  ],
-
-  "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
 }
