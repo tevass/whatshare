@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "@whatshare/eslint-config/node"
+  ]
+}
