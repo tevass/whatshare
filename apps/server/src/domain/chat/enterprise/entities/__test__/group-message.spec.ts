@@ -1,9 +1,9 @@
-import { makeAttendantProfile } from '@/test/factories/make-attendant-profile'
 import { makeContact } from '@/test/factories/make-contact'
 import { makeMessageMedia } from '@/test/factories/make-message-media'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
 import { makeWAMessageID } from '@/test/factories/make-wa-message-id'
+import { makeAttendantProfile } from '@/test/factories/value-objects/make-attendant-profile'
 import { GroupMessage } from '../group-message'
 import { GroupQuotedMessage } from '../group-quoted-message'
 
@@ -33,7 +33,6 @@ describe('GroupMessage', () => {
       waMessageId: makeWAMessageID(),
       whatsAppId: makeUniqueEntityID(),
       author: makeContact(),
-      mentions: Array.from(Array(3)).map(() => makeContact()),
     })
 
     const attendantProfile = makeAttendantProfile()
@@ -48,7 +47,6 @@ describe('GroupMessage', () => {
         media: null,
         quoted: null,
         contacts: null,
-        mentions: null,
       }),
     )
   })

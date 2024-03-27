@@ -1,5 +1,9 @@
 import { GroupQuotedMessage } from '@/domain/chat/enterprise/entities/group-quoted-message'
 import { PrivateQuotedMessage } from '@/domain/chat/enterprise/entities/private-quoted-message'
+import {
+  isGroupMessage,
+  isPrivateMessage,
+} from '@/domain/chat/enterprise/types/message'
 import { FakeDateAdapter } from '@/test/adapters/fake-date-adapter'
 import { makeGroupChat } from '@/test/factories/make-group-chat'
 import { makeGroupMessage } from '@/test/factories/make-group-message'
@@ -17,10 +21,6 @@ import { InMemoryMessagesRepository } from '@/test/repositories/in-memory-messag
 import { FakeUploader } from '@/test/storage/fake-uploader'
 import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
 import { CreateMessageFromWAMessageUseCase } from '../create-message-from-wa-message-use-case'
-import {
-  isGroupMessage,
-  isPrivateMessage,
-} from '@/domain/chat/enterprise/types/message'
 
 let inMemoryMessagesRepository: InMemoryMessagesRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -50,6 +50,7 @@ describe('CreateMessageFromWAMessageUseCase', () => {
     sut = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
+      inMemoryContactsRepository,
       inMemoryMessageMediasRepository,
       createContactsFromWaContacts,
       fakeUploader,
@@ -60,12 +61,12 @@ describe('CreateMessageFromWAMessageUseCase', () => {
   it('should be able to create contacts from wa-message', async () => {
     const whatsAppId = makeUniqueEntityID()
 
-    const waContact = makeWAContact({ isMyContact: true })
+    const waContact = makeWAContact({ isMyContact: true, isGroup: false })
     const waChat = makeWAChat({ contact: waContact }, waContact.id)
 
     const waContacts = Array.from(Array(2))
-      .map(() => makeWAContact({ isMyContact: true }))
-      .concat(makeWAContact({ isMyContact: false }))
+      .map(() => makeWAContact({ isMyContact: true, isGroup: false }))
+      .concat(makeWAContact({ isMyContact: false, isGroup: false }))
 
     const waMessage = makeWAMessage({
       type: 'multi_vcard',
@@ -188,6 +189,7 @@ describe('CreateMessageFromWAMessageUseCase (Private Message)', () => {
     sut = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
+      inMemoryContactsRepository,
       inMemoryMessageMediasRepository,
       createContactsFromWaContacts,
       fakeUploader,
@@ -283,6 +285,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     sut = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
+      inMemoryContactsRepository,
       inMemoryMessageMediasRepository,
       createContactsFromWaContacts,
       fakeUploader,
@@ -301,7 +304,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     const contact = waContact.toContact()
     inMemoryContactsRepository.items.push(contact)
 
-    const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
+    const chat = makeGroupChat({ waChatId: waChat.id, whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
     const response = await sut.execute({
@@ -331,7 +334,7 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     const contact = waContact.toContact()
     inMemoryContactsRepository.items.push(contact)
 
-    const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
+    const chat = makeGroupChat({ waChatId: waChat.id, whatsAppId })
     inMemoryChatsRepository.items.push(chat)
 
     const quotedMessage = makeGroupMessage({
@@ -358,40 +361,5 @@ describe('CreateMessageFromWAMessageUseCase (Group Message)', () => {
     expect(message.createdAt.toString()).toBe(
       fakeDateAdapter.fromUnix(waMessage.timestamp).toDate().toString(),
     )
-  })
-
-  it('should be able to create contacts from mentions of wa-message', async () => {
-    const whatsAppId = makeUniqueEntityID()
-
-    const waContact = makeWAContact({ isMyContact: true })
-    const waChat = makeWAChat({}, waContact.id)
-
-    const waMessage = makeWAMessage({
-      mentions: Array.from(Array(3)).map(() => makeWAContact()),
-    })
-
-    const contact = waContact.toContact()
-    inMemoryContactsRepository.items.push(contact)
-
-    const chat = makeGroupChat({ waChatId: waChat.id, contact, whatsAppId })
-    inMemoryChatsRepository.items.push(chat)
-
-    const response = await sut.execute({
-      waChatId: waChat.id.toString(),
-      waMessage,
-      whatsAppId: whatsAppId.toString(),
-    })
-
-    expect(response.isRight()).toBe(true)
-    if (response.isLeft()) return
-
-    const { message } = response.value
-
-    if (isPrivateMessage(message)) return
-
-    expect(message.hasMentions()).toBe(true)
-    expect(message.mentions).toHaveLength(3)
-    expect(inMemoryContactsRepository.items).toHaveLength(4)
-    expect(inMemoryMessagesRepository.items).toHaveLength(1)
   })
 })

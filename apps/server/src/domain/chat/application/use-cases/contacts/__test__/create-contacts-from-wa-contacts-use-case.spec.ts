@@ -1,9 +1,9 @@
-import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
-import { makeWAContact } from '@/test/factories/make-wa-contact'
-import { CreateContactsFromWaContactsUseCase } from '../create-contacts-from-wa-contacts-use-case'
 import { makeContact } from '@/test/factories/make-contact'
-import { faker } from '@faker-js/faker'
+import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWAEntityID } from '@/test/factories/make-wa-entity-id'
+import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
+import { faker } from '@faker-js/faker'
+import { CreateContactsFromWaContactsUseCase } from '../create-contacts-from-wa-contacts-use-case'
 
 let inMemoryContactsRepository: InMemoryContactsRepository
 
@@ -20,8 +20,12 @@ describe('CreateContactsFromWaContactsUseCase', () => {
     const waContactId = makeWAEntityID()
 
     const waContacts = Array.from(Array(2))
-      .map(() => makeWAContact({ isMyContact: true, imageUrl: null }))
-      .concat(makeWAContact({ isMyContact: false, imageUrl: null }))
+      .map(() =>
+        makeWAContact({ isMyContact: true, imageUrl: null, isGroup: false }),
+      )
+      .concat(
+        makeWAContact({ isMyContact: false, imageUrl: null, isGroup: false }),
+      )
 
     inMemoryContactsRepository.items.push(
       ...waContacts
@@ -32,7 +36,7 @@ describe('CreateContactsFromWaContactsUseCase', () => {
 
     waContacts.push(
       makeWAContact(
-        { imageUrl: faker.image.url(), isMyContact: true },
+        { imageUrl: faker.image.url(), isMyContact: true, isGroup: false },
         waContactId,
       ),
     )

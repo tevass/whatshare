@@ -39,7 +39,8 @@ export class ImportContactsUseCase {
       return left(new WAClientNotFoundError(whatsAppId))
     }
 
-    const waContacts = await waClient.contact.getMany()
+    const allWaContacts = await waClient.contact.getMany()
+    const waContacts = allWaContacts.filter((waContact) => !waContact.isGroup)
     const waContactsIds = waContacts.map((waContact) => waContact.id)
 
     const contactsAlreadyExists =

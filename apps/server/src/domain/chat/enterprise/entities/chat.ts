@@ -2,12 +2,10 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
-import { Contact } from './contact'
 
 export interface ChatProps<LastMessage = null> {
   waChatId: WAEntityID
   whatsAppId: UniqueEntityID
-  contact: Contact
   unreadCount: number
   lastInteraction: Date | null
   lastMessage: LastMessage | null
@@ -48,10 +46,6 @@ export abstract class Chat<
 
   get whatsAppId() {
     return this.props.whatsAppId
-  }
-
-  get contact() {
-    return this.props.contact
   }
 
   get unreadCount() {

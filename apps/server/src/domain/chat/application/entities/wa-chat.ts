@@ -3,7 +3,6 @@ import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { CreateChatProps } from '../../enterprise/entities/chat'
-import { GroupChatContactList } from '../../enterprise/entities/grou-chat-contact-list'
 import { GroupChat } from '../../enterprise/entities/group-chat'
 import { PrivateChat } from '../../enterprise/entities/private-chat'
 import { WAContact } from './wa-contact'
@@ -68,7 +67,6 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
 
   toChat() {
     const chatProps: CreateChatProps = {
-      contact: this.contact.toContact(),
       waChatId: this.id,
       unreadCount: this.unreadCount,
       whatsAppId: this.waClientId,
@@ -77,11 +75,12 @@ export class WAChat extends WAEntity<WAChatProps, WAEntityID> {
     return this.isGroup()
       ? GroupChat.create({
           ...chatProps,
-          participants: GroupChatContactList.create(
-            this.participants.map((waContact) => waContact.toContact()),
-          ),
+          group: this.contact.toGroup(),
         })
-      : PrivateChat.create({ ...chatProps })
+      : PrivateChat.create({
+          ...chatProps,
+          contact: this.contact.toContact(),
+        })
   }
 
   static create(

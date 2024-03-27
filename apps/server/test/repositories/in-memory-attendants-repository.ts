@@ -4,11 +4,8 @@ import {
   AttendantsRepositoryFindByIdParams,
 } from '@/domain/chat/application/repositories/attendants-repository'
 import { Attendant } from '@/domain/chat/enterprise/entities/attendant'
-import { InMemoryAttendantProfilesRepository } from './in-memory-attendant-profiles-repository'
 
 export class InMemoryAttendantsRepository implements AttendantsRepository {
-  constructor(private profileRepository: InMemoryAttendantProfilesRepository) {}
-
   items: Attendant[] = []
 
   async findById(
@@ -36,7 +33,5 @@ export class InMemoryAttendantsRepository implements AttendantsRepository {
 
   async create(attendant: Attendant): Promise<void> {
     this.items.push(attendant)
-
-    await this.profileRepository.save(attendant.profile)
   }
 }

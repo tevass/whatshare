@@ -3,8 +3,8 @@ import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { PaginationRequest } from '@/domain/shared/application/use-cases/pagination-request'
 import { SearchRequest } from '@/domain/shared/application/use-cases/search-request'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { ContactsRepository } from '../../repositories/contacts-repository'
 import { Injectable } from '@nestjs/common'
+import { ContactsRepository } from '../../repositories/contacts-repository'
 
 interface FetchContactsUseCaseRequest
   extends PaginationRequest,
@@ -29,20 +29,16 @@ export class FetchContactsUseCase {
 
     const limit = Pagination.limit()
 
-    const filters = {
-      query,
-      isGroup: false,
-      isMyContact: true,
-    }
-
     const [rows, contacts] = await Promise.all([
       this.contactsRepository.countMany({
-        ...filters,
+        query,
+        isMyContact: true,
       }),
       this.contactsRepository.findMany({
         page,
         take: limit,
-        ...filters,
+        query,
+        isMyContact: true,
       }),
     ])
 

@@ -5,7 +5,6 @@ import { Contact } from '../../enterprise/entities/contact'
 
 export interface ContactsRepositoryFilters {
   isMyContact?: boolean
-  isGroup?: boolean
 }
 
 export interface ContactsRepositoryFindByIdParams {

@@ -56,12 +56,9 @@ export class CreateChatFromWaChatUseCase {
     chat.set({ contact })
 
     if (waChat.isGroup() && isGroupChat(chat)) {
-      const response = await this.createContactsFromWaContacts.execute({
+      await this.createContactsFromWaContacts.execute({
         waContacts: waChat.participants,
       })
-
-      const participants = response.value?.contacts ?? []
-      chat.participants.update(participants)
     }
 
     await this.chatsRepository.create(chat)

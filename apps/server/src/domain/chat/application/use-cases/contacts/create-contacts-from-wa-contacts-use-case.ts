@@ -1,9 +1,9 @@
 import { Either, right } from '@/core/either'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
-import { ContactsRepository } from '../../repositories/contacts-repository'
-import { WAContact } from '../../entities/wa-contact'
-import { Injectable } from '@nestjs/common'
 import { ContactPhone } from '@/domain/chat/enterprise/entities/value-objects/contact-phone'
+import { Injectable } from '@nestjs/common'
+import { WAContact } from '../../entities/wa-contact'
+import { ContactsRepository } from '../../repositories/contacts-repository'
 
 interface CreateContactsFromWaContactsUseCaseRequest {
   waContacts: WAContact[]
@@ -25,9 +25,11 @@ export class CreateContactsFromWaContactsUseCase {
   ): Promise<CreateContactsFromWaContactsUseCaseResponse> {
     const { waContacts } = request
 
+    const onlyContacts = waContacts.filter((waContact) => !waContact.isGroup)
+
     const [waContactsThatAreMine, waMyContactsThatAreNotMineYet] = [
-      waContacts.filter((waContact) => waContact.isMyContact),
-      waContacts.filter((waContact) => !waContact.isMyContact),
+      onlyContacts.filter((waContact) => waContact.isMyContact),
+      onlyContacts.filter((waContact) => !waContact.isMyContact),
     ]
 
     const waContactsThatAreMineIds = waContactsThatAreMine.map(

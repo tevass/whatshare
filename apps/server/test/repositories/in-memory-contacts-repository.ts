@@ -21,13 +21,9 @@ export class InMemoryContactsRepository implements ContactsRepository {
   items: Contact[] = []
 
   private resolveFilters({ item, ...filters }: ResolveFiltersParams) {
-    const { isGroup, isMyContact } = filters ?? {}
+    const { isMyContact } = filters ?? {}
 
-    return TypeGuards.isNotUndefined(isGroup)
-      ? item.isGroup === isGroup
-      : true && TypeGuards.isNotUndefined(isMyContact)
-        ? item.isMyContact
-        : true
+    return TypeGuards.isNotUndefined(isMyContact) ? item.isMyContact : true
   }
 
   async findById(

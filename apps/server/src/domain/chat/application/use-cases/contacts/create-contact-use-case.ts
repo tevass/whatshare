@@ -2,10 +2,10 @@ import { Either, left, right } from '@/core/either'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
 import { ContactPhone } from '@/domain/chat/enterprise/entities/value-objects/contact-phone'
+import { Injectable } from '@nestjs/common'
 import { ContactsRepository } from '../../repositories/contacts-repository'
 import { WAClientManager } from '../../services/wa-client-manager'
 import { ContactAlreadyExistsError } from '../errors/contact-already-exists-error'
-import { Injectable } from '@nestjs/common'
 
 interface CreateContactUseCaseRequest {
   name: string

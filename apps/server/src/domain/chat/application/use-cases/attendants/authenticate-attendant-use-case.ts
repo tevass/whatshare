@@ -56,9 +56,12 @@ export class AuthenticateAttendantUseCase {
       this.encrypter.encrypt(payload, {
         expiresIn: '1h',
       }),
-      this.encrypter.encrypt(payload, {
-        expiresIn: '7d',
-      }),
+      this.encrypter.encrypt(
+        {},
+        {
+          expiresIn: '7d',
+        },
+      ),
     ])
 
     return right({

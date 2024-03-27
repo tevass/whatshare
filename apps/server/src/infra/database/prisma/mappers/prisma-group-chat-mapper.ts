@@ -1,9 +1,8 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
-import { GroupChatContactList } from '@/domain/chat/enterprise/entities/grou-chat-contact-list'
 import { GroupChat } from '@/domain/chat/enterprise/entities/group-chat'
 import { Prisma, Chat as PrismaChat } from '@prisma/client'
-import { PrismaContactMapper, RawContact } from './prisma-contact-mapper'
+import { RawContact } from './prisma-contact-mapper'
 import {
   PrismaGroupMessageMapper,
   RawGroupMessage,
@@ -21,16 +20,12 @@ export class PrismaGroupChatMapper {
       {
         waChatId: WAEntityID.createFromString(raw.waChatId),
         whatsAppId: new UniqueEntityID(raw.whatsAppId),
-        contact: PrismaContactMapper.toDomain(raw.contact),
         unreadCount: raw.unreadCount,
         deletedAt: raw.deletedAt,
         lastInteraction: raw.lastInteraction,
         lastMessage: raw.lastMessage?.[0]
           ? PrismaGroupMessageMapper.toDomain(raw.lastMessage[0])
           : null,
-        participants: GroupChatContactList.create(
-          raw.participants.map(PrismaContactMapper.toDomain),
-        ),
       },
       new UniqueEntityID(raw.id),
     )

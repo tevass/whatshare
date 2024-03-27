@@ -1,5 +1,4 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { GroupChatContactList } from '@/domain/chat/enterprise/entities/grou-chat-contact-list'
 import {
   GroupChat,
   GroupChatProps,
@@ -8,7 +7,8 @@ import { PrismaGroupChatMapper } from '@/infra/database/prisma/mappers/prisma-gr
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
-import { FakeContactFactory, makeContact } from './make-contact'
+import { FakeContactFactory } from './make-contact'
+import { makeGroup } from './make-group'
 import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 
@@ -18,13 +18,10 @@ export const makeGroupChat = (
 ) => {
   return GroupChat.create(
     {
-      contact: makeContact(),
       unreadCount: faker.number.int({ max: 99 }),
       whatsAppId: makeUniqueEntityID(),
       waChatId: makeWAEntityID(),
-      participants: GroupChatContactList.create(
-        Array.from(Array(2)).map(() => makeContact()),
-      ),
+      group: makeGroup(),
       ...override,
     },
     id,
@@ -42,9 +39,7 @@ export class FakeGroupChatFactory {
     data: Partial<GroupChatProps> = {},
     id?: UniqueEntityID,
   ): Promise<GroupChat> {
-    const contact = data.contact ?? (await this.fakeContact.makePrismaContact())
-
-    const chat = makeGroupChat({ ...data, contact }, id)
+    const chat = makeGroupChat({ ...data }, id)
 
     await this.prisma.chat.create({
       data: PrismaGroupChatMapper.toPrismaCreate(chat),

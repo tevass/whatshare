@@ -6,11 +6,11 @@ import {
 import { PrismaAttendantMapper } from '@/infra/database/prisma/mappers/prisma-attendant-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
+import { makeUniqueEntityID } from './make-unique-entity-id'
 import {
   FakeAttendantProfileFactory,
   makeAttendantProfile,
-} from './make-attendant-profile'
-import { makeUniqueEntityID } from './make-unique-entity-id'
+} from './value-objects/make-attendant-profile'
 
 export const makeAttendant = (
   override: Partial<AttendantProps> = {},
@@ -24,8 +24,6 @@ export const makeAttendant = (
     },
     attendantId,
   )
-
-  attendant.profile.set({ attendantId })
 
   return attendant
 }

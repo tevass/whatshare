@@ -1,7 +1,7 @@
 import { WAEntity } from '@/core/entities/wa-entity'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
-import type { MessageAck, MessageType } from '@whatshare/core-schemas/enums'
+import type { MessageAck, MessageType } from '@whatshare/core'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { WAMessageMedia } from './value-objects/wa-message-media'
 import { WAContact } from './wa-contact'
@@ -22,7 +22,6 @@ export interface WAMessageProps {
   // eslint-disable-next-line no-use-before-define
   quoted: WAMessage | null
   contacts: WAContact[] | null
-  mentions: WAContact[] | null
 }
 
 export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
@@ -101,18 +100,10 @@ export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
     )
   }
 
-  get mentions() {
-    return this.props.mentions
-  }
-
-  hasMentions(): this is SetNonNullable<WAMessageProps, 'mentions'> {
-    return !!this.mentions?.length
-  }
-
   static create(
     props: SetOptional<
       WAMessageProps,
-      'body' | 'media' | 'quoted' | 'contacts' | 'mentions' | 'author'
+      'body' | 'media' | 'quoted' | 'contacts' | 'author'
     >,
     id: WAMessageID,
   ) {
@@ -124,7 +115,6 @@ export class WAMessage extends WAEntity<WAMessageProps, WAMessageID> {
         quoted: props.quoted ?? null,
         media: props.media ?? null,
         contacts: props.contacts ?? null,
-        mentions: props.mentions ?? null,
       },
       id,
     )

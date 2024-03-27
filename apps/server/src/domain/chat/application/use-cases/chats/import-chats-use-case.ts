@@ -5,6 +5,7 @@ import { Chat } from '@/domain/chat/enterprise/types/chat'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { ContactsRepository } from '../../repositories/contacts-repository'
+import { GroupsRepository } from '../../repositories/groups-repository'
 import { WhatsAppsRepository } from '../../repositories/whats-apps-repository'
 import { WAClientManager } from '../../services/wa-client-manager'
 
@@ -24,6 +25,7 @@ export class ImportChatsUseCase {
     private whatsAppsRepository: WhatsAppsRepository,
     private chatsRepository: ChatsRepository,
     private contactsRepository: ContactsRepository,
+    private groupsRepository: GroupsRepository,
     private waManager: WAClientManager,
   ) {}
 
@@ -54,10 +56,20 @@ export class ImportChatsUseCase {
         !chatsAlreadyExists.some((chat) => chat.waChatId.equals(waChat.id)),
     )
 
-    const chats = waChatsToCreate.map((waChat) => waChat.toChat())
-    const contacts = chats.map((chat) => chat.contact)
+    const contacts = waChatsToCreate
+      .filter((waChat) => !waChat.isGroup)
+      .map((waChat) => waChat.contact.toContact())
 
-    await this.contactsRepository.createMany(contacts)
+    const groups = waChatsToCreate
+      .filter((waChat) => waChat.isGroup)
+      .map((waChat) => waChat.contact.toGroup())
+
+    await Promise.all([
+      this.contactsRepository.createMany(contacts),
+      this.groupsRepository.createMany(groups),
+    ])
+
+    const chats = waChatsToCreate.map((waChat) => waChat.toChat())
     await this.chatsRepository.createMany(chats)
 
     return right({

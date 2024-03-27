@@ -8,18 +8,19 @@ import { PrivateMessage } from '@/domain/chat/enterprise/entities/private-messag
 import { PrivateQuotedMessage } from '@/domain/chat/enterprise/entities/private-quoted-message'
 import { MessageBody } from '@/domain/chat/enterprise/entities/value-objects/message-body'
 import { MimeType } from '@/domain/chat/enterprise/entities/value-objects/mime-type'
+import { isPrivateChat } from '@/domain/chat/enterprise/types/chat'
+import { Message } from '@/domain/chat/enterprise/types/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
 import { Readable } from 'node:stream'
 import { DateAdapter } from '../../adapters/date-adapter'
 import { WAMessage } from '../../entities/wa-message'
 import { ChatsRepository } from '../../repositories/chats-repository'
+import { ContactsRepository } from '../../repositories/contacts-repository'
 import { MessageMediasRepository } from '../../repositories/message-medias-repository'
 import { MessagesRepository } from '../../repositories/messages-repository'
 import { Uploader } from '../../storage/uploader'
 import { CreateContactsFromWaContactsUseCase } from '../contacts/create-contacts-from-wa-contacts-use-case'
-import { Message, isGroupMessage } from '@/domain/chat/enterprise/types/message'
-import { isPrivateChat } from '@/domain/chat/enterprise/types/chat'
 
 interface CreateMessageFromWAMessageUseCaseRequest {
   waMessage: WAMessage
@@ -39,6 +40,7 @@ export class CreateMessageFromWAMessageUseCase {
   constructor(
     private messagesRepository: MessagesRepository,
     private chatsRepository: ChatsRepository,
+    private contactsRepository: ContactsRepository,
     private messageMediasRepository: MessageMediasRepository,
     private createContactsFromWaContacts: CreateContactsFromWaContactsUseCase,
     private uploader: Uploader,
@@ -50,10 +52,17 @@ export class CreateMessageFromWAMessageUseCase {
   ): Promise<CreateMessageFromWAMessageUseCaseResponse> {
     const { waChatId, waMessage, whatsAppId } = request
 
-    const chat = await this.chatsRepository.findByWAChatIdAndWhatsAppId({
-      waChatId: WAEntityID.createFromString(waChatId),
-      whatsAppId,
-    })
+    const waChatEntityId = WAEntityID.createFromString(waChatId)
+
+    const [chat, contact] = await Promise.all([
+      this.chatsRepository.findByWAChatIdAndWhatsAppId({
+        waChatId: waChatEntityId,
+        whatsAppId,
+      }),
+      this.contactsRepository.findByWAContactId({
+        waContactId: waChatEntityId,
+      }),
+    ])
 
     if (!chat) {
       return left(new ResourceNotFoundError(waChatId))
@@ -79,16 +88,24 @@ export class CreateMessageFromWAMessageUseCase {
       createdAt: this.dateAdapter.fromUnix(waMessage.timestamp).toDate(),
     }
 
-    const message = isPrivateChat(chat)
-      ? PrivateMessage.create({
-          ...messageProps,
-          isStatus: waMessage.isStatus,
-          isBroadcast: waMessage.isBroadcast,
-        })
-      : GroupMessage.create({
-          ...messageProps,
-          author: chat.contact,
-        })
+    let message: Message
+
+    if (isPrivateChat(chat)) {
+      message = PrivateMessage.create({
+        ...messageProps,
+        isStatus: waMessage.isStatus,
+        isBroadcast: waMessage.isBroadcast,
+      })
+    } else {
+      if (!contact) {
+        return left(new ResourceNotFoundError(waChatId))
+      }
+
+      message = GroupMessage.create({
+        ...messageProps,
+        author: contact,
+      })
+    }
 
     if (waMessage.hasQuoted()) {
       const waQuotedMessage = waMessage.quoted
@@ -112,15 +129,6 @@ export class CreateMessageFromWAMessageUseCase {
 
       const contacts = response?.value?.contacts ?? null
       message.set({ contacts })
-    }
-
-    if (waMessage.hasMentions() && isGroupMessage(message)) {
-      const response = await this.createContactsFromWaContacts.execute({
-        waContacts: waMessage.mentions,
-      })
-
-      const mentions = response?.value?.contacts ?? null
-      message.set({ mentions })
     }
 
     if (waMessage.hasMedia()) {

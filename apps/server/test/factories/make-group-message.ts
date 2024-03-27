@@ -3,16 +3,16 @@ import {
   GroupMessage,
   GroupMessageProps,
 } from '@/domain/chat/enterprise/entities/group-message'
+import { PrismaGroupMessageMapper } from '@/infra/database/prisma/mappers/prisma-group-message-mapper'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
-import { makeAttendantProfile } from './make-attendant-profile'
 import { makeContact } from './make-contact'
 import { makeMessageMedia } from './make-message-media'
 import { makeUniqueEntityID } from './make-unique-entity-id'
 import { makeWAEntityID } from './make-wa-entity-id'
 import { makeWAMessageID } from './make-wa-message-id'
+import { makeAttendantProfile } from './value-objects/make-attendant-profile'
 import { makeMessageBody } from './value-objects/make-message-body'
-import { PrismaGroupMessageMapper } from '@/infra/database/prisma/mappers/prisma-group-message-mapper'
 
 export const makeGroupMessage = (
   override: Partial<GroupMessageProps> = {},

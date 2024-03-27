@@ -3,6 +3,7 @@ import { WAEntityID } from '@/core/entities/wa-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import * as vCardTS from 'vcard4-tsm'
 import { Contact } from '../../enterprise/entities/contact'
+import { Group } from '../../enterprise/entities/group'
 import { ContactPhone } from '../../enterprise/entities/value-objects/contact-phone'
 
 export interface WAContactProps {
@@ -92,6 +93,14 @@ export class WAContact extends WAEntity<WAContactProps, WAEntityID> {
       isGroup: this.isGroup,
       isMyContact: this.isMyContact,
       isWAClient: this.isMe,
+    })
+  }
+
+  toGroup() {
+    return Group.create({
+      name: this.defaultName,
+      waGroupId: this.id,
+      imageUrl: this.imageUrl,
     })
   }
 

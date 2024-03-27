@@ -1,21 +1,15 @@
 import { makeAttendant } from '@/test/factories/make-attendant'
 import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
-import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { GetAttendantUseCase } from '../get-attendant-use-case'
 
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
-let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 
 let sut: GetAttendantUseCase
 
 describe('GetAttendantUseCase', () => {
   beforeEach(() => {
-    inMemoryAttendantProfilesRepository =
-      new InMemoryAttendantProfilesRepository()
-    inMemoryAttendantsRepository = new InMemoryAttendantsRepository(
-      inMemoryAttendantProfilesRepository,
-    )
+    inMemoryAttendantsRepository = new InMemoryAttendantsRepository()
 
     sut = new GetAttendantUseCase(inMemoryAttendantsRepository)
   })

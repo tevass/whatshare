@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { AttendantProfile } from '@/domain/chat/enterprise/entities/attendant-profile'
+import { AttendantProfile } from '@/domain/chat/enterprise/entities/value-objects/attendant-profile'
 import {
   Prisma,
   AttendantProfile as PrismaAttendantProfile,

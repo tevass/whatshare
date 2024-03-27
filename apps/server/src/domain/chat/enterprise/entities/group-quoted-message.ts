@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import type { SetNonNullable, SetOptional } from 'type-fest'
+import type { SetOptional } from 'type-fest'
 import { Contact } from './contact'
 import {
   CreateQuotedMessageOptionalProps,
@@ -9,7 +9,6 @@ import {
 
 export interface GroupQuotedMessageProps extends QuotedMessageProps {
   author: Contact
-  mentions: Contact[] | null
 }
 
 export class GroupQuotedMessage extends QuotedMessage<GroupQuotedMessageProps> {
@@ -17,24 +16,13 @@ export class GroupQuotedMessage extends QuotedMessage<GroupQuotedMessageProps> {
     return this.props.author
   }
 
-  get mentions() {
-    return this.props.mentions
-  }
-
-  hasMentions(): this is SetNonNullable<GroupQuotedMessage, 'mentions'> {
-    return !!this.mentions?.length
-  }
-
   static create(
     props: SetOptional<
       GroupQuotedMessageProps,
-      keyof CreateQuotedMessageOptionalProps | 'mentions'
+      keyof CreateQuotedMessageOptionalProps
     >,
     id?: UniqueEntityID,
   ) {
-    return new GroupQuotedMessage(
-      { ...props, mentions: props.mentions ?? null },
-      id,
-    )
+    return new GroupQuotedMessage({ ...props }, id)
   }
 }

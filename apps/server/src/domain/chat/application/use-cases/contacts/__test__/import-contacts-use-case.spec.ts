@@ -1,11 +1,11 @@
+import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { makeWAContact } from '@/test/factories/make-wa-contact'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
 import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
 import { InMemoryWhatsAppsRepository } from '@/test/repositories/in-memory-whats-apps-repository'
-import { ImportContactsUseCase } from '../import-contacts-use-case'
-import { makeUniqueEntityID } from '@/test/factories/make-unique-entity-id'
 import { FakeWAClientManager } from '@/test/services/fake-wa-client-manager'
 import { FakeWAClient } from '@/test/services/fake-wa-client-manager/clients/fake-wa-client'
+import { ImportContactsUseCase } from '../import-contacts-use-case'
 
 let inMemoryWhatsAppRepository: InMemoryWhatsAppsRepository
 let inMemoryContactsRepository: InMemoryContactsRepository
@@ -34,7 +34,9 @@ describe('ImportContactsUseCase', () => {
     const fakeWAClient = FakeWAClient.createFromWhatsApp(whatsApp)
     fakeWAClientManager.clients.set(whatsApp.id.toString(), fakeWAClient)
 
-    const waContacts = Array.from(Array(4)).map(() => makeWAContact())
+    const waContacts = Array.from(Array(4)).map(() =>
+      makeWAContact({ isGroup: false }),
+    )
     fakeWAClient.contact.contacts.push(...waContacts)
 
     inMemoryContactsRepository.items.push(

@@ -2,11 +2,11 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { WAEntityID } from '@/core/entities/wa-entity-id'
 import { WAMessageID } from '@/core/entities/wa-message-id'
-import { MessageType } from '@whatshare/core-schemas/enums'
+import { MessageType } from '@whatshare/core'
 import type { SetNonNullable, SetOptional } from 'type-fest'
 import { MESSAGE_MEDIA_TYPES } from '../constants/media-types'
-import { AttendantProfile } from './attendant-profile'
 import { MessageMedia } from './message-media'
+import { AttendantProfile } from './value-objects/attendant-profile'
 import { MessageBody } from './value-objects/message-body'
 
 export interface QuotedMessageProps {

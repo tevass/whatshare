@@ -9,7 +9,6 @@ export interface ContactProps {
   name: string
   phone: ContactPhone
   imageUrl: string | null
-
   isWAClient: boolean
   isGroup: boolean
   isBusiness: boolean

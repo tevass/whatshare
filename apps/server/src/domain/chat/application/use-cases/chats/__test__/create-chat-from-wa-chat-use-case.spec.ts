@@ -1,10 +1,10 @@
-import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
-import { CreateChatFromWaChatUseCase } from '../create-chat-from-wa-chat-use-case'
-import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
-import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
-import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { makeContact } from '@/test/factories/make-contact'
+import { makeWAChat } from '@/test/factories/make-wa-chat'
 import { makeWAContact } from '@/test/factories/make-wa-contact'
+import { InMemoryChatsRepository } from '@/test/repositories/in-memory-chats-repository'
+import { InMemoryContactsRepository } from '@/test/repositories/in-memory-contacts-repository'
+import { CreateContactsFromWaContactsUseCase } from '../../contacts/create-contacts-from-wa-contacts-use-case'
+import { CreateChatFromWaChatUseCase } from '../create-chat-from-wa-chat-use-case'
 
 let inMemoryContactsRepository: InMemoryContactsRepository
 let inMemoryChatsRepository: InMemoryChatsRepository
@@ -34,7 +34,7 @@ describe('CreateChatFromUseCase', () => {
       contact: waContact,
     })
 
-    const contact = makeContact({ waContactId: waContact.id })
+    const contact = makeContact({ waContactId: waContact.id, isGroup: false })
     inMemoryContactsRepository.items.push(contact)
 
     const response = await sut.execute({
@@ -52,10 +52,12 @@ describe('CreateChatFromUseCase', () => {
     const waChat = makeWAChat({
       isGroup: true,
       contact: waContact,
-      participants: Array.from(Array(2)).map(() => makeWAContact()),
+      participants: Array.from(Array(2)).map(() =>
+        makeWAContact({ isGroup: false }),
+      ),
     })
 
-    const contact = makeContact({ waContactId: waContact.id })
+    const contact = makeContact({ waContactId: waContact.id, isGroup: false })
     inMemoryContactsRepository.items.push(contact)
 
     const response = await sut.execute({

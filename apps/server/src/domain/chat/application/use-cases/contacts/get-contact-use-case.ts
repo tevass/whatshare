@@ -1,8 +1,8 @@
 import { Either, left, right } from '@/core/either'
 import { Contact } from '@/domain/chat/enterprise/entities/contact'
-import { ContactsRepository } from '../../repositories/contacts-repository'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
+import { ContactsRepository } from '../../repositories/contacts-repository'
 
 interface GetContactUseCaseRequest {
   contactId: string

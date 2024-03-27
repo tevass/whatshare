@@ -2,12 +2,12 @@ import { Either, left, right } from '@/core/either'
 import { MessagesRepository } from '../../repositories/messages-repository'
 
 import { WAEntityID } from '@/core/entities/wa-entity-id'
+import { Message } from '@/domain/chat/enterprise/types/message'
 import { ResourceNotFoundError } from '@/domain/shared/application/errors/resource-not-found-error'
 import { WAClientNotFoundError } from '../../handlers/errors/wa-client-not-found-error'
 import { ChatsRepository } from '../../repositories/chats-repository'
 import { WAClientManager } from '../../services/wa-client-manager'
 import { CreateMessageFromWAMessageUseCase } from './create-message-from-wa-message-use-case'
-import { Message } from '@/domain/chat/enterprise/types/message'
 
 interface ImportMessagesUseCaseRequest {
   waChatId: string

@@ -1,12 +1,10 @@
 import { FakeHashService } from '@/test/cryptography/faker-hash-service'
 import { makeWhatsApp } from '@/test/factories/make-whats-app'
-import { InMemoryAttendantProfilesRepository } from '@/test/repositories/in-memory-attendant-profiles-repository'
 import { InMemoryAttendantsRepository } from '@/test/repositories/in-memory-attendants-repository'
 import { InMemoryWhatsAppsRepository } from '@/test/repositories/in-memory-whats-apps-repository'
 import { faker } from '@faker-js/faker'
 import { CreateAttendantUseCase } from '../create-attendant-use-case'
 
-let inMemoryAttendantProfilesRepository: InMemoryAttendantProfilesRepository
 let inMemoryAttendantsRepository: InMemoryAttendantsRepository
 let inMemoryWhatsAppsRepository: InMemoryWhatsAppsRepository
 let fakerHashGenerator: FakeHashService
@@ -15,16 +13,11 @@ let sut: CreateAttendantUseCase
 
 describe('CreateAttendantUseCase', () => {
   beforeEach(() => {
-    inMemoryAttendantProfilesRepository =
-      new InMemoryAttendantProfilesRepository()
-    inMemoryAttendantsRepository = new InMemoryAttendantsRepository(
-      inMemoryAttendantProfilesRepository,
-    )
+    inMemoryAttendantsRepository = new InMemoryAttendantsRepository()
     inMemoryWhatsAppsRepository = new InMemoryWhatsAppsRepository()
     fakerHashGenerator = new FakeHashService()
 
     sut = new CreateAttendantUseCase(
-      inMemoryAttendantProfilesRepository,
       inMemoryAttendantsRepository,
       inMemoryWhatsAppsRepository,
       fakerHashGenerator,

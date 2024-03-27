@@ -48,6 +48,7 @@ describe('ImportMessagesUseCase', () => {
     createMessageFromWAMessage = new CreateMessageFromWAMessageUseCase(
       inMemoryMessagesRepository,
       inMemoryChatsRepository,
+      inMemoryContactsRepository,
       inMemoryMessageMediasRepository,
       createContactsFromWaContacts,
       fakeUploader,

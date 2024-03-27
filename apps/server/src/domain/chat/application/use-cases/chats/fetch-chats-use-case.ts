@@ -1,9 +1,9 @@
 import { Either, right } from '@/core/either'
+import { Chat } from '@/domain/chat/enterprise/types/chat'
 import { PaginationRequest } from '@/domain/shared/application/use-cases/pagination-request'
 import { Pagination } from '@/domain/shared/enterprise/utilities/pagination'
-import { ChatsRepository } from '../../repositories/chats-repository'
 import { Injectable } from '@nestjs/common'
-import { Chat } from '@/domain/chat/enterprise/types/chat'
+import { ChatsRepository } from '../../repositories/chats-repository'
 
 interface FetchChatsUseCaseRequest extends PaginationRequest {
   whatsAppId: string
