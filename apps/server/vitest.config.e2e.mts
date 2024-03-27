@@ -1,17 +1,12 @@
-import { config } from '@whatshare/vitest-config'
-import swc from 'unplugin-swc'
-import { defineConfig, mergeConfig, UserConfig } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
+
+import { defaultConfig } from './vitest-config.mjs'
 
 export default defineConfig(
-  mergeConfig(config, {
+  mergeConfig(defaultConfig, {
     test: {
       include: ['**/*.e2e-spec.ts'],
       setupFiles: ['./test/setup/mongo-database-test.ts'],
     },
-    plugins: [
-      swc.vite({
-        module: { type: 'es6' },
-      }),
-    ],
-  } as UserConfig),
+  }),
 )

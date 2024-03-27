@@ -10,7 +10,6 @@
     "moduleDetection": "force",
     "isolatedModules": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
     "moduleResolution": "NodeNext",

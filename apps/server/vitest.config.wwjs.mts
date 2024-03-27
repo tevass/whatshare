@@ -1,9 +1,9 @@
-import { config } from '@whatshare/vitest-config'
-import swc from 'unplugin-swc'
-import { defineConfig, mergeConfig, UserConfig } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
+
+import { defaultConfig } from './vitest-config.mjs'
 
 export default defineConfig(
-  mergeConfig(config, {
+  mergeConfig(defaultConfig, {
     test: {
       include: ['**/*.wwjs-spec.ts'],
       setupFiles: [
@@ -16,10 +16,5 @@ export default defineConfig(
         setupFiles: 'list',
       },
     },
-    plugins: [
-      swc.vite({
-        module: { type: 'es6' },
-      }),
-    ],
-  } as UserConfig),
+  }),
 )

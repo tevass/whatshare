@@ -155,9 +155,6 @@ importers:
       '@whatshare/tsconfig':
         specifier: workspace:^
         version: link:../../config/tsconfig
-      '@whatshare/vitest-config':
-        specifier: workspace:^
-        version: link:../../config/vitest
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -212,6 +209,9 @@ importers:
       unplugin-swc:
         specifier: ^1.4.4
         version: 1.4.4(@swc/core@1.4.11)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.4.3)
       vitest:
         specifier: ^1.4.0
         version: 1.4.0(@types/node@20.11.30)(@vitest/ui@1.4.0)
@@ -223,25 +223,6 @@ importers:
         version: 2.2.2(eslint@8.57.0)(typescript@5.4.3)
 
   config/tsconfig: {}
-
-  config/vitest:
-    dependencies:
-      vite-tsconfig-paths:
-        specifier: ^4.3.2
-        version: 4.3.2(typescript@5.4.3)
-    devDependencies:
-      '@whatshare/eslint-config':
-        specifier: workspace:^
-        version: link:../eslint
-      '@whatshare/tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      typescript:
-        specifier: ^5.4.3
-        version: 5.4.3
-      vitest:
-        specifier: ^1.4.0
-        version: 1.4.0(@types/node@20.11.30)(@vitest/ui@1.4.0)
 
   packages/config/tsup:
     dependencies:
@@ -5819,7 +5800,7 @@ packages:
 
   /globrex@0.1.2:
     resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
-    dev: false
+    dev: true
 
   /gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
@@ -8477,7 +8458,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.4.3
-    dev: false
+    dev: true
 
   /tsconfig-paths-webpack-plugin@4.1.0:
     resolution: {integrity: sha512-xWFISjviPydmtmgeUAuXp4N1fky+VCtfhOkDUFIv5ea7p4wuTomI4QTrXvFBX2S4jZsmyTSrStQl+E+4w+RzxA==}
@@ -8692,6 +8673,7 @@ packages:
     resolution: {integrity: sha512-KrPd3PKaCLr78MalgiwJnA25Nm8HAmdwN3mYUYZgG/wizIo9EainNVQI9/yDavtVFRN2h3k8uf3GLHuhDMgEHg==}
     engines: {node: '>=14.17'}
     hasBin: true
+    dev: true
 
   /ufo@1.5.3:
     resolution: {integrity: sha512-Y7HYmWaFwPUmkoQCUIAYpKqkOf+SbVj/2fJJZ4RJMCfZp0rTGwRbzQD+HghfnhKOjL9E01okqz+ncJskGYfBNw==}
@@ -8868,7 +8850,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - typescript
-    dev: false
+    dev: true
 
   /vite@5.2.6(@types/node@20.11.30):
     resolution: {integrity: sha512-FPtnxFlSIKYjZ2eosBQamz4CbyrTizbZ3hnGJlh/wMtCrlp1Hah6AzBLjGI5I2urTfNnpovpHdrL6YRuBOPnCA==}
