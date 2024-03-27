@@ -1,7 +1,7 @@
 import {
   AttendantProfile,
   AttendantProfileProps,
-} from '@/domain/chat/enterprise/entities/attendant-profile'
+} from '@/domain/chat/enterprise/entities/value-objects/attendant-profile'
 import { faker } from '@faker-js/faker'
 
 export const makeAttendantProfile = (

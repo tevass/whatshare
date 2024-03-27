@@ -1,4 +1,4 @@
-import { makeAttendantProfile } from '@/test/factories/make-attendant-profile'
+import { makeAttendantProfile } from '@/test/factories/value-objects/make-attendant-profile'
 import { Attendant } from '../attendant'
 
 describe('Attendant', () => {

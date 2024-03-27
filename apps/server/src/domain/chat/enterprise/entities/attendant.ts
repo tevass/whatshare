@@ -1,8 +1,8 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import type { SetNonNullable, SetOptional } from 'type-fest'
-import { AttendantProfile } from './attendant-profile'
 import { AttendantWhatsAppList } from './attendant-whats-app-list'
+import { AttendantProfile } from './value-objects/attendant-profile'
 
 export interface AttendantProps {
   profile: AttendantProfile
