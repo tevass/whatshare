@@ -1,4 +1,4 @@
-import { config } from '@whatshare/vitest-config/node'
+import { config } from '@whatshare/vitest-config'
 import swc from 'unplugin-swc'
 import { defineConfig, mergeConfig, UserConfig } from 'vitest/config'
 

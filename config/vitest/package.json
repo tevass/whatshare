@@ -1,0 +1,22 @@
+{
+  "name": "@whatshare/vitest-config",
+  "version": "1.0.0",
+  "license": "ISC",
+  "private": true,
+  "main": "./node.ts",
+  "module": "./node.ts",
+  "types": "./node.ts",
+  "scripts": {
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts --fix ."
+  },
+  "dependencies": {
+    "vite-tsconfig-paths": "^4.3.2"
+  },
+  "devDependencies": {
+    "@whatshare/eslint-config": "workspace:^",
+    "@whatshare/tsconfig": "workspace:^",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
+  }
+}
