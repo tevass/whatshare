@@ -27,9 +27,7 @@ export class WAMessageOwnerID {
   }
 
   toString() {
-    const ownerIsNotEntityId = this.ref !== 'out'
-
-    if (ownerIsNotEntityId) {
+    if (!this.itsSelf) {
       return WAEntityID.createFromString(this.ref).toString()
     }
 

@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@types/mime-types": "^2.1.4",
     "@types/node": "^20.11.30",
     "@whatshare/eslint-config": "workspace:^",
     "@whatshare/tsconfig": "workspace:^",
@@ -23,6 +24,7 @@
     "vitest": "^1.4.0"
   },
   "dependencies": {
-    "@whatshare/core": "workspace:^"
+    "@whatshare/core": "workspace:^",
+    "mime-types": "^2.1.35"
   }
 }
